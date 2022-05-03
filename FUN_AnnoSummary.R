@@ -1,5 +1,5 @@
 AnnoSummary = function(scRNA.SeuObj,  list_files.df, scAnno.df,
-                       ClassSet=1, ClassSet2 = ClassSet2){
+                       ClassSet=ClassSet1, ClassSet2 = ClassSet2){
 
   ## Annotation Summary Table
     for (i in 1:(ncol(list_files.df)+nrow(scAnno.df)-1)) {
@@ -51,7 +51,7 @@ AnnoSummary = function(scRNA.SeuObj,  list_files.df, scAnno.df,
         names(Anno_Freq_Tar_df.lt[[j]][[i]])[1] <- colnames(Anno.df)[i]
         Anno_Freq_Tar_df.lt[[j]][[i]] <- data.frame(Type=paste0(Anno_Tar_df.lt[[j]][1,1]),
                                                     Anno_Freq_Tar_df.lt[[j]][[i]])
-        colnames(Anno_Freq_Tar_df.lt[[j]][[i]])[1] <- colnames(list_files.df)[ClassSet+1]
+        colnames(Anno_Freq_Tar_df.lt[[j]][[i]])[1] <- colnames(list_files.df)[which(colnames(list_files.df)==ClassSet)+1]
         Anno_Freq_Tar_df.lt[[j]][[i]]$Percent <- Anno_Freq_Tar_df.lt[[j]][[i]]$Freq/sum(Anno_Freq_Tar_df.lt[[j]][[i]]$Freq)
         
         names(Anno_Freq_Tar_df.lt[[j]])[[i]] <- paste0("Freq_",colnames(Anno_Tar_df.lt[[j]])[[i]])
