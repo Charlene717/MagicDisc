@@ -37,6 +37,9 @@
   source("FUN_GSEA_LargeGeneSet.R")
   source("FUN_GSEA_ggplot.R")
 
+  source("Fun_Draw_ConfuMax.R")
+
+
 ##### Current path and new folder setting*  #####
   ProjectName = "CC"
   Sampletype = "PBMC"
