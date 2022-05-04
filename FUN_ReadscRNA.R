@@ -1,4 +1,6 @@
-ReadscRNA = function( InputFolder, list_files.df, Mode="10x" ,ProjectName="") # Mode=c("10x","Exp")
+ReadscRNA = function( InputFolder,Folder = Folder,
+                      Path = "/monocle/outs/filtered_gene_bc_matrices/mm10",
+                      list_files.df, Mode="10x" ,ProjectName="") # Mode=c("10x","Exp")
   {
 
     if(Mode=="10x"){
@@ -6,7 +8,7 @@ ReadscRNA = function( InputFolder, list_files.df, Mode="10x" ,ProjectName="") # 
       scRNA_SeuObj.list <- list()
       for(i in 1:nrow(list_files.df)){
         Folder <- list_files.df$Folder[i]
-        Data.dgCMatrix <- Read10X(data.dir = paste0(InputFolder,"/", Folder, "/monocle/outs/filtered_gene_bc_matrices/mm10"))
+        Data.dgCMatrix <- Read10X(data.dir = paste0(InputFolder,"/", Folder,Path))
         Data.SeuObj <- CreateSeuratObject(counts = Data.dgCMatrix,
                                           project = ProjectName,
                                           min.cells = 3, min.features = 200)
