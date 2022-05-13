@@ -87,44 +87,44 @@
                                  list_files.df, Mode = DataMode)
 
 ##### 01 Combine different datasets before QC #####
-
   ## Combine SeuObjs from list before QC
   # (About 30 min for 20000 cells)
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
 
   ## Extract the original Meta term
   Ori_Meta.set <- colnames(scRNA.SeuObj@meta.data)
+
+  #### Save RData ####
   save.image(paste0(Save.Path,"/01_Combine_different_datasets_before_QC.RData"))
 
 
 ##### 02 Quality Control #####
-  ## Creative QC folder
-  dir.create(paste0(Save.Path,"/",ProjectName,"_QC"))
+  ## Create new folder
+  QCPath <- paste0(Save.Path,"/","A01_QC")
+  if (!dir.exists(QCPath)){
+    dir.create(QCPath)
+  }
 
   ## QC for all samples
   scRNA_Ori.SeuObj <- scRNA.SeuObj # Save the original obj
   #Test# scRNA_Ori.SeuObj.list <- SplitObject(scRNA_Ori.SeuObj, split.by = "ID")
-  scRNA.SeuObj_QCTry <- scRNAQC(scRNA.SeuObj,FileName = paste0(Version,"/",ProjectName,"_QC/",ProjectName,"_QCTry"),NAno=1)
-
-  rm(scRNA.anchors,scRNA.SeuObj,scRNA.SeuObj_QCTry)
-
-  # specify that we will perform downstream analysis on the corrected data note that the
-  # original unmodified data still resides in the 'RNA' assay
+  scRNA.SeuObj_QCTry <- scRNAQC(scRNA.SeuObj, Path = QCPath ,FileName = paste0(ProjectName,"_QCTry"),NAno=1)
 
   ## QC for each sample for the new integration
   scRNA_SeuObj_QC.list <- list()
   for (i in 1:length(scRNA_SeuObj.list)) {
 
     Name <- names(scRNA_SeuObj.list)[[i]]
-    scRNA_SeuObj_QC.list[[i]] <- scRNAQC(scRNA_SeuObj.list[[i]],
-                                         FileName = paste0(Version,"/",ProjectName,"_QC/",ProjectName,"_", Name,"_QC"))
+    scRNA_SeuObj_QC.list[[i]] <- scRNAQC(scRNA_SeuObj.list[[i]], Path = QCPath ,
+                                         FileName = paste0(ProjectName,"_", Name,"_QC"))
     names(scRNA_SeuObj_QC.list)[[i]] <- Name
 
     }
   rm(i,Name)
+  rm(scRNA.anchors,scRNA.SeuObj,scRNA.SeuObj_QCTry)
 
+  #### Save RData ####
   save.image(paste0(Save.Path,"/02_Quality_Control.RData"))
-
 
 ##### 03 Combine different data sets after QC #####
 
@@ -135,6 +135,7 @@
   ## Check QC
   scRNAQC(scRNA.SeuObj,AddMitInf = "No",CheckOnly="Yes",FileName = paste0(Version,"/",ProjectName,"_QC/",ProjectName,"_QC_Check"))
 
+  #### Save RData ####
   save.image(paste0(Save.Path,"/03_Combine_different_data_sets_after_QC.RData"))
 
 ##### 04 Perform an integrated analysis #####
@@ -154,6 +155,7 @@
 
   # specify that we will perform downstream analysis on the corrected data note that the
   # original unmodified data still resides in the 'RNA' assay
+
   if(length(scRNA_SeuObj.list)==1){
     DefaultAssay(scRNA.SeuObj) <- "RNA"
     scRNA.SeuObj <- FindVariableFeatures(object = scRNA.SeuObj)

@@ -3,11 +3,12 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
                     PtSize=0, SpeciSet = "Mouse",
                     AddMitInf = "Yes", # Add mitochondria information
                     CheckOnly="No", # CheckOnly = "Yes": Just plot the Fig
-                    FileName = "QC",NAno=1){   
+                    Path = Save.Path,
+                    FileName = "QC",NAno=1){
 
     ## https://hbctraining.github.io/scRNA-seq/lessons/04_SC_quality_control.html
     ## QC for scRNA Data
-    
+
     ##### QC in Seruat #####
     PBMC.combined_QC <- PBMC.combined
     # QC and selecting cells for further analysis
@@ -27,19 +28,19 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
         FSplot1.PBMC <- FeatureScatter(PBMC.combined_QC, feature1 = "nUMI", feature2 = "nGene",
                                        group.by=colnames(metadata_ori)[3+NAno])
         VlnPlot.PBMC + FSplot1.PBMC
-        
-        
+
+
         #########################################################################################################
         ##### QC in Harvard Chan Bioinformatics Core (HBC) #####
         ## https://hbctraining.github.io/scRNA-seq/lessons/04_SC_quality_control.html
         # Add number of genes per UMI for each cell to metadata
         PBMC.combined_QC$log10GenesPerUMI <- log10(PBMC.combined_QC$nGene) / log10(PBMC.combined_QC$nUMI)
         metadata <- PBMC.combined_QC@meta.data
-        
+
         ## Cell counts
         # Visualize the number of cell counts per sample
-        metadata %>% 
-          ggplot(aes(x=metadata[,3+NAno], fill=metadata[,3+NAno])) + 
+        metadata %>%
+          ggplot(aes(x=metadata[,3+NAno], fill=metadata[,3+NAno])) +
           geom_bar() +
           theme_classic() +
           theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),aspect.ratio=1) +
@@ -47,71 +48,71 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
           ggtitle("NCells")+
           labs(x = colnames(metadata)[3+NAno],
                fill=colnames(metadata)[3+NAno]) -> NCells.BarPlot
-        
+
         NCells.BarPlot
-        
-        
-        
+
+
+
         ## UMI counts (transcripts) per cell
         # Visualize the number UMIs/transcripts per cell
-        metadata %>% 
-          ggplot(aes(color=metadata[,3+NAno], x=nUMI, fill= metadata[,3+NAno])) + 
-          geom_density(alpha = 0.2) + 
-          scale_x_log10() + 
+        metadata %>%
+          ggplot(aes(color=metadata[,3+NAno], x=nUMI, fill= metadata[,3+NAno])) +
+          geom_density(alpha = 0.2) +
+          scale_x_log10() +
           theme_classic() +
           ylab("Cell density") +
           geom_vline(xintercept = nUMIFilter) +
           labs(fill=colnames(metadata)[3+NAno],
                colour=colnames(metadata)[3+NAno]) -> Cell_density.UMIs.Plot
-        
+
         Cell_density.UMIs.Plot
-        
-        
+
+
         ## Genes detected per cell
         # Visualize the distribution of genes detected per cell via histogram
-        metadata %>% 
-          ggplot(aes(color = metadata[,3+NAno], x=nGene, fill = metadata[,3+NAno])) + 
-          geom_density(alpha = 0.2) + 
+        metadata %>%
+          ggplot(aes(color = metadata[,3+NAno], x=nGene, fill = metadata[,3+NAno])) +
+          geom_density(alpha = 0.2) +
           theme_classic() +
           scale_x_log10() +
           ylab("Cell density") +
           geom_vline(xintercept = nGeneFilter)+
           labs(fill=colnames(metadata)[3+NAno],
                colour=colnames(metadata)[3+NAno]) ->  Cell_density.NGenes.Plot
-        
+
         Cell_density.NGenes.Plot
-        
+
         # Visualize the distribution of genes detected per cell via boxplot
-        metadata %>% 
-          ggplot(aes(x = metadata[,3+NAno], y=log10(nGene), fill = metadata[,3+NAno])) + 
-          geom_boxplot() + 
+        metadata %>%
+          ggplot(aes(x = metadata[,3+NAno], y=log10(nGene), fill = metadata[,3+NAno])) +
+          geom_boxplot() +
           theme_classic() +
           theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),aspect.ratio=1) +
           theme(plot.title = element_text(hjust=0.5, face="bold")) +
           ggtitle("NCells vs NGenes") +
           labs(fill=colnames(metadata)[3+NAno],
                colour=colnames(metadata)[3+NAno]) ->  NCvsNG.BarPlot
-        
+
         NCvsNG.BarPlot
-        
-        
+
+
         ## UMIs vs. genes detected
-        
+
         # Visualize the correlation between genes detected and number of UMIs and determine whether strong presence of cells with low numbers of genes/UMIs
-        metadata %>% 
-          ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
+        metadata %>%
+          ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) +
           geom_point() +
           scale_colour_continuous(limits = c(0, 1),low = "gray90", high = "black") +
           #scale_colour_gradient(low = "gray90", high = "black") +
           stat_smooth(method=lm) +
-          scale_x_log10() + 
-          scale_y_log10() + 
+          scale_x_log10() +
+          scale_y_log10() +
           theme_classic() +
           geom_vline(xintercept = nUMIFilter) +
           geom_hline(yintercept = nGeneFilter) +
           theme(aspect.ratio=1)+
           theme(legend.title = element_text(size=17),
-                legend.text = element_text(size=14, face="bold"))+ 
+                legend.text = element_text(size=14, face="bold"))+
           theme(plot.title = element_text(size=14, face="bold.italic"),
                 axis.title.x = element_text(color="black", size=20, face="bold"),
                 axis.title.y = element_text(color="black", size=20, face="bold"),
@@ -120,46 +121,50 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
           facet_wrap(colnames(metadata)[3+NAno])+
           theme(strip.text.x = element_text(size=17, color="black",
                                             face="bold.italic")) -> FSplot
-        
+
         FSplot
 
         # Add p-Value and r-Value
         # https://stackoverflow.com/questions/39335005/add-p-value-and-r-on-ggplot-follow-up
         # https://stackoverflow.com/questions/39333151/add-p-value-and-r2-ggplot-follow-up
-        
+
         formula <- y ~ x
-        FSplot2 <- FSplot  +  
+        FSplot2 <- FSplot  +
           stat_poly_eq(aes(label = paste(..rr.label..)),
-                       label.x.npc = "right", 
-                       label.y.npc = 0.15, 
-                       formula = formula, 
-                       parse=TRUE, 
-                       size = 5) + 
+                       label.x = "left",
+                       label.y = "top",
+                       label.x.npc = "right",
+                       label.y.npc = 0.15,
+                       formula = formula,
+                       parse=TRUE,
+                       size = 5) +
           stat_fit_glance(method = 'lm', method.args = list(formula = formula),
-                          geom='text', aes(label=ifelse(..p.value..< 0.001, "p<0.001**", 
+                          geom='text', aes(label=ifelse(..p.value..< 0.001, "p<0.001**",
                                                         ifelse(..p.value..>=0.001 & ..p.value..<0.05, "p<0.05*", "p>0.05"))),
+                          label.x = "right",
+                          label.y = "top",
                           label.x.npc = 'right',
-                          label.y.npc = 0.4, 
+                          label.y.npc = 0.4,
                           size = 5)
         FSplot2
-        
-        
+
+
         ## Mitochondrial counts ratio
-        
+
         # Visualize the distribution of mitochondrial gene expression detected per cell
-        metadata %>% 
-          ggplot(aes(color=metadata[,3+NAno], x=mitoRatio, fill=metadata[,3+NAno])) + 
-          geom_density(alpha = 0.2) + 
-          #scale_x_log10() + 
+        metadata %>%
+          ggplot(aes(color=metadata[,3+NAno], x=mitoRatio, fill=metadata[,3+NAno])) +
+          geom_density(alpha = 0.2) +
+          #scale_x_log10() +
           theme_classic() +
           ylab("Cell density") +
           geom_vline(xintercept = 0.1) +
           labs(fill=colnames(metadata)[3+NAno],
                colour=colnames(metadata)[3+NAno]) ->  Cell_density.mitR.Plot
-        
+
         Cell_density.mitR.Plot
-        
-        
+
+
         ## Complexity
         # Visualize the overall complexity of the gene expression by visualizing the genes detected per UMI
         metadata %>%
@@ -169,23 +174,23 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
           geom_vline(xintercept = logGPUFilter)+
           labs(fill=colnames(metadata)[3+NAno],
                colour=colnames(metadata)[3+NAno])  -> Cell_density.log10GenesPerUMI.Plot
-        
+
         Cell_density.log10GenesPerUMI.Plot
-        
+
         # Cell_density
-        Cell_density.UMIs.Plot + Cell_density.NGenes.Plot + 
+        Cell_density.UMIs.Plot + Cell_density.NGenes.Plot +
           Cell_density.mitR.Plot + Cell_density.log10GenesPerUMI.Plot
         # BarPlot
         NCells.BarPlot + NCvsNG.BarPlot
         # FeatureScatter
-        FSplot 
-    
+        FSplot
+
         # https://stackoverflow.com/questions/19288101/r-pdf-usage-inside-a-function/19288874
         pdf(
-          file = paste0(getwd(),"/",FileName,".pdf"),
+          file = paste0(Path,"/",FileName,".pdf"),
           width = 10,  height = 7
         )
-        
+
         print(VlnPlot.PBMC + FSplot1.PBMC)
         # Cell_density
         print(Cell_density.UMIs.Plot + Cell_density.NGenes.Plot + Cell_density.mitR.Plot + Cell_density.log10GenesPerUMI.Plot)
@@ -193,40 +198,40 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
         print(NCells.BarPlot + NCvsNG.BarPlot)
         # FeatureScatter
         print(FSplot2)
-        
+
         dev.off()
         # graphics.off()
-        
+
       if(CheckOnly == "No"){
         ##### Filtering #####
         ## Cell-level filtering
         # Filter out low quality reads using selected thresholds - these will change with experiment
-        PBMC.combined_QC_Filter <- subset(x = PBMC.combined_QC, 
-                                          subset= (nUMI >= nUMIFilter) & 
-                                            (nGene >= nGeneFilter) & 
-                                            (log10GenesPerUMI > logGPUFilter) & 
+        PBMC.combined_QC_Filter <- subset(x = PBMC.combined_QC,
+                                          subset= (nUMI >= nUMIFilter) &
+                                            (nGene >= nGeneFilter) &
+                                            (log10GenesPerUMI > logGPUFilter) &
                                             (mitoRatio < mitRFilter))
-        
+
         # ## Gene-level filtering
         # # Output a logical vector for every gene on whether the more than zero counts per cell
         # # Extract counts
         # # counts <- GetAssayData(object = PBMC.combined_QC_Filter, slot = "counts")
         # counts <- PBMC.combined_QC_Filter@assays[["RNA"]]@counts
-        # 
-        # 
+        #
+        #
         # # Output a logical vector for every gene on whether the more than zero counts per cell
         # nonzero <- counts > 0
-        # 
+        #
         # # Sums all TRUE values and returns TRUE if more than 10 TRUE values per gene
         # keep_genes <- Matrix::rowSums(nonzero) >= 10
-        # 
+        #
         # # Only keeping those genes expressed in more than 10 cells
         # filtered_counts <- counts[keep_genes, ]
-        # 
+        #
         # # Reassign to filtered Seurat object
         # PBMC.combined_QC_Filter2 <- CreateSeuratObject(filtered_counts, meta.data = PBMC.combined_QC_Filter@meta.data)
         # scRNAQC(PBMC.combined_QC_Filter2,AddMitInf = "No",FileName = paste0(FileName,"_CheckTry"), CheckOnly="Yes")
-        scRNAQC(PBMC.combined_QC_Filter,AddMitInf = "No",FileName = paste0(FileName,"_Check"), CheckOnly="Yes")
+        scRNAQC(PBMC.combined_QC_Filter,AddMitInf = "No",FileName = paste0(FileName,"_Check"),Path = Path, CheckOnly="Yes")
       }else{
         PBMC.combined_QC_Filter <- PBMC.combined_QC
       }
@@ -244,14 +249,14 @@ return(PBMC.combined_QC_Filter)
 # # The [[ operator can add columns to object metadata. This is a great place to stash QC stats
 # PBMC.TN138.combined_QC[["percent.mt"]] <- PercentageFeatureSet(PBMC.TN138.combined_QC, pattern = "^MT-")
 # PBMC.TN138.combined_QC[["percent.mt"]] <- PercentageFeatureSet(PBMC.TN138.combined_QC, pattern = "^mt-") # OK, and same as mitoRatio
-# 
+#
 # # Visualize QC metrics as a violin plot
 # v1 <- VlnPlot(PBMC.TN138.combined_QC, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
 # p1 <- FeatureScatter(PBMC.TN138, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
 # p2 <- FeatureScatter(PBMC.TN138.combined_QC, feature1 = "nCount_RNA", feature2 = "percent.mt")
 # p3 <- p1+p2
-# 
-# 
+#
+#
 # # Test by funciton
 # PBMC.TN138.combined_QC2 <- scRNAMit(PBMC.TN138)
 # v1T <- VlnPlot(PBMC.TN138.combined_QC2, features = c("nGene", "nUMI", "mitoRatio"), ncol = 3)
