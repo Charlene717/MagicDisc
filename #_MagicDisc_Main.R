@@ -53,6 +53,8 @@
 
   source("Fun_Draw_ConfuMax.R")
 
+  source("FUN_CombineSeuObj.R")
+  source("FUN_DRCluster.R")
   source("FUN_Export_CellCount.R")
 
 ##### Current path and new folder setting* #####
@@ -87,6 +89,7 @@
                                  list_files.df, Mode = DataMode)
 
 ##### 01 Combine different datasets before QC #####
+  source("FUN_CombineSeuObj.R")
   ## Combine SeuObjs from list before QC
   # (About 30 min for 20000 cells)
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
@@ -100,22 +103,22 @@
 
 ##### 02 Quality Control #####
   ## Create new folder
-  QCPath <- paste0(Save.Path,"/","A01_QC")
-  if (!dir.exists(QCPath)){
-    dir.create(QCPath)
+  PathQC <- paste0(Save.Path,"/","A01_QC")
+  if (!dir.exists(PathQC)){
+    dir.create(PathQC)
   }
 
   ## QC for all samples
   scRNA_Ori.SeuObj <- scRNA.SeuObj # Save the original obj
   #Test# scRNA_Ori.SeuObj.list <- SplitObject(scRNA_Ori.SeuObj, split.by = "ID")
-  scRNA.SeuObj_QCTry <- scRNAQC(scRNA.SeuObj, Path = QCPath ,FileName = paste0(ProjectName,"_QCTry"),NAno=1)
-
+  scRNA.SeuObj_QCTry <- scRNAQC(scRNA.SeuObj, Path = PathQC ,FileName = paste0(ProjectName,"_QCTry"))
+  scRNA.SeuObj_QCTry2 <- scRNAQC(scRNA.SeuObj, Path = PathQC ,FileName = paste0(ProjectName,"_QCTry2"),GroupBy= "Sample")
   ## QC for each sample for the new integration
   scRNA_SeuObj_QC.list <- list()
   for (i in 1:length(scRNA_SeuObj.list)) {
 
     Name <- names(scRNA_SeuObj.list)[[i]]
-    scRNA_SeuObj_QC.list[[i]] <- scRNAQC(scRNA_SeuObj.list[[i]], Path = QCPath ,
+    scRNA_SeuObj_QC.list[[i]] <- scRNAQC(scRNA_SeuObj.list[[i]], Path = PathQC ,
                                          FileName = paste0(ProjectName,"_", Name,"_QC"))
     names(scRNA_SeuObj_QC.list)[[i]] <- Name
 
@@ -127,142 +130,34 @@
   save.image(paste0(Save.Path,"/02_Quality_Control.RData"))
 
 ##### 03 Combine different data sets after QC #####
-
   ## Combine SeuObjs from list after QC
   # (About 30 min for 20000 cells)
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj_QC.list)
 
   ## Check QC
-  scRNAQC(scRNA.SeuObj,AddMitInf = "No",CheckOnly="Yes",FileName = paste0(Version,"/",ProjectName,"_QC/",ProjectName,"_QC_Check"))
+  scRNAQC(scRNA.SeuObj,AddMitInf = "No",CheckOnly="Yes", Path = PathQC ,FileName = paste0(ProjectName,"_QCTry"))
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/03_Combine_different_data_sets_after_QC.RData"))
 
 ##### 04 Perform an integrated analysis #####
-  ## Creative Clusters folder
-  dir.create(paste0(Save.Path,"/",ProjectName,"_Clusters"))
-
-  # Run the standard workflow for visualization and clustering
-
-  # # # !!
-  # set.seed(1) # Fix the seed
-  # all.genes <- rownames(scRNA.SeuObj)
-  # scRNA.SeuObj <- ScaleData(scRNA.SeuObj, features = all.genes)
-
-  ## Issues: re_clustering in seurat v3
-  ## https://github.com/satijalab/seurat/issues/1528
-  # DefaultAssay(scRNA.SeuObj) <- "RNA"
-
-  # specify that we will perform downstream analysis on the corrected data note that the
-  # original unmodified data still resides in the 'RNA' assay
-
-  if(length(scRNA_SeuObj.list)==1){
-    DefaultAssay(scRNA.SeuObj) <- "RNA"
-    scRNA.SeuObj <- FindVariableFeatures(object = scRNA.SeuObj)
-  }else{
-    DefaultAssay(scRNA.SeuObj) <- "integrated"
+  source("FUN_DRCluster.R")
+  ## Create new folder
+  PathCluster <- paste0(Save.Path,"/","A02_Cluster")
+  if (!dir.exists(PathCluster)){
+    dir.create(PathCluster)
   }
 
-  ##?
-  set.seed(1) # Fix the seed
-  scRNA.SeuObj <- ScaleData(scRNA.SeuObj, verbose = FALSE)
-  AnnoNames.set <- colnames(scRNA.SeuObj@meta.data)
-  # ## Run if use filter
-  # set.seed(1) # Fix the seed
-  # scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj)
-
-
-  ### RunPCA
-  # set.seed(1) # Fix the seed
-  # scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 30, verbose = FALSE)
-  set.seed(1) # Fix the seed
-  scRNA.SeuObj <- RunPCA(scRNA.SeuObj, features = VariableFeatures(object = scRNA.SeuObj))
-
-  print(scRNA.SeuObj[["pca"]], dims = 1:5, nfeatures = 5)
-
-  pdf(
-    file = paste0(Save.Path,"/",ProjectName,"_Clusters/",ProjectName,"_PCA.pdf"),
-    width = 10,  height = 8
-  )
-    VizDimLoadings(scRNA.SeuObj, dims = 1:2, reduction = "pca")
-    DimPlot(scRNA.SeuObj, reduction = "pca")
-    DimHeatmap(scRNA.SeuObj, dims = 1, cells = 500, balanced = TRUE)
-    DimHeatmap(scRNA.SeuObj, dims = 1:15, cells = 500, balanced = TRUE)
-    DimHeatmap(scRNA.SeuObj, dims = 16:30, cells = 500, balanced = TRUE)
-
-    # # Determine the 'dimensionality' of the dataset
-    # # NOTE: This process can take a long time for big datasets, comment out for expediency. More
-    # # approximate techniques such as those implemented in ElbowPlot() can be used to reduce
-    # # computation time
-    # scRNA.SeuObj <- JackStraw(scRNA.SeuObj, num.replicate = 100)
-    # scRNA.SeuObj <- ScoreJackStraw(scRNA.SeuObj, dims = 1:20)
-    # JackStrawPlot(scRNA.SeuObj, dims = 1:20)
-    ElbowPlot(scRNA.SeuObj, ndims = 50)
-  dev.off()
-
-  ElbowPlot(scRNA.SeuObj, ndims = 50)
-
-  ## Issues: RunUMAP causes R exit
-  ## https://github.com/satijalab/seurat/issues/2259
-  # The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric
-  # To use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'
-  # This message will be shown once per session
-  #### UMAP
-  set.seed(1) # Fix the seed
-  scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:30)
-
-  set.seed(1) # Fix the seed
-  scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:30)
-  set.seed(1) # Fix the seed
-  scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 0.5)
-
-  #### tSNE
-  set.seed(1) # Fix the seed
-  scRNA.SeuObj <- RunTSNE(scRNA.SeuObj, reduction = "pca", dims = 1:30)
-  set.seed(1) # Fix the seed
-  scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:30)
-  set.seed(1) # Fix the seed
-  scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 0.5)
-
-
-  ## Visualization
-  DimPlot(scRNA.SeuObj, reduction = "umap", group.by = colnames(list_files.df)[3] ) %>% BeautifyggPlot(.,LegPos = c(0.85, 0.15),AxisTitleSize=1.1)
-
-  pdf(
-    file = paste0(Save.Path,"/",ProjectName,"_Clusters/",ProjectName,"_nlDR_Cluster.pdf"),
-    width = 12,  height = 8
-  )
-
-    DimPlot(scRNA.SeuObj, reduction = "umap", label = TRUE, label.size = 7, repel = TRUE) %>%
-      BeautifyggPlot(.,LegPos = c(1, 0.5),AxisTitleSize=1.2, LegTextSize = 14)
-
-
-    for (i in 1:(length(Ori_Meta.set)-3)) {
-      print(DimPlot(scRNA.SeuObj, reduction = "umap", group.by = AnnoNames.set[i+3]) %>%
-            BeautifyggPlot(.,TV= -5,TitleSize = 25,LegPos = c(0.8, 0.15),AxisTitleSize=1.2, LegTextSize = 18)+
-              theme(plot.title = element_text(vjust = 0.85)))
-      print(DimPlot(scRNA.SeuObj, reduction = "umap", ncol = 2, split.by = AnnoNames.set[i+3], label = TRUE, label.size = 4) %>%
-              BeautifyggPlot(.,LegPos = c(1, 0.5),AxisTitleSize=1.2, TitleSize = 20,
-                             SubTitSize = 17, LegTextSize = 14, XaThick=0.9, YaThick=0.9,OL_Thick = 1.5))
-
-      print(DimPlot(scRNA.SeuObj, reduction = "tsne", group.by = AnnoNames.set[i+3]) %>%
-              BeautifyggPlot(.,TV= -5,TitleSize = 25,LegPos = c(0.8, 0.15),AxisTitleSize=1.2, LegTextSize = 18)+
-              theme(plot.title = element_text(vjust = 0.85)))
-      print(DimPlot(scRNA.SeuObj, reduction = "tsne", ncol = 2, split.by = AnnoNames.set[i+3], label = TRUE, label.size = 4) %>%
-              BeautifyggPlot(.,LegPos = c(1, 0.5),AxisTitleSize=1.2, TitleSize = 20,
-                             SubTitSize = 17, LegTextSize = 14, XaThick=0.9, YaThick=0.9,OL_Thick = 1.5))
-
-    }
-    rm(i)
-
-  dev.off()
-  # graphics.off()
-
-  save.image(paste0(Save.Path,"/04_Perform_an_integrated_analysis.RData"))
+  scRNA.SeuObj <- DRCluster(scRNA_SeuObj.list, seed=1, PCAdims = 30,
+                            Path = PathCluster, projectName= ProjectName,
+                            MetaSet = Ori_Meta.set)
 
   ##### Meta Table  #####
   Meta.df <- MetaSummary(scRNA_SeuObj.list, scRNA.SeuObj,
                          scRNA_SeuObj_QC.list,scRNA_Ori.SeuObj)
+
+  #### Save RData ####
+  save.image(paste0(Save.Path,"/04_Perform_an_integrated_analysis.RData"))
 
 ################## (Pending) Cell Cycle Regression ##################
 
