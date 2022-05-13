@@ -88,32 +88,10 @@
 
 ##### 01 Combine different datasets before QC #####
 
-  if(length(scRNA_SeuObj.list)==1){
-    scRNA.SeuObj <- scRNA_SeuObj.list[[1]]
-  }else{
-    # normalize and identify variable features for each dataset independently
-    set.seed(1) # Fix the seed
-    scRNA_SeuObj.list <- lapply(X = scRNA_SeuObj.list, FUN = function(x) {
-      x <- NormalizeData(x)
-      x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
-    })
+  ## Combine SeuObjs from list before QC
+  scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
 
-    # select features that are repeatedly variable across datasets for integration
-    set.seed(1) # Fix the seed
-    features <- SelectIntegrationFeatures(object.list = scRNA_SeuObj.list)
-
-    ## Perform integration
-    set.seed(1) # Fix the seed
-    scRNA.anchors <- FindIntegrationAnchors(object.list = scRNA_SeuObj.list, anchor.features = features)
-    # this command creates an 'integrated' data assay
-    set.seed(1) # Fix the seed
-    scRNA.SeuObj <- IntegrateData(anchorset = scRNA.anchors)
-
-    set.seed(1) # Fix the seed
-    DefaultAssay(scRNA.SeuObj) <- "integrated"
-
-  }
-
+  ## Extract the original Meta term
   Ori_Meta.set <- colnames(scRNA.SeuObj@meta.data)
   save.image(paste0(Save.Path,"/01_Combine_different_datasets_before_QC.RData"))
 
@@ -148,28 +126,9 @@
 
 
 ##### 03 Combine different data sets after QC #####
-  if(length(scRNA_SeuObj_QC.list)==1){
-    scRNA.SeuObj <- scRNA_SeuObj_QC.list[[1]]
-  }else{
-    # normalize and identify variable features for each dataset independently
-    set.seed(1) # Fix the seed
-    scRNA_SeuObj_QC.list <- lapply(X = scRNA_SeuObj_QC.list, FUN = function(x) {
-      x <- NormalizeData(x)
-      x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
-    })
 
-    # select features that are repeatedly variable across datasets for integration
-    set.seed(1) # Fix the seed
-    features <- SelectIntegrationFeatures(object.list = scRNA_SeuObj_QC.list)
-
-    ## Perform integration
-    set.seed(1) # Fix the seed
-    scRNA.anchors <- FindIntegrationAnchors(object.list = scRNA_SeuObj_QC.list, anchor.features = features)
-    # this command creates an 'integrated' data assay
-    set.seed(1) # Fix the seed
-    scRNA.SeuObj <- IntegrateData(anchorset = scRNA.anchors)
-
-  }
+  ## Combine SeuObjs from list after QC
+  scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj_QC.list)
 
   ## Check QC
   scRNAQC(scRNA.SeuObj,AddMitInf = "No",CheckOnly="Yes",FileName = paste0(Version,"/",ProjectName,"_QC/",ProjectName,"_QC_Check"))
@@ -300,7 +259,6 @@
   ##### Meta Table  #####
   Meta.df <- MetaSummary(scRNA_SeuObj.list, scRNA.SeuObj,
                          scRNA_SeuObj_QC.list,scRNA_Ori.SeuObj)
-
 
 ################## (Pending) Cell Cycle Regression ##################
 
