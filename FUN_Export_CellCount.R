@@ -1,8 +1,12 @@
 ExportCellCount <- function(AnnoSummary.lt,Path = Save.Path,
                             Folder = "B01_CellCount", projectName = ProjectName) {
   # Create new folder
+
   NewPath <- paste0(Path,"/",Folder)
-  dir.create(NewPath)
+
+  if (!dir.exists(NewPath)){
+    dir.create(NewPath)
+  }
 
   # Extract annotation dataframe
   Anno.df <- AnnoSummary.lt[["Anno.df"]]

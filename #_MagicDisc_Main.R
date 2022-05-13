@@ -557,7 +557,8 @@ save.image(paste0(Save.Path,"/05_Identify_conserved_cell_type_markers.RData"))
 
   rm(top_N, top_NSet)
 
-save.image(paste0(Save.Path,"/06_Cell_type_annotation.RData"))
+  #### Save RData ####
+  save.image(paste0(Save.Path,"/06_Cell_type_annotation.RData"))
 
   # ##### Export marker gene from specific cluster #####
   #   # For performing differential expression after integration, we switch back to the original data

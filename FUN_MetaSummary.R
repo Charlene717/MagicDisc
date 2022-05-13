@@ -5,7 +5,10 @@ MetaSummary = function(scRNA_SeuObj.list,  scRNA.SeuObj,
 
   # Create new folder
   NewPath <- paste0(Path,"/",Folder)
-  dir.create(NewPath)
+  if (!dir.exists(NewPath)){
+    dir.create(NewPath)
+  }
+
 
   Meta.df <- data.frame(matrix(nrow = 0,ncol = 3))
   colnames(Meta.df) <- c("Folder","Cell_Num","Gene_Num")
