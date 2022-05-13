@@ -3,21 +3,36 @@
   memory.limit(150000)
 
 ##### Load Packages #####
-  library(Seurat)
-  # library(SeuratData)
-  library(patchwork)
-  library(ggplot2)
-  library(ggpmisc)
-  library(broom)
 
-  library("stringr")
-  library("magrittr")
-  library("dplyr")
-  library(fgsea)
+  ## Check whether the installation of those packages is required from basic
+  Package.set <- c("tidyverse","Seurat","ggplot2","ggpmisc","broom",
+                   "stringr","magrittr","dplyr",
+                   "CellChat","patchwork","reticulate","anndata")
+  for (i in 1:length(Package.set)) {
+    if (!requireNamespace(Package.set[i], quietly = TRUE)){
+      install.packages(Package.set[i])
+    }
+  }
+  ## Load Packages
+  lapply(Package.set, library, character.only = TRUE)
+  rm(Package.set,i)
 
-  # In fuction
-  library("AnnotationHub")
-  library(ensembldb)
+  ## Check whether the installation of those packages is required from BiocManager
+  if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+  Package.set <- c("fgsea","AnnotationHub","ensembldb",
+                   "basilisk","zellkonverter","SeuratDisk")
+  for (i in 1:length(Package.set)) {
+    if (!requireNamespace(Package.set[i], quietly = TRUE)){
+      BiocManager::install(Package.set[i])
+    }
+  }
+  ## Load Packages
+  lapply(Package.set, library, character.only = TRUE)
+  rm(Package.set,i)
+
+  options(stringsAsFactors = FALSE)
+
 
 ##### Function setting #####
   ## Call function
