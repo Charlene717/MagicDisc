@@ -79,11 +79,6 @@
   list_files.df <- read.csv(paste0(InputFolder,"/",InputAnno))
   Feature.set <- colnames(list_files.df)[-1]
 
-  scAnno.df <- data.frame()
-  Folder <- list_files.df$Folder[1]
-  scAnno.df <- read.table(paste0(InputFolder,"/", Folder, "/Anno.tsv"),
-                          header=T, row.names = 1, sep="\t")
-
   ## Read 10x files
   scRNA_SeuObj.list <- ReadscRNA(InputFolder,Folder = Folder,
                                  Path =  "/monocle/outs/filtered_gene_bc_matrices/mm10",
@@ -277,7 +272,7 @@
       BeautifyggPlot(.,LegPos = c(1, 0.5),AxisTitleSize=1.2, LegTextSize = 14)
 
 
-    for (i in 1:(ncol(list_files.df)+ nrow(scAnno.df)-1)) {
+    for (i in 1:(length(scRNA.SeuObj@meta.data)-3)) {
       print(DimPlot(scRNA.SeuObj, reduction = "umap", group.by = AnnoNames.set[i+3]) %>%
             BeautifyggPlot(.,TV= -5,TitleSize = 25,LegPos = c(0.8, 0.15),AxisTitleSize=1.2, LegTextSize = 18)+
               theme(plot.title = element_text(vjust = 0.85)))
@@ -509,7 +504,7 @@ save.image(paste0(Save.Path,"/05_Identify_conserved_cell_type_markers.RData"))
       BeautifyggPlot(.,LegPos = c(1, 0.5),AxisTitleSize=1.2, LegTextSize = 14)
 
 
-    for (i in 1:(ncol(list_files.df)+nrow(scAnno.df)-1)) {
+    for (i in 1:(length(scRNA.SeuObj@meta.data)-3)) {
       print(DimPlot(scRNA.SeuObj, reduction = "umap", group.by = AnnoNames.set[i+3]) %>%
               BeautifyggPlot(.,TV= -5,TitleSize = 25,LegPos = c(0.8, 0.15),AxisTitleSize=1.2, LegTextSize = 18)+
               theme(plot.title = element_text(vjust = 0.85)))
@@ -601,7 +596,7 @@ save.image(paste0(Save.Path,"/06_Cell_type_annotation.RData"))
 
 ##### 07 Count Cell number  #####
   ## Annotation Summary Table
-  AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df, scAnno.df,
+  AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df,
                                 ClassSet = ClassSet1, ClassSet2 = ClassSet2)
   Anno.df <- AnnoSummary.lt[["Anno.df"]]
   ClassSet2.set <- Anno.df[,ClassSet2] %>% unique()
