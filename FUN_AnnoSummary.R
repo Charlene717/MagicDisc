@@ -1,8 +1,8 @@
-AnnoSummary = function(scRNA.SeuObj,  list_files.df,
+AnnoSummary = function(scRNA.SeuObj,  list_files.df, Ori_Meta.set,
                        ClassSet = ClassSet1, ClassSet2 = ClassSet2){
 
   ## Annotation Summary Table
-    for (i in 1:(length(scRNA.SeuObj@meta.data)-3)) {
+    for (i in 1:(length(Ori_Meta.set)-3)) {
       if(i==1){
         Anno.df <- data.frame(scRNA.SeuObj@meta.data[[3+i]])
         colnames(Anno.df)[i] <- colnames(list_files.df)[i+1]
@@ -83,13 +83,13 @@ AnnoSummary = function(scRNA.SeuObj,  list_files.df,
     Freq_All_Cla.lt[[paste0("Freq_Cla",1)]] <- table(Freq_All_Cla.lt[[paste0("Anno_Cla",1)]]$celltype) %>% as.data.frame()
     Freq_All_Cla.lt[[paste0("Freq_Cla",1)]] <- data.frame(Type=ClassSet2.set[1],Freq_All_Cla.lt[[paste0("Freq_Cla",1)]])
     Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]$Percent <- Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]$Freq/sum(Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]$Freq)
-    colnames(Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]) <- c("Sample","celltype","Freq","Percent")
+    colnames(Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]) <- c("SampleID","celltype","Freq","Percent")
 
     # Count LO_CT
     Freq_All_Cla.lt[[paste0("Freq_Cla",2)]] <- table(Freq_All_Cla.lt[[paste0("Anno_Cla",2)]]$celltype) %>% as.data.frame()
     Freq_All_Cla.lt[[paste0("Freq_Cla",2)]] <- data.frame(Type=ClassSet2.set[2],Freq_All_Cla.lt[[paste0("Freq_Cla",2)]])
     Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]$Percent <- Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]$Freq/sum(Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]$Freq)
-    colnames(Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]) <- c("Sample","celltype","Freq","Percent")
+    colnames(Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]) <- c("SampleID","celltype","Freq","Percent")
 
     # Combind all count of sample
     Freq_All_Cla.lt[["Freq_All_Cla.df"]]  <- rbind(Anno_Freq_Tar_df.lt[[1]][["Freq_celltype"]],

@@ -112,7 +112,7 @@
 
   }
 
-
+  Ori_Meta.set <- colnames(scRNA.SeuObj@meta.data)
   save.image(paste0(Save.Path,"/01_Combine_different_datasets_before_QC.RData"))
 
 
@@ -272,7 +272,7 @@
       BeautifyggPlot(.,LegPos = c(1, 0.5),AxisTitleSize=1.2, LegTextSize = 14)
 
 
-    for (i in 1:(length(scRNA.SeuObj@meta.data)-3)) {
+    for (i in 1:(length(Ori_Meta.set)-3)) {
       print(DimPlot(scRNA.SeuObj, reduction = "umap", group.by = AnnoNames.set[i+3]) %>%
             BeautifyggPlot(.,TV= -5,TitleSize = 25,LegPos = c(0.8, 0.15),AxisTitleSize=1.2, LegTextSize = 18)+
               theme(plot.title = element_text(vjust = 0.85)))
@@ -504,7 +504,7 @@ save.image(paste0(Save.Path,"/05_Identify_conserved_cell_type_markers.RData"))
       BeautifyggPlot(.,LegPos = c(1, 0.5),AxisTitleSize=1.2, LegTextSize = 14)
 
 
-    for (i in 1:(length(scRNA.SeuObj@meta.data)-3)) {
+    for (i in 1:(length(Ori_Meta.set)-3)) {
       print(DimPlot(scRNA.SeuObj, reduction = "umap", group.by = AnnoNames.set[i+3]) %>%
               BeautifyggPlot(.,TV= -5,TitleSize = 25,LegPos = c(0.8, 0.15),AxisTitleSize=1.2, LegTextSize = 18)+
               theme(plot.title = element_text(vjust = 0.85)))
@@ -596,7 +596,7 @@ save.image(paste0(Save.Path,"/06_Cell_type_annotation.RData"))
 
 ##### 07 Count Cell number  #####
   ## Annotation Summary Table
-  AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df,
+  AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df, Ori_Meta.set,
                                 ClassSet = ClassSet1, ClassSet2 = ClassSet2)
   Anno.df <- AnnoSummary.lt[["Anno.df"]]
   ClassSet2.set <- Anno.df[,ClassSet2] %>% unique()
