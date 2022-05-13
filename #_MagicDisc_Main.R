@@ -299,8 +299,7 @@
 
   ##### Meta Table  #####
   Meta.df <- MetaSummary(scRNA_SeuObj.list, scRNA.SeuObj,
-                         scRNA_SeuObj_QC.list,scRNA_Ori.SeuObj,
-                         SavePath = Version, projectName = paste0("/",ProjectName))
+                         scRNA_SeuObj_QC.list,scRNA_Ori.SeuObj)
 
 
 ################## (Pending) Cell Cycle Regression ##################

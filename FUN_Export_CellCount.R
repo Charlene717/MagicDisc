@@ -1,10 +1,15 @@
-ExportCellCount <- function(AnnoSummary.lt) {
+ExportCellCount <- function(AnnoSummary.lt,Path = Save.Path,
+                            Folder = "B01_CellCount", projectName = ProjectName) {
+  # Create new folder
+  NewPath <- paste0(Path,"/",Folder)
+  dir.create(NewPath)
 
+  # Extract annotation dataframe
   Anno.df <- AnnoSummary.lt[["Anno.df"]]
 
   #### Export table ####
   write.table( AnnoSummary.lt[["Freq_All_Cla.lt"]][["Freq_All_Cla.df"]] ,
-               file = paste0(Save.Path,"/",ProjectName,"_CellCount_CT_Cla.tsv"),
+               file = paste0(NewPath,"/",projectName,"_CellCount_CT_Cla.tsv"),
                sep = "\t",
                quote = F,
                row.names = F
@@ -74,7 +79,7 @@ ExportCellCount <- function(AnnoSummary.lt) {
   CellNum_P3
 
   # library(eoffice)
-  # topptx(CellNum_P3,paste0(Save.Path,"/Temp.pptx"))
+  # topptx(CellNum_P3,paste0(NewPath,"/Temp.pptx"))
 
   CellNum_P4 <- ggplot(Freq_All_Cla.df, aes(x = factor(Cell_Type), y = Percent,
                                             colour = Pheno_Type,
@@ -120,7 +125,7 @@ ExportCellCount <- function(AnnoSummary.lt) {
   BarPlot1_1
 
   #### Export PDF file ####
-  pdf(file = paste0(Save.Path,"/",ProjectName,"_CellCount_LinePlot.pdf"),
+  pdf(file = paste0(NewPath,"/",projectName,"_CellCount_LinePlot.pdf"),
       width = 7, height = 7 )
   CellNum_P4 %>% print()
   CellNum_P3 %>% print()
