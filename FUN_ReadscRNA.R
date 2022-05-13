@@ -75,7 +75,7 @@ ReadscRNA = function( InputFolder,Folder = Folder,
           }
 
       }
-      rm(i,j,Folder,GeneExp.df,Data.SeuObj)
+      rm(i,j,k,Folder,GeneExp.df,Data.SeuObj)
 
     }
     return(scRNA_SeuObj.list)
