@@ -89,6 +89,7 @@
 ##### 01 Combine different datasets before QC #####
 
   ## Combine SeuObjs from list before QC
+  # (About 30 min for 20000 cells)
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
 
   ## Extract the original Meta term
@@ -128,6 +129,7 @@
 ##### 03 Combine different data sets after QC #####
 
   ## Combine SeuObjs from list after QC
+  # (About 30 min for 20000 cells)
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj_QC.list)
 
   ## Check QC
