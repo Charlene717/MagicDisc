@@ -59,7 +59,7 @@
   source("FUN_Beautify_Heatmap_Seurat.R")
   source("FUN_UMAP_CellTypeMarker.R")
   source("FUN_Export_All_DRPlot")
-
+  source("FUN_BeautifyDotPlot.R")
 
 ##### Current path and new folder setting* #####
   ProjectName = "CC"
@@ -225,37 +225,10 @@
   ## Export All DRPlot(UMAP,tSNE)
   Export_All_DRPlot(scRNA.SeuObj)
 
-
   ## DotPlot
-  DotPlot_Color1.set <- c("#de3767", "#de3767", "#4169e1", "#4169e1")
-  DotPlot_Color2.set <- c("#5b8e7d","#7b2cbf")
-  DotPlot_Color3.set <- c("#de3767", "#4169e1")
+  #(Pending)
+  BeautifyDotPlot(scRNA.SeuObj, Path = PathCellType, projectName = ProjectName)
 
-  pdf(
-    file = paste0(PathCellType,"/",ProjectName,"_DotPlot_CellType",".pdf"),
-    width = 10,  height = 8
-  )
-
-    # https://satijalab.org/seurat/reference/dotplot
-    DotPlot(scRNA.SeuObj, features = markers.to.plot, cols = c("lightgrey", "blue"),
-            dot.scale = 8) + RotatedAxis()%>%
-      BeautifyggPlot(.,LegPos = "bottom",AxisTitleSize=1, TitleSize = 20, xangle =90,
-                     LegDir = "horizontal",SubTitSize = 17 , LegTextSize = 14, XaThick=1, YaThick=1,XtextSize=12,  YtextSize=12)
-
-    DotPlot(scRNA.SeuObj, features = markers.to.plot, cols = DotPlot_Color1.set,
-            dot.scale = 8, split.by = "Sample") + RotatedAxis()
-
-
-    # https://github.com/satijalab/seurat/issues/1541
-    DotPlot(scRNA.SeuObj, features = markers.to.plot, cols = DotPlot_Color2.set,
-            dot.scale = 8, split.by = "Cachexia") + RotatedAxis()
-
-    DotPlot(scRNA.SeuObj, features = markers.to.plot, cols = DotPlot_Color3.set,
-            dot.scale = 8, split.by = "Sex") + RotatedAxis()
-
-  dev.off()
-
-  rm(top_N, top_NSet)
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/06_Cell_type_annotation.RData"))
@@ -313,146 +286,20 @@
 ##### 08_1 Find CCmarker in different Cell type and VolcanoPlot (SSA) ########
   #### Define group by different phenotype ####
     source("FUN_Find_Markers.R")
-    scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
+  ## Create new folder
+  PathBiomarkers <- paste0(Save.Path,"/","B02_Biomarkers")
+  if (!dir.exists(PathBiomarkers)){
+    dir.create(PathBiomarkers)
+  }
 
-    # for (i in 1:(ncol(list_files.df)-1)) {
-    #   scRNA.SeuObj[[paste0("celltype.",colnames(list_files.df)[1+i])]] <- paste(Idents(scRNA.SeuObj), as.matrix(scRNA.SeuObj[[colnames(list_files.df)[1+i]]]), sep = "_")
-    #
-    # }
+  scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
 
-    scRNA.SeuObj[[paste0("celltype.",ClassSet2)]] <- paste(Idents(scRNA.SeuObj),
-                                                           as.matrix(scRNA.SeuObj[[ClassSet2]]), sep = "_")
-    scRNA.SeuObj[[paste0("celltype.",ClassSet2,".",ClassSet3)]] <- paste(Idents(scRNA.SeuObj),
-                                                                         as.matrix(scRNA.SeuObj[[ClassSet2]]),
-                                                                         as.matrix(scRNA.SeuObj[[ClassSet3]]), sep = "_")
-    Idents(scRNA.SeuObj) <- paste0("celltype.",ClassSet2,".",ClassSet3)
+  ## Find CCmarker in different Cell type
+  BioMarker(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
+            classSet2 = ClassSet2, classSet3 = ClassSet3,Type = "celltype")
 
-
-    DefaultAssay(scRNA.SeuObj) <- "RNA"
-
-
-    ClassSet2.set <- list_files.df[[ClassSet2]] %>% unique()
-    ClassSet3.set <- list_files.df[[ClassSet3]] %>% unique()
-    CellType.list <- as.character(unique(scRNA.SeuObj@meta.data[["celltype"]]))
-    # CellType.list <- CellType.list[-9]
-    ####-------------- Find Marker gene in Male --------------####
-      Sep_Cla3_FMar.Path <- paste0(Sampletype,"_",ProjectName,"_Separate_",ClassSet3.set[1],"_FindMarkers")
-      dir.create(paste0(Save.Path,"/",Sep_Cla3_FMar.Path))
-
-      # About 15 mins
-      CCMarker_Male.lt <- list()
-      for(i in c(1:length(CellType.list))){
-        try({
-          CCMarker_Male.lt[[i]] <- Find_Markers(scRNA.SeuObj,
-                                                paste0(CellType.list[i],"_",ClassSet2.set[1],"_",ClassSet3.set[1]),
-                                                paste0(CellType.list[i],"_",ClassSet2.set[2],"_",ClassSet3.set[1]),
-                                                CellType.list[i],
-                                                Path = Save.Path,
-                                                ResultFolder = paste0(Sep_Cla3_FMar.Path),
-                                                ProjectTitle = ProjectName)
-          # names(CCMarker_Male.lt)[[i]] <- paste0("CCMarker_Male.lt.",CellType.list[i])
-          names(CCMarker_Male.lt)[[i]] <- paste0(CellType.list[i])
-        })
-      }
-      rm(i)
-
-      CCMarker_Male.lt <- CCMarker_Male.lt[!unlist(lapply(CCMarker_Male.lt,is.null))]
-
-
-      ## Generate pdf and tif file for Male VolcanoPlot
-      Sep_Cla3_Volcano.Path <- paste0(Sampletype,"_",ProjectName,"_Separate_",ClassSet3.set[1],"_VolcanoPlot")
-      dir.create(paste0(Save.Path,"/",Sep_Cla3_Volcano.Path ))
-
-      pdf(file = paste0(Save.Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,".pdf"),
-          width = 7, height = 7 )
-      for (i in 1:length(CellType.list)) {
-        try({
-          print(VolcanoPlot(CCMarker_Male.lt[[i]][[paste0(ProjectName, "Marker.S")]],
-                            CCMarker_Male.lt[[i]][[paste0(ProjectName, "Marker.S_Pos_List")]],
-                            CCMarker_Male.lt[[i]][[paste0(ProjectName, "Marker.S_Neg_List")]], ShowGeneNum = 6)+
-                  ggtitle(paste0(ProjectName,"_",ClassSet3.set[1],"_",CellType.list[i]))
-          )
-        })
-      }
-      dev.off() # graphics.off()
-      rm(i)
-
-      for (i in 1:length(CellType.list)) {
-        try({
-          tiff(file = paste0(Save.Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,"_",CellType.list[i],".tif"),
-               width = 17, height = 17, units = "cm", res = 200)
-          print(VolcanoPlot(CCMarker_Male.lt[[i]][[paste0(ProjectName, "Marker.S")]],
-                            CCMarker_Male.lt[[i]][[paste0(ProjectName, "Marker.S_Pos_List")]],
-                            CCMarker_Male.lt[[i]][[paste0(ProjectName, "Marker.S_Neg_List")]])+
-                  ggtitle(paste0(ProjectName,"_",ClassSet3.set[1],"_",CellType.list[i]))
-          )
-
-          graphics.off()
-        })
-      }
-      rm(i,Sep_Cla3_FMar.Path)
-
-    ####-------------- Find Marker gene in Female --------------####
-      Sep_Cla3_FMar.Path <- paste0(Sampletype,"_",ProjectName,"_Separate_",ClassSet3.set[2],"_FindMarkers")
-      dir.create(paste0(Save.Path, "/", Sep_Cla3_FMar.Path))
-
-      # About 15 mins
-      CCMarker_Female.lt <- list()
-
-      for(i in c(1:length(CellType.list))){
-        try({
-          CCMarker_Female.lt[[i]] <- Find_Markers(scRNA.SeuObj,
-                                                  paste0(CellType.list[i],"_",ClassSet2.set[1],"_",ClassSet3.set[2]),
-                                                  paste0(CellType.list[i],"_",ClassSet2.set[2],"_",ClassSet3.set[2]),
-                                                  CellType.list[i],
-                                                  Path = Save.Path,
-                                                  ResultFolder = paste0(Sep_Cla3_FMar.Path),
-                                                  ProjectTitle = ProjectName)
-          # names(CCMarker_Female.lt)[[i]] <- paste0("CCMarker_Female.lt.",CellType.list[i])
-          names(CCMarker_Female.lt)[[i]] <- paste0(CellType.list[i])
-        })
-      }
-      rm(i)
-
-      CCMarker_Female.lt <- CCMarker_Female.lt[!unlist(lapply(CCMarker_Female.lt,is.null))]
-
-
-      ## Generate pdf and tif file for Female VolcanoPlot
-      Sep_Cla3_Volcano.Path <- paste0(Sampletype,"_",ProjectName,"_Separate_",ClassSet3.set[2],"_VolcanoPlot")
-      dir.create(paste0(Save.Path,"/",Sep_Cla3_Volcano.Path ))
-
-      # dir.create(paste0(Save.Path,"/PBMC_SSA_Female_VolcanoPlot/"))
-
-      pdf(file = paste0(Save.Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,".pdf"),
-          width = 7, height = 7 )
-        for (i in 1:length(CellType.list)) {
-          try({
-            print(VolcanoPlot(CCMarker_Female.lt[[i]][[paste0(ProjectName, "Marker.S")]],
-                              CCMarker_Female.lt[[i]][[paste0(ProjectName, "Marker.S_Pos_List")]],
-                              CCMarker_Female.lt[[i]][[paste0(ProjectName, "Marker.S_Neg_List")]], ShowGeneNum = 6)+
-                    ggtitle(paste0(ProjectName,"_",ClassSet3.set[2],"_",CellType.list[i]))
-            )
-          })
-        }
-        dev.off() # graphics.off()
-        rm(i)
-
-        for (i in 1:length(CellType.list)) {
-          try({
-            tiff(file = paste0(Save.Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,"_",CellType.list[i],".tif"),
-                 width = 17, height = 17, units = "cm", res = 200)
-            print(VolcanoPlot(CCMarker_Female.lt[[i]][[paste0(ProjectName, "Marker.S")]],
-                              CCMarker_Female.lt[[i]][[paste0(ProjectName, "Marker.S_Pos_List")]],
-                              CCMarker_Female.lt[[i]][[paste0(ProjectName, "Marker.S_Neg_List")]])+
-                    ggtitle(paste0(ProjectName,"_",ClassSet3.set[2],"_",CellType.list[i]))
-            )
-
-            graphics.off()
-        })
-      }
-      rm(i,Sep_Cla3_FMar.Path)
-
-save.image(paste0(Save.Path,"/08_1_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Separate).RData"))
+  #### Save RData ####
+  save.image(paste0(Save.Path,"/08_1_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Separate).RData"))
 
 
 ##### 08_2 Find CCmarker in different Cell type and VennDiagrame (SSA_IntersectCT) ########
