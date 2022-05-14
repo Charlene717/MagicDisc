@@ -61,6 +61,7 @@
   source("FUN_Export_All_DRPlot")
   source("FUN_BeautifyDotPlot.R")
   source("FUN_BioMarker2Index.R")
+  source("FUN_BeautifyVennDiag.R")
 
 ##### Current path and new folder setting* #####
   ProjectName = "CC"
@@ -265,7 +266,6 @@
   CCMarker.lt <-  BioMarker2Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
                                   classSet2 = ClassSet2, classSet3 = ClassSet3,Type = "celltype")
 
-
   #### Save RData ####
   save.image(paste0(Save.Path,"/08_1_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Separate).RData"))
 
@@ -281,38 +281,9 @@
 
   CellType.list <- names(CCMarker_Male.lt)
 
-  ##-------------- Venn Pos --------------##
-  source("FUN_Venn.R")
-  # pdf(file = paste0(Save.Path,"/PBMC_Female_VolcanoPlot.pdf"),width = 7, height = 7 )
-  Sep_Cla3_Venn.Path <- paste0(Sampletype,"_",ProjectName,"_Separate_","_VennDiagrame")
-  dir.create(paste0(Save.Path,"/",Sep_Cla3_Venn.Path))
-  Venn_CCMarker_Pos <- list()
-  for(i in c(1:length(CellType.list))){
-    try({
-      Venn_CCMarker_Pos[[i]] <- Venn_Intersect(CCMarker_Male.lt[[paste0(CellType.list[i])]][[paste0(ProjectName, "Marker.S_Pos_List")]],
-                                               CCMarker_Female.lt[[paste0(CellType.list[i])]][[paste0(ProjectName, "Marker.S_Pos_List")]],
-                                               CellType.list[i],"Pos","#9d0208","#f08080",SampleType = Sampletype,
-                                               PathName = paste0(Save.Path,"/",Sep_Cla3_Venn.Path),
-                                               ClassSet3_1 = ClassSet3.set[1], ClassSet3_2 =ClassSet3.set[2])
-      names(Venn_CCMarker_Pos)[[i]] <- paste0("Venn_",ProjectName,"Marker.",CellType.list[i],"_Pos")
-    })
-  }
-  rm(i)
+  Venn_CCMarke.lt <- BeautifyVennDiag(CCMarker_Male.lt, CCMarker_Female.lt, CellType.list)
 
-  ##-------------- Venn Neg --------------##
-  Venn_CCMarker_Neg <- list()
-  for(i in c(1:length(CellType.list))){
-    try({
-      Venn_CCMarker_Neg[[i]] <- Venn_Intersect(CCMarker_Male.lt[[paste0(CellType.list[i])]][[paste0(ProjectName, "Marker.S_Neg_List")]],
-                                               CCMarker_Female.lt[[paste0(CellType.list[i])]][[paste0(ProjectName, "Marker.S_Neg_List")]],
-                                               CellType.list[i],"Neg","#00296b","#1368aa",SampleType=Sampletype,
-                                               PathName = paste0(Save.Path,"/",Sep_Cla3_Venn.Path))
-
-      names(Venn_CCMarker_Neg)[[i]] <- paste0("Venn_",ProjectName,"Marker.",CellType.list[i],"_Neg")
-    })
-  }
-  rm(i,Sep_Cla3_Venn.Path)
-
+  #### Save RData ####
   save.image(paste0(Save.Path,"/08_2_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_Venn.RData"))
 
 
@@ -320,62 +291,12 @@
   ### Define group by different phenotype ###
   source("FUN_Find_Markers.R")
 
-  Idents(scRNA.SeuObj) <- "celltype.Cachexia"
-  Sep_Cla3_FMar.Path <- paste0(Sampletype,"_",ProjectName,"_Pooled_FindMarkers")
-  dir.create(paste0(Save.Path,"/",Sep_Cla3_FMar.Path))
+  CCMarker.lt <- BioMarker1Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
+                                  sampletype = Sampletype, cellType.list = CellType.list, classSet2 = ClassSet2,
+                                  Type = paste0("celltype.",classSet2) )
 
-  CCMarker_SPA.lt <- list()
-  for(i in c(1:length(CellType.list))){
-    try({
-      CCMarker_SPA.lt[[i]] <- Find_Markers(scRNA.SeuObj,
-                                           paste0(CellType.list[i],"_",ClassSet2.set[1]),
-                                           paste0(CellType.list[i],"_",ClassSet2.set[2]),
-                                           CellType.list[i],
-                                           Path = Save.Path,
-                                           ResultFolder =  Sep_Cla3_FMar.Path,
-                                           ProjectTitle = ProjectName)
-
-      # names(CCMarker_SPA.lt)[[i]] <- paste0("CCMarker_SPA.lt.",CellType.list[i])
-      names(CCMarker_SPA.lt)[[i]] <- paste0(CellType.list[i])
-    })
-  }
-  rm(i,Sep_Cla3_FMar.Path)
-
-  CCMarker_SPA.lt <- CCMarker_SPA.lt[!unlist(lapply(CCMarker_SPA.lt,is.null))]
-
-
-  ## Generate pdf and tif file for VolcanoPlot
-  Sep_Cla3_Volcano.Path <- paste0(Sampletype,"_",ProjectName,"_Pooled_","_VolcanoPlot")
-  dir.create(paste0(Save.Path,"/",Sep_Cla3_Volcano.Path))
-  pdf(file = paste0(Save.Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,".pdf"),width = 7, height = 7 )
-    for (i in 1:length(CellType.list)) {
-      try({
-        print(VolcanoPlot(CCMarker_SPA.lt[[i]][[paste0(ProjectName,"Marker.S")]],
-                          CCMarker_SPA.lt[[i]][[paste0(ProjectName,"Marker.S_Pos_List")]],
-                          CCMarker_SPA.lt[[i]][[paste0(ProjectName,"Marker.S_Neg_List")]], ShowGeneNum = 6)+
-                ggtitle(paste0(Sampletype,"_",CellType.list[i]))
-        )
-      })
-    }
-    # graphics.off()
-  dev.off()
-  rm(i)
-
-  for (i in 1:length(CellType.list)) {
-    try({
-      tiff(file = paste0(Save.Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,"_",CellType.list[i],".tif"), width = 17, height = 17, units = "cm", res = 200)
-      print(VolcanoPlot(CCMarker_SPA.lt[[i]][[paste0(ProjectName,"Marker.S")]],
-                        CCMarker_SPA.lt[[i]][[paste0(ProjectName,"Marker.S_Pos_List")]],
-                        CCMarker_SPA.lt[[i]][[paste0(ProjectName,"Marker.S_Neg_List")]])+
-                        ggtitle(paste0(Sampletype,"_",CellType.list[i]))
-      )
-
-      graphics.off()
-    })
-  }
-  rm(i,Sep_Cla3_Volcano.Path)
-
-save.image(paste0(Save.Path,"/08_3_Find__",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Pooled).RData"))
+  #### Save RData ####
+  save.image(paste0(Save.Path,"/08_3_Find__",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Pooled).RData"))
 
 ################## (Pending) CCmarker matrix (Heatmap) ##################
 ################## (Pending) CCmarker matrix LogFC (Heatmap) ##################
