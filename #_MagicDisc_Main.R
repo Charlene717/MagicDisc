@@ -102,6 +102,7 @@
 
 
 ##### 02 Quality Control #####
+  source("FUN_scRNAQC.R")
   ## Create new folder
   PathQC <- paste0(Save.Path,"/","A01_QC")
   if (!dir.exists(PathQC)){
@@ -109,12 +110,11 @@
   }
 
   ## QC for all samples
-  scRNA_Ori.SeuObj <- scRNA.SeuObj # Save the original obj
-  #Test# scRNA_Ori.SeuObj.list <- SplitObject(scRNA_Ori.SeuObj, split.by = "ID")
   scRNA.SeuObj_QCTry <- scRNAQC(scRNA.SeuObj, Path = PathQC ,FileName = paste0(ProjectName,"_QCTry"))
   scRNA.SeuObj_QCTry2 <- scRNAQC(scRNA.SeuObj, Path = PathQC ,FileName = paste0(ProjectName,"_QCTry2"),GroupBy= "Sample")
   ## QC for each sample for the new integration
-  scRNA_SeuObj_QC.list <- list()
+  #Test# scRNA_Ori.SeuObj.list <- SplitObject(scRNA_Ori.SeuObj, split.by = "ID")
+    scRNA_SeuObj_QC.list <- list()
   for (i in 1:length(scRNA_SeuObj.list)) {
 
     Name <- names(scRNA_SeuObj.list)[[i]]
@@ -132,6 +132,7 @@
 ##### 03 Combine different data sets after QC #####
   ## Combine SeuObjs from list after QC
   # (About 30 min for 20000 cells)
+  scRNA_Ori.SeuObj <- scRNA.SeuObj # Save the original obj
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj_QC.list)
 
   ## Check QC
