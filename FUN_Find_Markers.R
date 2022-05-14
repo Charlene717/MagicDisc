@@ -47,7 +47,7 @@ Find_Markers <- function(PBMC.combined, ident1, ident2, CellType ,Path = getwd()
   Tcell.CCMarker.F.All <- data.frame(Genes = row.names(Tcell.CCMarker.F.All),Tcell.CCMarker.F.All)
   })
 
-  write.table(Tcell.CCMarker.F.All, file=paste0(Path,"/", ResultFolder,"/", CellType,"_FindMarkers.tsv"),
+  write.table(Tcell.CCMarker.F.All, file=paste0(Path,"/", ResultFolder,"/", "FindMarkers_",CellType,".tsv"),
               sep="\t", row.names= F, quote = FALSE)
   try({
   Tcell.CCMarker.F.S_Order <- Tcell.CCMarker.F.S[order(Tcell.CCMarker.F.S$avg_log2FC,decreasing=TRUE, na.last=FALSE),]
