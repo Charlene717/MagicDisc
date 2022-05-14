@@ -42,13 +42,7 @@ Export_All_DRPlot <- function(scRNA.SeuObj,
   dev.off()
   
   
-  
-  
-  
-  
-  
-  
-  
+  return()
   
   
 }

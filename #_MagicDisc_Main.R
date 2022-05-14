@@ -60,6 +60,7 @@
   source("FUN_UMAP_CellTypeMarker.R")
   source("FUN_Export_All_DRPlot")
   source("FUN_BeautifyDotPlot.R")
+  source("FUN_BioMarker2Index.R")
 
 ##### Current path and new folder setting* #####
   ProjectName = "CC"
@@ -233,42 +234,6 @@
   #### Save RData ####
   save.image(paste0(Save.Path,"/06_Cell_type_annotation.RData"))
 
-  # ##### Export marker gene from specific cluster #####
-  #   # For performing differential expression after integration, we switch back to the original data
-  #   set.seed(1) # Fix the seed
-  #   DefaultAssay(scRNA.SeuObj) <- "RNA"
-  #
-  #   # nk.markers <- FindConservedMarkers(scRNA.SeuObj, ident.1 = 6, grouping.var = "sample", verbose = FALSE)
-  #   library(BiocManager)
-  #   library(multtest)
-  #   nk.markers <- FindConservedMarkers(scRNA.SeuObj, ident.1 = 'NK', grouping.var = "sample", verbose = FALSE)
-  #   head(nk.markers)
-  #
-  #   rm(nk.markers)
-
-  # ##### Identify differential expressed genes across conditions  #####
-  #   library(ggplot2)
-  #   library(cowplot)
-  #   theme_set(theme_cowplot())
-  #   CD4T.cells <- subset(scRNA.SeuObj, idents = "CD4+T")
-  #   Idents(CD4T.cells) <- "Cachexia"
-  #   avg.CD4T.cells <- as.data.frame(log1p(AverageExpression(CD4T.cells, verbose = FALSE)$RNA))
-  #   avg.CD4T.cells$gene <- rownames(avg.CD4T.cells)
-  #
-  #   MacrophageM2 <- subset(scRNA.SeuObj, idents = "Mac2")
-  #   Idents(MacrophageM2) <- "Cachexia"
-  #   avg.MacrophageM2 <- as.data.frame(log1p(AverageExpression(MacrophageM2, verbose = FALSE)$RNA))
-  #   avg.MacrophageM2$gene <- rownames(avg.MacrophageM2)
-  #
-  #   genes.to.label = c("Sox17", "Mrpl15", "Lypla1", "Tcea1", "Rgs20", "Atp6v1h", "Rb1cc1", "4732440D04Rik", "St18")
-  #   p1 <- ggplot(avg.CD4T.cells, aes(EO, LO)) + geom_point() + ggtitle("Cachexia T.cells")
-  #   p1 <- LabelPoints(plot = p1, points = genes.to.label, repel = TRUE)
-  #   p2 <- ggplot(avg.MacrophageM2, aes(EO, LO)) + geom_point() + ggtitle("Cachexia Macrophage")
-  #   p2 <- LabelPoints(plot = p2, points = genes.to.label, repel = TRUE)
-  #   p1 + p2
-  #   rm(p1 , p2 ,CD4T.cells, MacrophageM2, avg.CD4T.cells, avg.MacrophageM2)
-
-
 ##### 07 Count Cell number  #####
   source("FUN_AnnoSummary.R")
   source("FUN_Export_CellCount.R")
@@ -285,7 +250,9 @@
 
 ##### 08_1 Find CCmarker in different Cell type and VolcanoPlot (SSA) ########
   #### Define group by different phenotype ####
-    source("FUN_Find_Markers.R")
+  source("FUN_Find_Markers.R")
+  source("FUN_BioMarker2Index.R")
+
   ## Create new folder
   PathBiomarkers <- paste0(Save.Path,"/","B02_Biomarkers")
   if (!dir.exists(PathBiomarkers)){
@@ -295,8 +262,9 @@
   scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
 
   ## Find CCmarker in different Cell type
-  BioMarker(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
-            classSet2 = ClassSet2, classSet3 = ClassSet3,Type = "celltype")
+  CCMarker.lt <-  BioMarker2Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
+                                  classSet2 = ClassSet2, classSet3 = ClassSet3,Type = "celltype")
+
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/08_1_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Separate).RData"))
@@ -304,6 +272,8 @@
 
 ##### 08_2 Find CCmarker in different Cell type and VennDiagrame (SSA_IntersectCT) ########
   ##-------------- Intersect_CellType --------------##
+  CCMarker_Male.lt <- CCMarker.lt[1]
+  CCMarker_Female.lt <- CCMarker.lt[2]
   intersect_CellType <- intersect(names(CCMarker_Male.lt),names(CCMarker_Female.lt))
 
   CCMarker_Male.lt <- CCMarker_Male.lt[names(CCMarker_Male.lt) %in% intersect_CellType]
