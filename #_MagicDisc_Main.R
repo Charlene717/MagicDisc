@@ -64,7 +64,11 @@
 
   Version = paste0(Sys.Date(),"_","CC_PBMC")
   Save.Path = paste0(getwd(),"/",Version)
-  dir.create(Save.Path)
+  ## Create new folder
+  if (!dir.exists(Save.Path)){
+    dir.create(Save.Path)
+  }
+
 
   ## Import information
   InputFolder = "Input_files_10x"
@@ -111,7 +115,7 @@
 
   ## QC for all samples
   scRNA.SeuObj_QCTry <- scRNAQC(scRNA.SeuObj, Path = PathQC ,FileName = paste0(ProjectName,"_QCTry"))
-  scRNA.SeuObj_QCTry2 <- scRNAQC(scRNA.SeuObj, Path = PathQC ,FileName = paste0(ProjectName,"_QCTry2"),GroupBy= "Sample")
+
   ## QC for each sample for the new integration
   #Test# scRNA_Ori.SeuObj.list <- SplitObject(scRNA_Ori.SeuObj, split.by = "ID")
     scRNA_SeuObj_QC.list <- list()
@@ -124,6 +128,8 @@
 
     }
   rm(i,Name)
+
+  scRNA_Ori.SeuObj <- scRNA.SeuObj # Save the original obj
   rm(scRNA.SeuObj,scRNA.SeuObj_QCTry)
 
   #### Save RData ####
@@ -132,7 +138,6 @@
 ##### 03 Combine different data sets after QC #####
   ## Combine SeuObjs from list after QC
   # (About 30 min for 20000 cells)
-  scRNA_Ori.SeuObj <- scRNA.SeuObj # Save the original obj
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj_QC.list)
 
   ## Check QC
