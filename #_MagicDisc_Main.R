@@ -173,8 +173,13 @@
 
 
 ##### 05 Identify conserved cell type markers  #####
-  ## Creative Cell type folder
-  dir.create(paste0(Save.Path,"/",ProjectName,"_CT"))
+  source("FUN_Beautify_UMAP.R")
+  ## Create new folder
+  PathCellType <- paste0(Save.Path,"/","A03_CellTypeAno")
+  if (!dir.exists(PathCellType)){
+    dir.create(PathCellType)
+  }
+
 
   ## Identify conserved cell type markers
   # find markers for every cluster compared to all remaining cells, report only the positive ones
@@ -214,7 +219,7 @@
   # --------------- Check specific tissue marker --------------- #
 
   pdf(
-    file = paste0(Save.Path,"/",ProjectName,"_CT/",ProjectName,"_nlDR_CTMarker.pdf"),
+    file = paste0(PathCellType,"_CT/",ProjectName,"_nlDR_CTMarker.pdf"),
     width = 10,  height = 8
   )
 
@@ -307,7 +312,7 @@ save.image(paste0(Save.Path,"/05_Identify_conserved_cell_type_markers.RData"))
   Heatmap_Color.lt <- list(low="#5283ff",mid ="white", high ="#ff5c5c")
 
   pdf(
-    file = paste0(Save.Path,"/",ProjectName,"_CT/",ProjectName,"_Heatmap_CellType_top",top_NSet,".pdf"),
+    file = paste0(PathCellType,"/",ProjectName,"_Heatmap_CellType_top",top_NSet,".pdf"),
     width = 10,  height = 8
   )
     DoHeatmap(scRNA.SeuObj, features = top_N$gene,size = 3,angle = 60) +
@@ -336,7 +341,7 @@ save.image(paste0(Save.Path,"/05_Identify_conserved_cell_type_markers.RData"))
   DoHeatmap(scRNA.SeuObj, features = top_N$gene,group.by = "seurat_clusters",size = 3,angle = 90) + NoLegend()
 
   pdf(
-    file = paste0(Save.Path,"/",ProjectName,"_CT/",ProjectName,"_Heatmap_CellType_top",top_NSet,".pdf"),
+    file = paste0(PathCellType,"/",ProjectName,"_Heatmap_CellType_top",top_NSet,".pdf"),
     width = 10,  height = 8
   )
     DoHeatmap(scRNA.SeuObj, features = top_N$gene,group.by = "celltype",size = 2,angle = 45) +
@@ -360,7 +365,7 @@ save.image(paste0(Save.Path,"/05_Identify_conserved_cell_type_markers.RData"))
 
 
   pdf(
-    file = paste0(Save.Path,"/",ProjectName,"_CT/",ProjectName,"_nlDR_CellType_Sup.pdf"),
+    file = paste0(PathCellType,"/",ProjectName,"_nlDR_CellType_Sup.pdf"),
     width = 12,  height = 8
   )
 
@@ -395,7 +400,7 @@ save.image(paste0(Save.Path,"/05_Identify_conserved_cell_type_markers.RData"))
   DotPlot_Color3.set <- c("#de3767", "#4169e1")
 
   pdf(
-    file = paste0(Save.Path,"/",ProjectName,"_CT/",ProjectName,"_DotPlot_CellType",".pdf"),
+    file = paste0(PathCellType,"/",ProjectName,"_DotPlot_CellType",".pdf"),
     width = 10,  height = 8
   )
 
