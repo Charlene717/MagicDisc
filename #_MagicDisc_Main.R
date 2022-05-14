@@ -124,7 +124,7 @@
 
     }
   rm(i,Name)
-  rm(scRNA.anchors,scRNA.SeuObj,scRNA.SeuObj_QCTry)
+  rm(scRNA.SeuObj,scRNA.SeuObj_QCTry)
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/02_Quality_Control.RData"))
