@@ -194,13 +194,13 @@
   DoHeatmap(scRNA.SeuObj, features = top_N$gene) + NoLegend()
 
 
-  write.table(top_N, file=paste0(Save.Path,"/",ProjectName,"_Clusters/",ProjectName,"_ClusterMarker_top",top_NSet,"Gene.txt"),sep="\t", row.names=T
+  write.table(top_N, file=paste0(PathCluster, "/",ProjectName,"_ClusterMarker_top",top_NSet,"Gene.txt"),sep="\t", row.names=T
               , quote = FALSE)
-  write.table(PBMC.markers, file=paste0(Save.Path,"/",ProjectName,"_Clusters/",ProjectName,"_ClusterMarker_AllGene.txt"),sep="\t", row.names=T
+  write.table(PBMC.markers, file=paste0(PathCluster, "/",ProjectName,"_ClusterMarker_AllGene.txt"),sep="\t", row.names=T
               , quote = FALSE)
 
   pdf(
-    file = paste0(Save.Path,"/",ProjectName,"_Clusters/",ProjectName,"_Heatmap_Cluster_top",top_NSet,".pdf"),
+    file = paste0(PathCluster, "/",ProjectName,"_Heatmap_Cluster_top",top_NSet,".pdf"),
     width = 10,  height = 8
   )
     DoHeatmap(scRNA.SeuObj, features = top_N$gene,size = 2,angle = 60) +
@@ -356,7 +356,7 @@ save.image(paste0(Save.Path,"/05_Identify_conserved_cell_type_markers.RData"))
   DimPlot(scRNA.SeuObj,group.by = colnames(list_files.df)[2],
           pt.size =0.5) %>% BeautifyUMAP(FileName = paste0("/",Version,"/",ProjectName,"_CT/",ProjectName,"_nlDR_",colnames(list_files.df)[2]))
   DimPlot(scRNA.SeuObj,group.by = "seurat_clusters",label.size = 7, label = TRUE,
-          pt.size =1) %>% BeautifyUMAP(FileName = paste0("/",Version,"/",ProjectName,"_Clusters/",ProjectName,"_nlDR_Clusters"))
+          pt.size =1) %>% BeautifyUMAP(FileName = paste0(PathCluster, "/",ProjectName,"_nlDR_Clusters"))
 
 
   pdf(
@@ -369,17 +369,17 @@ save.image(paste0(Save.Path,"/05_Identify_conserved_cell_type_markers.RData"))
 
 
     for (i in 1:(length(Ori_Meta.set)-3)) {
-      print(DimPlot(scRNA.SeuObj, reduction = "umap", group.by = AnnoNames.set[i+3]) %>%
+      print(DimPlot(scRNA.SeuObj, reduction = "umap", group.by = Ori_Meta.set[i+3]) %>%
               BeautifyggPlot(.,TV= -5,TitleSize = 25,LegPos = c(0.8, 0.15),AxisTitleSize=1.2, LegTextSize = 18)+
               theme(plot.title = element_text(vjust = 0.85)))
-      print(DimPlot(scRNA.SeuObj, reduction = "umap", ncol = 2, split.by = AnnoNames.set[i+3], label = TRUE, label.size = 4) %>%
+      print(DimPlot(scRNA.SeuObj, reduction = "umap", ncol = 2, split.by = Ori_Meta.set[i+3], label = TRUE, label.size = 4) %>%
               BeautifyggPlot(.,LegPos = c(1, 0.5),AxisTitleSize=1.2, TitleSize = 20,
                              SubTitSize = 17, LegTextSize = 14, XaThick=0.9, YaThick=0.9,OL_Thick = 1.5))
 
-      print(DimPlot(scRNA.SeuObj, reduction = "tsne", group.by = AnnoNames.set[i+3]) %>%
+      print(DimPlot(scRNA.SeuObj, reduction = "tsne", group.by = Ori_Meta.set[i+3]) %>%
               BeautifyggPlot(.,TV= -5,TitleSize = 25,LegPos = c(0.8, 0.15),AxisTitleSize=1.2, LegTextSize = 18)+
               theme(plot.title = element_text(vjust = 0.85)))
-      print(DimPlot(scRNA.SeuObj, reduction = "tsne", ncol = 2, split.by = AnnoNames.set[i+3], label = TRUE, label.size = 4) %>%
+      print(DimPlot(scRNA.SeuObj, reduction = "tsne", ncol = 2, split.by = Ori_Meta.set[i+3], label = TRUE, label.size = 4) %>%
               BeautifyggPlot(.,LegPos = c(1, 0.5),AxisTitleSize=1.2, TitleSize = 20,
                              SubTitSize = 17, LegTextSize = 14, XaThick=0.9, YaThick=0.9,OL_Thick = 1.5))
 
@@ -406,7 +406,7 @@ save.image(paste0(Save.Path,"/05_Identify_conserved_cell_type_markers.RData"))
                      LegDir = "horizontal",SubTitSize = 17 , LegTextSize = 14, XaThick=1, YaThick=1,XtextSize=12,  YtextSize=12)
 
     DotPlot(scRNA.SeuObj, features = markers.to.plot, cols = DotPlot_Color1.set,
-            dot.scale = 8, split.by = "sample") + RotatedAxis()
+            dot.scale = 8, split.by = "Sample") + RotatedAxis()
 
 
     # https://github.com/satijalab/seurat/issues/1541
