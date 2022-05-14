@@ -172,48 +172,20 @@
 
 
 
-##### 05 Identify conserved cell type markers  #####
-  source("FUN_Beautify_UMAP.R")
+##### 05 Identify conserved cluster markers  #####
   ## Create new folder
   PathCellType <- paste0(Save.Path,"/","A03_CellTypeAno")
   if (!dir.exists(PathCellType)){
     dir.create(PathCellType)
   }
 
-
-  ## Identify conserved cell type markers
+  ## Identify conserved cluster markers
   # find markers for every cluster compared to all remaining cells, report only the positive ones
   set.seed(1) # Fix the seed
   PBMC.markers <- FindAllMarkers(scRNA.SeuObj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 
-  library("magrittr")
-  library("dplyr")
-
-  # https://github.com/satijalab/seurat/issues/2960
-  # Filter the top markers and plot the heatmap
-  top_NSet = 7
-  PBMC.markers %>%
-    group_by(cluster) %>%
-    top_n(n = top_NSet, wt = avg_log2FC) -> top_N
-  scRNA.SeuObj <- ScaleData(scRNA.SeuObj, verbose = FALSE)
-  DoHeatmap(scRNA.SeuObj, features = top_N$gene) + NoLegend()
-
-
-  write.table(top_N, file=paste0(PathCluster, "/",ProjectName,"_ClusterMarker_top",top_NSet,"Gene.txt"),sep="\t", row.names=T
-              , quote = FALSE)
-  write.table(PBMC.markers, file=paste0(PathCluster, "/",ProjectName,"_ClusterMarker_AllGene.txt"),sep="\t", row.names=T
-              , quote = FALSE)
-
-  pdf(
-    file = paste0(PathCluster, "/",ProjectName,"_Heatmap_Cluster_top",top_NSet,".pdf"),
-    width = 10,  height = 8
-  )
-    DoHeatmap(scRNA.SeuObj, features = top_N$gene,size = 2,angle = 60) +
-      scale_fill_gradient2(low="#5283ff",mid ="white", high ="#ff5c5c") +
-      theme(axis.text.y = element_text(size  = 5)) +
-      theme(legend.position = "bottom" )
-
-  dev.off()
+  scRNA.SeuObj <- Beautify_Heatmap_Seurat(scRNA.SeuObj, PBMC.markers, topN = 7, Path = PathCluster,
+                                          projectName = ProjectName)
 
 
   # --------------- Check specific tissue marker --------------- #
