@@ -72,10 +72,11 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
   source("FUN_Export_CellCount.R")
   source("FUN_Beautify_Heatmap_Seurat.R")
   source("FUN_UMAP_CellTypeMarker.R")
-  source("FUN_Export_All_DRPlot")
+  source("FUN_Export_All_DRPlot.R")
   source("FUN_BeautifyDotPlot.R")
   source("FUN_BioMarker2Index.R")
   source("FUN_BeautifyVennDiag.R")
+  source("FUN_BioMarker1Index.R")
 
 ##### Current path and new folder setting* #####
   ProjectName = "CC"
@@ -234,16 +235,20 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
 
   ## Heatmap
   Heatmap_Color.lt <- list(low="#5283ff",mid ="white", high ="#ff5c5c")
-  scRNA.SeuObj <- Beautify_Heatmap_Seurat(scRNA.SeuObj, PBMC.markers, topN = 7, Path = PathCluster,
+  scRNA.SeuObj <- Beautify_Heatmap_Seurat(scRNA.SeuObj, PBMC.markers, topN = 7, Path = PathCellType,
                                           Type = "celltype", HMColor.lt = Heatmap_Color.lt,
                                           projectName = ProjectName)
 
   ## Export All DRPlot(UMAP,tSNE)
   Export_All_DRPlot(scRNA.SeuObj)
 
+  ## Summary
+  markers.to.plot <- c("Cd3d","Cd3e", "Cd4","Cd8a", "Csf1r", "Lyz2","Chil3","Il1b", "S100a9","Nkg7",
+                       "Gzmb", "Cd79a", "Ms4a1","Clu","Hbb-bs","Ppbp")
   ## DotPlot
   #(Pending)
-  BeautifyDotPlot(scRNA.SeuObj, Path = PathCellType, projectName = ProjectName)
+  BeautifyDotPlot(scRNA.SeuObj, Path = PathCellType, projectName = ProjectName,
+                  Features = markers.to.plot)
 
 
   #### Save RData ####
@@ -679,7 +684,7 @@ save.image(paste0(Save.Path,"/09_0_GSEA_Analysis(Geneset_Prepare).RData"))
   BBPlot_TB1
   dev.off()
 
-
+##### Cell-cell interaction #####
 
 ##### GO/Metascape #####
 
