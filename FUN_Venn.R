@@ -8,26 +8,28 @@
 
 #####----------------------------- Function -----------------------------#####
 
-Venn_Intersect <- function(setA, setB,CellType.list,Type,ColorA,ColorB,SampleType="PBMC",PathName = getwd(),
+Venn_Intersect <- function(setA, setB,CellType.list,Type,ColorA,ColorB,
+                           SampleType="PBMC",PathName = getwd(),
                            ClassSet3_1 = "A", ClassSet3_2 = "B") {
+
   ##-------------- Intersect --------------##
   Intersect_AB <- intersect(setA, setB)
   Union_AB <- union(setA, setB)
   Unique_A <-setdiff(setA, setB)
   Unique_B <-setdiff(setB,setA)
-  
+
   Summary <- list(Intersect_AB,Union_AB,Unique_A,Unique_B)
   names(Summary) <- c('Intersect_AB','Union_AB','Unique_A','Unique_B')
-  
+
   ##-------------- VennDiagram --------------##
   # Load the VennDiagram package
   # https://www.r-graph-gallery.com/14-venn-diagramm.html
   library(VennDiagram)
-  
+
   # colorsT <- c("#2563e8", "#eb57c8")
   colorsT <- c(ColorA, ColorB)
   library("png")
-  
+
   A <- na.omit(setA)
   B <- na.omit(setB)
 
@@ -36,8 +38,8 @@ Venn_Intersect <- function(setA, setB,CellType.list,Type,ColorA,ColorB,SampleTyp
                filename = paste0(PathName, "/IMGVenn_",SampleType,"_",Type,"_",CellType.list,".png"),
   #             output=TRUE,
                imagetype="png",
-                height = 2400 , 
-                width = 2400 , 
+                height = 2400 ,
+                width = 2400 ,
                scaled = FALSE,
                col = "Black",
                 # Circles
@@ -48,7 +50,7 @@ Venn_Intersect <- function(setA, setB,CellType.list,Type,ColorA,ColorB,SampleTyp
                 cex = 2,
                 fontface = "bold",
                 fontfamily = "sans",
-  
+
                # Set names
            #    cat.col = 1,
                cat.col = colorsT,
@@ -58,24 +60,30 @@ Venn_Intersect <- function(setA, setB,CellType.list,Type,ColorA,ColorB,SampleTyp
 
        #        cat.pos = c(90, 270),
                cat.default.pos = "outer",
-               margin = 0.15, 
+               margin = 0.15,
                cat.dist = c(0.15, 0.15),
                sub.just =c(1, 1)
   )
 
-  
+
   # Display saved image
   options(repr.plot.height=12, repr.plot.width= 12)
   library("png")
   VennDiag <- readPNG(paste0(PathName,"/IMGVenn_",SampleType,"_",Type,"_",CellType.list,".png"))
-  plot.new() 
+  plot.new()
   rasterImage(VennDiag,0,0,1,1)
-  
-  
+
+
+  # ## Save PDF
+  # pdf(file = paste0(PathName,"/IMGVenn_",SampleType,"_",Type,"_",CellType.list,".pdf"),
+  #     width = 7, height = 7 )
+  #  print(VennDiag)
+  # dev.off() # graphics.off()
+
   #####------------------------ Output ------------------------ #####
   OUTPUT <- list(Summary)
   names(OUTPUT) <- c('Summary')
-  
+
   return(OUTPUT)
 }
 
