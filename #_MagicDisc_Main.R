@@ -278,12 +278,21 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
     dir.create(PathBiomarkers)
   }
 
-  scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
+  # scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
+
+  ### Define group by different phenotype ###
+  Type = "celltype"
+  scRNA.SeuObj[[paste0(Type,".",ClassSet2)]] <- paste(Idents(scRNA.SeuObj),
+                                                      as.matrix(scRNA.SeuObj[[ClassSet2]]), sep = "_")
+  scRNA.SeuObj[[paste0(Type,".",ClassSet2,".",ClassSet3)]] <- paste(Idents(scRNA.SeuObj),
+                                                                    as.matrix(scRNA.SeuObj[[ClassSet2]]),
+                                                                    as.matrix(scRNA.SeuObj[[ClassSet3]]), sep = "_")
+  Idents(scRNA.SeuObj) <- paste0(Type,".",ClassSet2,".",ClassSet3)
+  DefaultAssay(scRNA.SeuObj) <- "RNA"
 
   ## Find CCmarker in different Cell type
   CCMarker2Index.lt <-  BioMarker2Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
                                   classSet2 = ClassSet2, classSet3 = ClassSet3,Type = "celltype")
-  scRNA.SeuObj <- CCMarker2Index.lt[["scRNA.SeuObj"]]
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/08_1_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Separate).RData"))
@@ -291,8 +300,8 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
 
 ##### 08_2 Find CCmarker in different Cell type and VennDiagrame (SSA_IntersectCT) ########
   ##-------------- Intersect_CellType --------------##
-  CCMarker_Male.lt <- CCMarker2Index.lt[[2]]
-  CCMarker_Female.lt <- CCMarker2Index.lt[[3]]
+  CCMarker_Male.lt <- CCMarker2Index.lt[[1]]
+  CCMarker_Female.lt <- CCMarker2Index.lt[[2]]
   intersect_CellType <- intersect(names(CCMarker_Male.lt),names(CCMarker_Female.lt))
 
   CCMarker_Male.lt <- CCMarker_Male.lt[names(CCMarker_Male.lt) %in% intersect_CellType]
@@ -311,6 +320,8 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
   ### Define group by different phenotype ###
   source("FUN_Find_Markers.R")
 
+  Idents(scRNA.SeuObj) <- paste0(Type,".",ClassSet2)
+  DefaultAssay(scRNA.SeuObj) <- "RNA"
   CCMarker.lt <- BioMarker1Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
                                  sampletype = Sampletype, cellType.list = CellType.list, classSet2 = ClassSet2,
                                  Type = paste0("celltype.",ClassSet2) )

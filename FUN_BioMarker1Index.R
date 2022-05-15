@@ -34,7 +34,7 @@ BioMarker1Index <- function(scRNA.SeuObj,
 
 
   ## Generate pdf and tif file for VolcanoPlot
-  Sep_Cla3_Volcano.Path <- paste0(Sampletype,"_",ProjectName,"_Pooled_","_VolcanoPlot")
+  Sep_Cla3_Volcano.Path <- paste0(Sampletype,"_",ProjectName,"_Pooled","_VolcanoPlot")
   dir.create(paste0(Path,"/",Sep_Cla3_Volcano.Path))
   pdf(file = paste0(Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,".pdf"),width = 7, height = 7 )
   for (i in 1:length(cellType.list)) {
@@ -64,7 +64,7 @@ BioMarker1Index <- function(scRNA.SeuObj,
   }
   rm(i,Sep_Cla3_Volcano.Path)
 
-return(CCMarker.lt)
+return(CCMarker_SPA.lt)
 
 }
 
