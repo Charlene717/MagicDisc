@@ -1,17 +1,18 @@
-BioMarker1Index <- function(scRNA.SeuObj, 
+BioMarker1Index <- function(scRNA.SeuObj,
                       Path = PathBiomarkers, projectName = ProjectName,
                       sampletype = Sampletype, cellType.list = CellType.list,
-                      classSet2 = ClassSet2, 
+                      classSet2 = ClassSet2,
                       Type = paste0("celltype.",classSet2) ){
 
+  classSet2.set <- list_files.df[[classSet2]] %>% unique()
   ##### 08_3 Find CCmarker in different Cell type and VolcanoPlot (SPA) ########
   ### Define group by different phenotype ###
   source("FUN_Find_Markers.R")
-  
+
   Idents(scRNA.SeuObj) <- Type
   Sep_Cla3_FMar.Path <- paste0(Sampletype,"_",ProjectName,"_Pooled_FindMarkers")
   dir.create(paste0(Path,"/",Sep_Cla3_FMar.Path))
-  
+
   CCMarker_SPA.lt <- list()
   for(i in c(1:length(cellType.list))){
     try({
@@ -22,16 +23,16 @@ BioMarker1Index <- function(scRNA.SeuObj,
                                            Path = Path,
                                            ResultFolder =  Sep_Cla3_FMar.Path,
                                            ProjectTitle = ProjectName)
-      
+
       # names(CCMarker_SPA.lt)[[i]] <- paste0("CCMarker_SPA.lt.",cellType.list[i])
       names(CCMarker_SPA.lt)[[i]] <- paste0(cellType.list[i])
     })
   }
   rm(i,Sep_Cla3_FMar.Path)
-  
+
   CCMarker_SPA.lt <- CCMarker_SPA.lt[!unlist(lapply(CCMarker_SPA.lt,is.null))]
-  
-  
+
+
   ## Generate pdf and tif file for VolcanoPlot
   Sep_Cla3_Volcano.Path <- paste0(Sampletype,"_",ProjectName,"_Pooled_","_VolcanoPlot")
   dir.create(paste0(Path,"/",Sep_Cla3_Volcano.Path))
@@ -48,7 +49,7 @@ BioMarker1Index <- function(scRNA.SeuObj,
   # graphics.off()
   dev.off()
   rm(i)
-  
+
   for (i in 1:length(cellType.list)) {
     try({
       tiff(file = paste0(Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,"_",cellType.list[i],".tif"), width = 17, height = 17, units = "cm", res = 200)
@@ -57,12 +58,12 @@ BioMarker1Index <- function(scRNA.SeuObj,
                         CCMarker_SPA.lt[[i]][[paste0(ProjectName,"Marker.S_Neg_List")]])+
               ggtitle(paste0(Sampletype,"_",cellType.list[i]))
       )
-      
+
       graphics.off()
     })
   }
   rm(i,Sep_Cla3_Volcano.Path)
-  
+
 return(CCMarker.lt)
 
 }
