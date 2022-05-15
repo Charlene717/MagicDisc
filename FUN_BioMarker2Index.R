@@ -146,9 +146,11 @@ BioMarker2Index <- function(scRNA.SeuObj,
   }
 rm(i,Sep_Cla3_FMar.Path)
 
-CCMarker.lt <- list(CCMarker_Male.lt, CCMarker_Female.lt)
-names(CCMarker.lt)[[1]] <- paste0("CCMarker_",classSet3.set[1])
-names(CCMarker.lt)[[2]] <- paste0("CCMarker_",classSet3.set[2])
+CCMarker.lt <- list(scRNA.SeuObj, CCMarker_Male.lt, CCMarker_Female.lt)
+
+names(CCMarker.lt)[[1]] <- "scRNA.SeuObj"
+names(CCMarker.lt)[[2]] <- paste0("CCMarker_",classSet3.set[1])
+names(CCMarker.lt)[[3]] <- paste0("CCMarker_",classSet3.set[2])
 
 return(CCMarker.lt)
 

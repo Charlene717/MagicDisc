@@ -1,12 +1,14 @@
-BeautifyVennDiag <- function(CCMarker_Male.lt, CCMarker_Female.lt, CellType.list,
+BeautifyVennDiag <- function(CCMarker_Male.lt, CCMarker_Female.lt, CellType.list,list_files.df,
                              Path = PathBiomarkers, projectName = ProjectName,
-                             sampletype = Sampletype){
+                             sampletype = Sampletype, classSet3 = ClassSet3){
 
   ##-------------- Venn Pos --------------##
   source("FUN_Venn.R")
   # pdf(file = paste0(Path,"/PBMC_Female_VolcanoPlot.pdf"),width = 7, height = 7 )
   Sep_Cla3_Venn.Path <- paste0(sampletype,"_",projectName,"_Separate_","_VennDiagrame")
   dir.create(paste0(Path,"/",Sep_Cla3_Venn.Path))
+
+  ClassSet3.set <- list_files.df[[classSet3]] %>% unique()
   Venn_CCMarker_Pos <- list()
   for(i in c(1:length(CellType.list))){
     try({
@@ -27,7 +29,8 @@ BeautifyVennDiag <- function(CCMarker_Male.lt, CCMarker_Female.lt, CellType.list
       Venn_CCMarker_Neg[[i]] <- Venn_Intersect(CCMarker_Male.lt[[paste0(CellType.list[i])]][[paste0(projectName, "Marker.S_Neg_List")]],
                                                CCMarker_Female.lt[[paste0(CellType.list[i])]][[paste0(projectName, "Marker.S_Neg_List")]],
                                                CellType.list[i],"Neg","#00296b","#1368aa",SampleType = sampletype,
-                                               PathName = paste0(Path,"/",Sep_Cla3_Venn.Path))
+                                               PathName = paste0(Path,"/",Sep_Cla3_Venn.Path),
+                                               ClassSet3_1 = ClassSet3.set[1], ClassSet3_2 =ClassSet3.set[2])
 
       names(Venn_CCMarker_Neg)[[i]] <- paste0("Venn_",projectName,"Marker.",CellType.list[i],"_Neg")
     })

@@ -283,6 +283,7 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
   ## Find CCmarker in different Cell type
   CCMarker2Index.lt <-  BioMarker2Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
                                   classSet2 = ClassSet2, classSet3 = ClassSet3,Type = "celltype")
+  scRNA.SeuObj <- CCMarker2Index.lt[["scRNA.SeuObj"]]
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/08_1_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Separate).RData"))
@@ -290,8 +291,8 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
 
 ##### 08_2 Find CCmarker in different Cell type and VennDiagrame (SSA_IntersectCT) ########
   ##-------------- Intersect_CellType --------------##
-  CCMarker_Male.lt <- CCMarker2Index.lt[1]
-  CCMarker_Female.lt <- CCMarker2Index.lt[2]
+  CCMarker_Male.lt <- CCMarker2Index.lt[[2]]
+  CCMarker_Female.lt <- CCMarker2Index.lt[[3]]
   intersect_CellType <- intersect(names(CCMarker_Male.lt),names(CCMarker_Female.lt))
 
   CCMarker_Male.lt <- CCMarker_Male.lt[names(CCMarker_Male.lt) %in% intersect_CellType]
@@ -299,7 +300,8 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
 
   CellType.list <- names(CCMarker_Male.lt)
 
-  Venn_CCMarke.lt <- BeautifyVennDiag(CCMarker_Male.lt, CCMarker_Female.lt, CellType.list)
+  Venn_CCMarke.lt <- BeautifyVennDiag(CCMarker_Male.lt, CCMarker_Female.lt, CellType.list,list_files.df,
+                                      classSet3 = ClassSet3)
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/08_2_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_Venn.RData"))
@@ -310,8 +312,8 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
   source("FUN_Find_Markers.R")
 
   CCMarker.lt <- BioMarker1Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
-                                  sampletype = Sampletype, cellType.list = CellType.list, classSet2 = ClassSet2,
-                                  Type = paste0("celltype.",classSet2) )
+                                 sampletype = Sampletype, cellType.list = CellType.list, classSet2 = ClassSet2,
+                                 Type = paste0("celltype.",ClassSet2) )
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/08_3_Find__",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Pooled).RData"))
