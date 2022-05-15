@@ -11,7 +11,6 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
              file.info(rstudioapi::getSourceEditorContext()$path)$size))
 
 
-
 ##### Presetting ######
   rm(list = ls()) # Clean variable
   memory.limit(150000)
@@ -282,7 +281,7 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
   scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
 
   ## Find CCmarker in different Cell type
-  CCMarker.lt <-  BioMarker2Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
+  CCMarker2Index.lt <-  BioMarker2Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
                                   classSet2 = ClassSet2, classSet3 = ClassSet3,Type = "celltype")
 
   #### Save RData ####
@@ -291,8 +290,8 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
 
 ##### 08_2 Find CCmarker in different Cell type and VennDiagrame (SSA_IntersectCT) ########
   ##-------------- Intersect_CellType --------------##
-  CCMarker_Male.lt <- CCMarker.lt[1]
-  CCMarker_Female.lt <- CCMarker.lt[2]
+  CCMarker_Male.lt <- CCMarker2Index.lt[1]
+  CCMarker_Female.lt <- CCMarker2Index.lt[2]
   intersect_CellType <- intersect(names(CCMarker_Male.lt),names(CCMarker_Female.lt))
 
   CCMarker_Male.lt <- CCMarker_Male.lt[names(CCMarker_Male.lt) %in% intersect_CellType]
