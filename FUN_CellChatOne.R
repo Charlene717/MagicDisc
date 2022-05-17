@@ -116,17 +116,6 @@ CellChatOne <- function(seuratObject,
     netVisual_circle(cellchat@net$count, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Number of interactions")
     netVisual_circle(cellchat@net$weight, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Interaction weights/strength")
 
-    mat <- cellchat@net$weight
-    par(mfrow = c(3,4), xpd=TRUE)
-    for (i in 1:nrow(mat)) {
-      mat2 <- matrix(0, nrow = nrow(mat), ncol = ncol(mat), dimnames = dimnames(mat))
-      mat2[i, ] <- mat[i, ]
-      netVisual_circle(mat2, vertex.weight = groupSize, weight.scale = T, edge.weight.max = max(mat), title.name = rownames(mat)[i])
-    }
-    rm(i)
-
-    netVisual_circle(cellchat@net$count, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Number of interactions")
-    netVisual_circle(cellchat@net$weight, vertex.weight = groupSize, weight.scale = T, label.edge= F, title.name = "Interaction weights/strength")
 
     pdf(file = paste0(Save_Path,"/",ProjectName,"_interaction_strength.pdf"),
         width = 7,  height = 7
