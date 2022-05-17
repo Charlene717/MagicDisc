@@ -76,6 +76,7 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
   source("FUN_BioMarker2Index.R")
   source("FUN_BeautifyVennDiag.R")
   source("FUN_BioMarker1Index.R")
+  source("FUN_CellChatOne.R")
 
 ##### Current path and new folder setting* #####
   ProjectName = "CC"
@@ -411,7 +412,8 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
 
     rm(PathwayN)
 
-save.image(paste0(Save.Path,"/09_0_GSEA_Analysis(Geneset_Prepare).RData"))
+    #### Save RData ####
+    save.image(paste0(Save.Path,"/09_0_GSEA_Analysis(Geneset_Prepare).RData"))
 
 ##### 09_1 GSEA Analysis (SPA) #####
   ## Create folder
@@ -697,6 +699,11 @@ save.image(paste0(Save.Path,"/09_0_GSEA_Analysis(Geneset_Prepare).RData"))
   dev.off()
 
 ##### Cell-cell interaction #####
+  CellChat.lt <- CellChatOne(scRNA.SeuObj,
+                             signalingtype = "ECM-Receptor", projectName = "ECM",
+                             save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
+                             groupby = "celltype"
+  )
 
 ##### GO/Metascape #####
 
