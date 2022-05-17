@@ -4,7 +4,7 @@
 CellChatOne <- function(seuratObject, 
                         signalingtype = "ECM-Receptor", projectName = "ECM",
                         save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
-                        groupby = "Cell_type"
+                        groupby = "celltype", species = "human" # species = c("human","mouse")
                         ){
 
     #### Load the required libraries ####
@@ -55,7 +55,14 @@ CellChatOne <- function(seuratObject,
     cellchat <- createCellChat(object = data.input, meta = meta, group.by = groupby)
     
     #### Set the ligand-receptor interaction database ####
-    CellChatDB <- CellChatDB.human # use CellChatDB.mouse if running on mouse data
+    if(species == "mouse"){
+      CellChatDB <- CellChatDB.mouse # use CellChatDB.human if running on human data
+      
+    }else{
+      CellChatDB <- CellChatDB.human # use CellChatDB.mouse if running on mouse data
+      
+    }
+    
     showDatabaseCategory(CellChatDB)
     
     pdf(file = paste0(Save_Path,"/",ProjectName,"_CellChatDB.pdf"),

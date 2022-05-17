@@ -702,7 +702,7 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
   CellChat.lt <- CellChatOne(scRNA.SeuObj,
                              signalingtype = "ECM-Receptor", projectName = "ECM",
                              save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
-                             groupby = "celltype"
+                             groupby = "celltype",species = "mouse"
   )
 
 ##### GO/Metascape #####
