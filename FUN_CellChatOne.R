@@ -152,101 +152,101 @@ CellChatOne <- function(seuratObject,
 
   pathway.set <- cellchat@netP[["pathways"]]
 
-  #### Plot Summary ####
-  pdf(file = paste0(PathPN,"/",ProjectName,"_pathway_network.pdf"),
-      width = 7,  height = 7
-  )
-
-  for (i in 1:length(pathway.set)) {
-    pathways.show <- pathway.set[i] # pathways.show <- c("CXCL")
-    # Hierarchy plot
-    # Here we define `vertex.receive` so that the left portion of the hierarchy plot shows signaling to fibroblast and the right portion shows signaling to immune cells
-    vertex.receiver = seq(1,4) # a numeric vector.
-    netVisual_aggregate(cellchat, signaling = pathways.show,  vertex.receiver = vertex.receiver)
-    # # Circle plot
-    # par(mfrow=c(1,1))
-    # netVisual_aggregate(cellchat, signaling = pathways.show, layout = "circle")
-
-    # Heatmap
-    par(mfrow=c(1,1))
-    Heatmap <- netVisual_heatmap(cellchat, signaling = pathways.show, color.heatmap = "Reds")
-    print(Heatmap)
-    #> Do heatmap based on a single object
-
-
-    # Chord diagram
-    par(mfrow=c(1,1))
-    netVisual_aggregate(cellchat, signaling = pathways.show, layout = "chord")
-
-    ### Compute the contribution of each ligand-receptor pair to the overall signaling pathway and visualize cell-cell communication mediated by a single ligand-receptor pair
-    #par(mfrow=c(1,1))
-    p <- netAnalysis_contribution(cellchat, signaling = pathways.show)
-    print(p)
-
-  }
-  dev.off()
-  rm(i,p,Heatmap)
-
-  #### Plot all ####
-  for (i in 1:length(pathway.set)) {
-    pathways.show <- pathway.set[i] # pathways.show <- c("CXCL")
-
-    pdf(file = paste0(PathPN,"/",ProjectName,"_pathway_network_",pathways.show,".pdf"),
+    #### Plot Summary ####
+    pdf(file = paste0(PathPN,"/",ProjectName,"_pathway_network.pdf"),
         width = 7,  height = 7
     )
 
+    for (i in 1:length(pathway.set)) {
+      pathways.show <- pathway.set[i] # pathways.show <- c("CXCL")
+      # Hierarchy plot
+      # Here we define `vertex.receive` so that the left portion of the hierarchy plot shows signaling to fibroblast and the right portion shows signaling to immune cells
+      vertex.receiver = seq(1,4) # a numeric vector.
+      netVisual_aggregate(cellchat, signaling = pathways.show,  vertex.receiver = vertex.receiver)
+      # # Circle plot
+      # par(mfrow=c(1,1))
+      # netVisual_aggregate(cellchat, signaling = pathways.show, layout = "circle")
 
-    # Hierarchy plot
-    # Here we define `vertex.receive` so that the left portion of the hierarchy plot shows signaling to fibroblast and the right portion shows signaling to immune cells
-    vertex.receiver = seq(1,4) # a numeric vector.
-    netVisual_aggregate(cellchat, signaling = pathways.show,  vertex.receiver = vertex.receiver)
-    # # Circle plot
-    # par(mfrow=c(1,1))
-    # netVisual_aggregate(cellchat, signaling = pathways.show, layout = "circle")
-
-    # Heatmap
-    par(mfrow=c(1,1))
-    Heatmap <- netVisual_heatmap(cellchat, signaling = pathways.show, color.heatmap = "Reds")
-    print(Heatmap)
-    #> Do heatmap based on a single object
-
-
-    # Chord diagram
-    par(mfrow=c(1,1))
-    netVisual_aggregate(cellchat, signaling = pathways.show, layout = "chord")
-
-    # # Chord diagram
-    # group.cellType <- c(rep("FIB", 4), rep("DC", 4), rep("TC", 4)) # grouping cell clusters into fibroblast, DC and TC cells
-    # names(group.cellType) <- levels(cellchat@idents)
-    # netVisual_chord_cell(cellchat, signaling = pathways.show, group = group.cellType, title.name = paste0(pathways.show, " signaling network"))
-    #
-    # #> Plot the aggregated cell-cell communication network at the signaling pathway level
-    # #> Note: The first link end is drawn out of sector 'Inflam. FIB'.
+      # Heatmap
+      par(mfrow=c(1,1))
+      Heatmap <- netVisual_heatmap(cellchat, signaling = pathways.show, color.heatmap = "Reds")
+      print(Heatmap)
+      #> Do heatmap based on a single object
 
 
-    ### Compute the contribution of each ligand-receptor pair to the overall signaling pathway and visualize cell-cell communication mediated by a single ligand-receptor pair
-    #par(mfrow=c(1,1))
-    p <- netAnalysis_contribution(cellchat, signaling = pathways.show)
-    print(p)
-
-    pairLR.CXCL <- extractEnrichedLR(cellchat, signaling = pathways.show, geneLR.return = FALSE)
-    for (j in 1:nrow(pairLR.CXCL)) {
-      LR.show <- pairLR.CXCL[j,] # show one ligand-receptor pair
-      # # Hierarchy plot
-      # vertex.receiver = seq(1,4) # a numeric vector
-      # netVisual_individual(cellchat, signaling = pathways.show,  pairLR.use = LR.show, vertex.receiver = vertex.receiver)
-      #> [[1]]
-      # Circle plot
-      netVisual_individual(cellchat, signaling = pathways.show, pairLR.use = LR.show, layout = "circle")
       # Chord diagram
-      netVisual_individual(cellchat, signaling = pathways.show, pairLR.use = LR.show, layout = "chord")
+      par(mfrow=c(1,1))
+      netVisual_aggregate(cellchat, signaling = pathways.show, layout = "chord")
+
+      ### Compute the contribution of each ligand-receptor pair to the overall signaling pathway and visualize cell-cell communication mediated by a single ligand-receptor pair
+      #par(mfrow=c(1,1))
+      p <- netAnalysis_contribution(cellchat, signaling = pathways.show)
+      print(p)
 
     }
-    rm(j)
-
     dev.off()
-  }
-  rm(i,p,Heatmap)
+    rm(i,p,Heatmap)
+
+    #### Plot all ####
+    for (i in 1:length(pathway.set)) {
+      pathways.show <- pathway.set[i] # pathways.show <- c("CXCL")
+
+      pdf(file = paste0(PathPN,"/",ProjectName,"_pathway_network_",pathways.show,".pdf"),
+          width = 7,  height = 7
+      )
+
+
+      # Hierarchy plot
+      # Here we define `vertex.receive` so that the left portion of the hierarchy plot shows signaling to fibroblast and the right portion shows signaling to immune cells
+      vertex.receiver = seq(1,4) # a numeric vector.
+      netVisual_aggregate(cellchat, signaling = pathways.show,  vertex.receiver = vertex.receiver)
+      # # Circle plot
+      # par(mfrow=c(1,1))
+      # netVisual_aggregate(cellchat, signaling = pathways.show, layout = "circle")
+
+      # Heatmap
+      par(mfrow=c(1,1))
+      Heatmap <- netVisual_heatmap(cellchat, signaling = pathways.show, color.heatmap = "Reds")
+      print(Heatmap)
+      #> Do heatmap based on a single object
+
+
+      # Chord diagram
+      par(mfrow=c(1,1))
+      netVisual_aggregate(cellchat, signaling = pathways.show, layout = "chord")
+
+      # # Chord diagram
+      # group.cellType <- c(rep("FIB", 4), rep("DC", 4), rep("TC", 4)) # grouping cell clusters into fibroblast, DC and TC cells
+      # names(group.cellType) <- levels(cellchat@idents)
+      # netVisual_chord_cell(cellchat, signaling = pathways.show, group = group.cellType, title.name = paste0(pathways.show, " signaling network"))
+      #
+      # #> Plot the aggregated cell-cell communication network at the signaling pathway level
+      # #> Note: The first link end is drawn out of sector 'Inflam. FIB'.
+
+
+      ### Compute the contribution of each ligand-receptor pair to the overall signaling pathway and visualize cell-cell communication mediated by a single ligand-receptor pair
+      #par(mfrow=c(1,1))
+      p <- netAnalysis_contribution(cellchat, signaling = pathways.show)
+      print(p)
+
+      pairLR.CXCL <- extractEnrichedLR(cellchat, signaling = pathways.show, geneLR.return = FALSE)
+      for (j in 1:nrow(pairLR.CXCL)) {
+        LR.show <- pairLR.CXCL[j,] # show one ligand-receptor pair
+        # # Hierarchy plot
+        # vertex.receiver = seq(1,4) # a numeric vector
+        # netVisual_individual(cellchat, signaling = pathways.show,  pairLR.use = LR.show, vertex.receiver = vertex.receiver)
+        #> [[1]]
+        # Circle plot
+        netVisual_individual(cellchat, signaling = pathways.show, pairLR.use = LR.show, layout = "circle")
+        # Chord diagram
+        netVisual_individual(cellchat, signaling = pathways.show, pairLR.use = LR.show, layout = "chord")
+
+      }
+      rm(j)
+
+      dev.off()
+    }
+    rm(i,p,Heatmap)
 
   #### Visualize cell-cell communication mediated by multiple ligand-receptors or signaling pathways ####
   PathLR <- paste0(Save_Path,"/LRPair")
@@ -255,138 +255,133 @@ CellChatOne <- function(seuratObject,
     dir.create(PathLR)
   }
 
-  #### Bubble plot ####
-  ## Sum
-  pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_Bubble_Sum.pdf"),
-      width = 15,  height = 20
-  )
-  netVisual_bubble(cellchat,  remove.isolate = FALSE)
-  dev.off()
-
-
-  ## All
-  try({
-  pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_Bubble_All.pdf"),
-      width = 5,  height = 12
-  )
-  for (i in 1:ncol(mat)) {
-    try({
-
-      # show all the significant interactions (L-R pairs) from some cell groups (defined by 'sources.use') to other cell groups (defined by 'targets.use')
-      P <- netVisual_bubble(cellchat, sources.use = i, remove.isolate = FALSE)
+    #### Bubble plot ####
+    ## Sum
+    pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_Bubble_Sum.pdf"),
+        width = 15,  height = 20
+    )
+      P <- netVisual_bubble(cellchat,  remove.isolate = FALSE)
       print(P)
-      #> Comparing communications on a single object
+    dev.off()
 
-    })
-  }
-  dev.off()
-  })
-  rm(i,p)
 
-  #### Chord diagram ####
-  pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_ChordDiagram.pdf"),
-      width = 12,  height = 12
-  )
-  for (i in 1:ncol(mat)) {
+    ## All
     try({
+    pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_Bubble_All.pdf"),
+        width = 5,  height = 12
+    )
+    for (i in 1:ncol(mat)) {
+      try({
 
-      # show all the significant interactions (L-R pairs) from some cell groups (defined by 'sources.use') to other cell groups (defined by 'targets.use')
-      P1 <-netVisual_chord_gene(cellchat, sources.use = i,  lab.cex = 0.5,legend.pos.y = 30)
-      print(P1)
-      P2 <-netVisual_chord_gene(cellchat, targets.use =i , lab.cex = 0.5,legend.pos.y = 30)
-      print(P2)
-      #> Comparing communications on a single object
+        # show all the significant interactions (L-R pairs) from some cell groups (defined by 'sources.use') to other cell groups (defined by 'targets.use')
+        P <- netVisual_bubble(cellchat, sources.use = i, remove.isolate = FALSE)
+        print(P)
+        #> Comparing communications on a single object
 
+      })
+    }
+    dev.off()
     })
-  }
-  dev.off()
-  rm(i,P1,P2)
+    rm(i,p)
 
-  #### Plot the signaling gene expression distribution using violin/dot plot ####
-  pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_Violin.pdf"),
-      width = 12,  height = 8
-  )
-  for (i in 1:length(pathway.set)) {
-    pathways.show <- pathway.set[i] # pathways.show <- c("CXCL")
+    #### Chord diagram ####
+    pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_ChordDiagram.pdf"),
+        width = 12,  height = 12
+    )
+    for (i in 1:ncol(mat)) {
+      try({
 
-    P <- plotGeneExpression(cellchat, signaling = pathways.show)
-    print(P)
-  }
-  dev.off()
-  rm(i,P)
+        # show all the significant interactions (L-R pairs) from some cell groups (defined by 'sources.use') to other cell groups (defined by 'targets.use')
+        P1 <-netVisual_chord_gene(cellchat, sources.use = i,  lab.cex = 0.5,legend.pos.y = 30)
+        print(P1)
+        P2 <-netVisual_chord_gene(cellchat, targets.use =i , lab.cex = 0.5,legend.pos.y = 30)
+        print(P2)
+        #> Comparing communications on a single object
+
+      })
+    }
+    dev.off()
+    rm(i,P1,P2)
+
+    #### Plot the signaling gene expression distribution using violin/dot plot ####
+    pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_Violin.pdf"),
+        width = 12,  height = 8
+    )
+    for (i in 1:length(pathway.set)) {
+      pathways.show <- pathway.set[i] # pathways.show <- c("CXCL")
+
+      P <- plotGeneExpression(cellchat, signaling = pathways.show)
+      print(P)
+    }
+    dev.off()
+    rm(i,P)
 
 ##### Part IV: Systems analysis of cell-cell communication network #####
   ##### Identify signaling roles (e.g., dominant senders, receivers) of cell groups as well as the major contributing signaling #####
-  #### Compute and visualize the network centrality scores ####
-  # Compute the network centrality scores
-  cellchat <- netAnalysis_computeCentrality(cellchat, slot.name = "netP") # the slot 'netP' means the inferred intercellular communication network of signaling pathways
-  # Visualize the computed centrality scores using heatmap, allowing ready identification of major signaling roles of cell groups
-  netAnalysis_signalingRole_network(cellchat, signaling = pathways.show, width = 8, height = 2.5, font.size = 10)
+    #### Compute and visualize the network centrality scores ####
+    # Compute the network centrality scores
+    cellchat <- netAnalysis_computeCentrality(cellchat, slot.name = "netP") # the slot 'netP' means the inferred intercellular communication network of signaling pathways
+    # Visualize the computed centrality scores using heatmap, allowing ready identification of major signaling roles of cell groups
+    netAnalysis_signalingRole_network(cellchat, signaling = pathways.show, width = 8, height = 2.5, font.size = 10)
 
-  pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_NWCentScores_Heatmap.pdf"),
-      width = 12,  height = 8
-  )
-  for (i in 1:length(pathway.set)) {
-    pathways.show <- pathway.set[i] # pathways.show <- c("CXCL")
+    pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_NWCentScores_Heatmap.pdf"),
+        width = 12,  height = 8
+    )
+    for (i in 1:length(pathway.set)) {
+      pathways.show <- pathway.set[i] # pathways.show <- c("CXCL")
 
-    P <-  netAnalysis_signalingRole_network(cellchat, signaling = pathways.show, width = 8, height = 2.5, font.size = 10)
-    print(P)
-  }
-  dev.off()
-  rm(i,P)
+      P <-  netAnalysis_signalingRole_network(cellchat, signaling = pathways.show, width = 8, height = 2.5, font.size = 10)
+      print(P)
+    }
+    dev.off()
+    rm(i,P)
 
 
 
-  #### Visualize the dominant senders (sources) and receivers (targets) in a 2D space ####
-  # Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
-  gg1 <- netAnalysis_signalingRole_scatter(cellchat) + ggtitle("All signaling pathways")+
-    theme(plot.title = element_text(color="black", size=14, face="bold"))
-  #> Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
-  # Signaling role analysis on the cell-cell communication networks of interest
-  gg2 <- netAnalysis_signalingRole_scatter(cellchat, signaling = pathways.show) +
-    ggtitle(paste0(pathways.show," signaling pathway network"))+
-    theme(plot.title = element_text(color="black", size=14, face="bold"))
-  #> Signaling role analysis on the cell-cell communication network from user's input
-  gg1 + gg2
-
-  pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_SourcesTargets_2Dspace.pdf"),
-      width = 7,  height = 7
-  )
-  # Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
-  gg1 <- netAnalysis_signalingRole_scatter(cellchat) + ggtitle("All signaling pathways")+
-    theme(plot.title = element_text(color="black", size=14, face="bold"))
-  gg1
-
-  for (i in 1:length(pathway.set)) {
-    pathways.show <- pathway.set[i] # pathways.show <- c("CXCL")
+    #### Visualize the dominant senders (sources) and receivers (targets) in a 2D space ####
+    # Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
+    gg1 <- netAnalysis_signalingRole_scatter(cellchat) + ggtitle("All signaling pathways")+
+      theme(plot.title = element_text(color="black", size=14, face="bold"))
     #> Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
     # Signaling role analysis on the cell-cell communication networks of interest
     gg2 <- netAnalysis_signalingRole_scatter(cellchat, signaling = pathways.show) +
       ggtitle(paste0(pathways.show," signaling pathway network"))+
       theme(plot.title = element_text(color="black", size=14, face="bold"))
-    print(gg2)
-    rm(gg2)
-  }
-  dev.off()
-  rm(i,gg1)
+    #> Signaling role analysis on the cell-cell communication network from user's input
+    gg1 + gg2
+
+    pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_SourcesTargets_2Dspace.pdf"),
+        width = 7,  height = 7
+    )
+    # Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
+    gg1 <- netAnalysis_signalingRole_scatter(cellchat) + ggtitle("All signaling pathways")+
+      theme(plot.title = element_text(color="black", size=14, face="bold"))
+    gg1
+
+    for (i in 1:length(pathway.set)) {
+      pathways.show <- pathway.set[i] # pathways.show <- c("CXCL")
+      #> Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
+      # Signaling role analysis on the cell-cell communication networks of interest
+      gg2 <- netAnalysis_signalingRole_scatter(cellchat, signaling = pathways.show) +
+        ggtitle(paste0(pathways.show," signaling pathway network"))+
+        theme(plot.title = element_text(color="black", size=14, face="bold"))
+      print(gg2)
+      rm(gg2)
+    }
+    dev.off()
+    rm(i,gg1)
 
 
   #### Identify signals contributing most to outgoing or incoming signaling of certain cell groups ####
-  # Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
-  ht1 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing")
-  ht2 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming")
-  ht1 + ht2
-  # Signaling role analysis on the cell-cell communication networks of interest
-  ht <- netAnalysis_signalingRole_heatmap(cellchat, signaling = pathways.show)
-  ht
-
   pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_mostOutIn_Heatmap.pdf"),
       width = 12,  height = 8
   )
+  try({
   # Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
   ht1 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing")
   ht2 <- netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming")
   ht1 + ht2
+  })
 
   for (i in 1:length(pathway.set)) {
 
