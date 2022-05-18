@@ -16,11 +16,10 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
   memory.limit(150000)
 
 ##### Load Packages #####
-
-  ## Check whether the installation of those packages is required from basic
   Package.set <- c("tidyverse","Seurat","ggplot2","ggpmisc","broom",
                    "stringr","magrittr","dplyr",
                    "CellChat","patchwork","reticulate","anndata")
+  ## Check whether the installation of those packages is required from basic
   for (i in 1:length(Package.set)) {
     if (!requireNamespace(Package.set[i], quietly = TRUE)){
       install.packages(Package.set[i])
@@ -699,11 +698,27 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
   dev.off()
 
 ##### Cell-cell interaction #####
-  CellChat.lt <- CellChatOne(scRNA.SeuObj,
-                             signalingtype = "ECM-Receptor", projectName = "ECM",
-                             save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
-                             groupby = "celltype",species = "mouse"
-  )
+  ## ECM-Receptor
+  CellChatOne(scRNA.SeuObj,
+              signalingtype = "ECM-Receptor", projectName = "ECM",
+              save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
+              groupby = "celltype",species = "mouse"
+              ) ->   CellChat_ECM.lt
+
+  ## Cell-Cell Contact
+  CellChatOne(scRNA.SeuObj,
+              signalingtype = "Cell-Cell Contact", projectName = "CC",
+              save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
+              groupby = "celltype",species = "mouse"
+              ) -> CellChat_CC.lt
+
+  ## Secreted Signaling
+  CellChatOne(scRNA.SeuObj,
+              signalingtype = "Secreted Signaling", projectName = "Secret",
+              save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
+              groupby = "celltype",species = "mouse"
+  ) -> CellChat_Secret.lt
+
 
 ##### GO/Metascape #####
 
@@ -712,6 +727,8 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
 ##### inferCNV #####
 
 ##### Deconvolution #####
+
+##### Clinical analysis #####
 
 ##### Beautify Figs #####
 
