@@ -144,7 +144,7 @@ CellChatOne <- function(seuratObject,
 
 ##### Part III: Visualization of cell-cell communication network #####
   ## Visualize each signaling pathway using Hierarchy plot, Circle plot or Chord diagram
-  PathPN <- paste0(Save_Path,"/Pathway_Network")
+  PathPN <- paste0(Save_Path, projectName, "/Pathway_Network")
   ## Create new folder
   if (!dir.exists(PathPN)){
     dir.create(PathPN)
@@ -249,7 +249,7 @@ CellChatOne <- function(seuratObject,
     rm(i,p,Heatmap)
 
   #### Visualize cell-cell communication mediated by multiple ligand-receptors or signaling pathways ####
-  PathLR <- paste0(Save_Path,"/LRPair")
+  PathLR <- paste0(Save_Path, projectName, "/LRPair")
   ## Create new folder
   if (!dir.exists(PathLR)){
     dir.create(PathLR)
@@ -411,20 +411,25 @@ CellChatOne <- function(seuratObject,
   pdf(file = paste0(PathLR,"/",ProjectName,"_LRPair_GlobalPatterns_outgoing.pdf"),
       width = 12,  height = 8
   )
-
+  try({
   nPatterns = 4
   cellchat <- identifyCommunicationPatterns(cellchat, pattern = "outgoing", k = nPatterns)
+  })
   # P.nHeatmap.outgoing <- identifyCommunicationPatterns(cellchat, pattern = "outgoing", k = nPatterns)
   # P.nHeatmap.outgoing
   # river plot
+  try({
   netAnalysis_river(cellchat, pattern = "outgoing")
+  })
   #> Please make sure you have load `library(ggalluvial)` when running this function
 
   # dot plot
+  try({
   netAnalysis_dot(cellchat, pattern = "outgoing")
 
   P.outgoing
   #graphics.off()
+  })
   dev.off()
   #### Identify and visualize incoming communication pattern of target cells ####
 
@@ -432,18 +437,22 @@ CellChatOne <- function(seuratObject,
       width = 12,  height = 8
   )
 
-
+  try({
   nPatterns = 4
   cellchat <- identifyCommunicationPatterns(cellchat, pattern = "incoming", k = nPatterns)
-
+  })
   # river plot
+  try({
   netAnalysis_river(cellchat, pattern = "incoming")
+  })
   #> Please make sure you have load `library(ggalluvial)` when running this function
 
   # dot plot
+  try({
   netAnalysis_dot(cellchat, pattern = "incoming")
 
   P.incoming
+  })
   #graphics.off()
   dev.off()
 
@@ -472,7 +481,7 @@ CellChatOne <- function(seuratObject,
   saveRDS(cellchat, file = paste0(Save_Path,"cellchat_humanSkin_LS.rds"))
 
     ##### Save CellChatDataBase #####
-    PathDB <- paste0(Save_Path,"/DataBase")
+    PathDB <- paste0(Save_Path, projectName, "/DataBase")
     ## Create new folder
     if (!dir.exists(PathDB)){
       dir.create(PathDB)
