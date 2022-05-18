@@ -342,77 +342,15 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
   source("FUN_HSsymbol2MMsymbol.R")
   source("FUN_GSEA_ggplot.R")
 
-  # Geneset from GSEA
-  # Pathway.all <- read.delim(paste0(getwd(),"/Pathway.all.v7.4.symbols.gmt"),header = F)
-  Pathway.all <- read.delim2(paste0(getwd(),"/",InputGSEA),
-                             col.names = 1:max(count.fields(paste0(getwd(),"/",InputGSEA))),
-                             header = F,sep = "\t")
+  ## Load the GSEA Dataset
+  load("GSEA_Analysis_Geneset.RData")
 
-  ##### Converting the Human gene name to Mouse gene name #####
-    # #  Need to be optimized
-    # # (Method1) bind the different length of column (Cannot use rbind)
-    # # (Method2) Save the data as list first and than use do.call() to unlist to have dataframe
-    #
-    # ## (Ori method)
-    # Pathway.all.MM = as.data.frame(matrix(nrow=nrow(Pathway.all),ncol=ncol(Pathway.all)*2))
-    # for (i in 1:nrow(Pathway.all)) {
-    #   #Pathway.all[,i] <- data.frame(colnames(Pathway.all)[i]=Pathway.all[,i]) %>% HSsymbol2MMsymbol(.,colnames(Pathway.all)[i])
-    #   PathwayN <- data.frame(Pathway.all[i,3:ncol(Pathway.all)]) %>% t()
-    #   colnames(PathwayN)="Temp"
-    #   PathwayN <- HSsymbol2MMsymbol(PathwayN,"Temp")
-    #   Pathway.all.MM[i,1:length(unique(PathwayN$MM.symbol))] <- unique(PathwayN$MM.symbol)
-    # }
-    #
-    # Pathway.all.MM <- data.frame(Pathway.all[,1:2],Pathway.all.MM)
-    # colnames(Pathway.all.MM) <- seq(1:ncol(Pathway.all.MM))
-    #
-    # rm(PathwayN)
-    #
-    # # assign(paste0("marrow_sub_DucT2_TOP2ACenter_T", i),marrow_sub_DucT2_TOP2ACenter_Tn)
-    # # assign(colnames(Pathway.all)[i],Pathway.all[,i])
+  # # Geneset from GSEA
+  # # Pathway.all <- read.delim(paste0(getwd(),"/Pathway.all.v7.4.symbols.gmt"),header = F)
+  # Pathway.all <- read.delim2(paste0(getwd(),"/",InputGSEA),
+  #                            col.names = 1:max(count.fields(paste0(getwd(),"/",InputGSEA))),
+  #                            header = F,sep = "\t")
 
-    ## (Method1)
-    # Refer # https://stackoverflow.com/questions/3699405/how-to-cbind-or-rbind-different-lengths-vectors-without-repeating-the-elements-o
-    # How to cbind or rbind different lengths vectors without repeating the elements of the shorter vectors?
-    ## Modify by Charlene: Can use in MultRow
-    bind_diff <- function(x, y){
-      if(ncol(x) > ncol(y)){
-        len_diff <- ncol(x) - ncol(y)
-        y <- data.frame(y, rep(NA, len_diff) %>% t() %>% as.data.frame())
-        colnames(x) <- seq(1:ncol(x))
-        colnames(y) <- seq(1:ncol(y))
-      }else if(ncol(x) < ncol(y)){
-        len_diff <- ncol(y) - ncol(x)
-        x <- data.frame(x, rep(NA, len_diff) %>% t() %>% as.data.frame())
-        colnames(x) <- seq(1:ncol(x))
-        colnames(y) <- seq(1:ncol(y))
-      }
-      rbind(x, y)
-    }
-
-    ## Converting
-    for (i in 1:nrow(Pathway.all)) {
-      PathwayN <- data.frame(Pathway.all[i,3:ncol(Pathway.all)]) %>% t()  %>% as.data.frame()
-      colnames(PathwayN)="Temp"
-      PathwayN <- HSsymbol2MMsymbol(PathwayN,"Temp")
-      PathwayN <- PathwayN[!PathwayN$MM.symbol  == 0,]
-      PathwayN <- PathwayN[!is.na(PathwayN$MM.symbol),]
-      if(i==1){
-        Pathway.all.MM <- unique(PathwayN$MM.symbol) %>% t()  %>% as.data.frame()
-      }else{
-        Pathway.all.MM <- bind_diff(Pathway.all.MM,unique(PathwayN$MM.symbol) %>% t()  %>% as.data.frame())
-        # Pathway.all.MM[i,1:length(unique(PathwayN$MM.symbol))] <- unique(PathwayN$MM.symbol)
-      }
-    }
-
-    Pathway.all.MM <- data.frame(Pathway.all[,1:2],Pathway.all.MM)
-    colnames(Pathway.all.MM) <- seq(1:ncol(Pathway.all.MM))
-    #Pathway.all.MM[Pathway.all.MM==0] <-NA
-
-    rm(PathwayN)
-
-    #### Save RData ####
-    save.image(paste0(Save.Path,"/09_0_GSEA_Analysis(Geneset_Prepare).RData"))
 
 ##### 09_1 GSEA Analysis (SPA) #####
   ## Create folder
