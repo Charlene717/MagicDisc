@@ -144,7 +144,7 @@ CellChatOne <- function(seuratObject,
 
 ##### Part III: Visualization of cell-cell communication network #####
   ## Visualize each signaling pathway using Hierarchy plot, Circle plot or Chord diagram
-  PathPN <- paste0(Save_Path, projectName, "/Pathway_Network")
+  PathPN <- paste0(Save_Path,"/", projectName, "_Pathway_Network")
   ## Create new folder
   if (!dir.exists(PathPN)){
     dir.create(PathPN)
@@ -249,7 +249,7 @@ CellChatOne <- function(seuratObject,
     rm(i,p,Heatmap)
 
   #### Visualize cell-cell communication mediated by multiple ligand-receptors or signaling pathways ####
-  PathLR <- paste0(Save_Path, projectName, "/LRPair")
+  PathLR <- paste0(Save_Path,"/", projectName, "_LRPair")
   ## Create new folder
   if (!dir.exists(PathLR)){
     dir.create(PathLR)
@@ -481,7 +481,7 @@ CellChatOne <- function(seuratObject,
   saveRDS(cellchat, file = paste0(Save_Path,"cellchat_humanSkin_LS.rds"))
 
     ##### Save CellChatDataBase #####
-    PathDB <- paste0(Save_Path, projectName, "/DataBase")
+    PathDB <- paste0(Save_Path,"/", projectName, "_DataBase")
     ## Create new folder
     if (!dir.exists(PathDB)){
       dir.create(PathDB)
