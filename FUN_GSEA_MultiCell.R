@@ -133,8 +133,8 @@ FUN_GSEA_MultiCell <- function(CCMarker.lt, CellType.list,
 
 
   pdf(file = paste0(PathGSEA,"/",GSEAFilname,"_Bubble_SPA_SubType_T.pdf"),width = 17, height = 7 )
-  BBPlot_TB
-  BBPlot_TB1
+  BBPlot_TB %>% print()
+  BBPlot_TB1 %>% print()
   dev.off()
 
 
@@ -158,8 +158,8 @@ FUN_GSEA_MultiCell <- function(CCMarker.lt, CellType.list,
   BBPlot_MacB1
 
   pdf(file = paste0(PathGSEA,"/",GSEAFilname,"_Bubble_SPA_SubType_Mac.pdf"),width = 17, height = 20 )
-  BBPlot_MacB
-  BBPlot_MacB1
+  BBPlot_MacB %>% print()
+  BBPlot_MacB1 %>% print()
   dev.off()
 
   
