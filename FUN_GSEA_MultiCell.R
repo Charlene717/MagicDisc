@@ -1,10 +1,10 @@
-FUN_GSEA_MultiCell <- function(CCMarker.lt, CellType.list,
-                               Sampletype = sampletype,
-                               ProjectName = projectName
+FUN_GSEA_MultiCell <- function(CCMarker.lt, CellType.list, 
+                               Path = Save.Path, sampletype = Sampletype,
+                               projectName = ProjectName,NES_TH = 1.5, Padj_TH = 0.01
                                ) {
 
   GSEAFilname <- paste0(sampletype,"_",projectName,"_GSEA")
-  PathGSEA <- paste0(paste0(Save.Path,"/",GSEAFilname))
+  PathGSEA <- paste0(paste0(Path,"/B03_Enrichment analysis_GSEA"))
   ## Create new folder
   if (!dir.exists(PathGSEA)){
     dir.create(PathGSEA)
@@ -12,8 +12,9 @@ FUN_GSEA_MultiCell <- function(CCMarker.lt, CellType.list,
 
 
   GSEA_Large <- list()
-  GSEA_Large.df <- as.data.frame(matrix(nrow=0,ncol=10))
-  colnames(GSEA_Large.df) <- c("GeneType","PhenoType","pathway","pval","padj","log2err","ES", "NES" ,"size","leadingEdge")
+  GSEA_Large.df <- as.data.frame(matrix(nrow = 0, ncol = 10))
+  colnames(GSEA_Large.df) <- c("GeneType","PhenoType","pathway",
+                               "pval","padj","log2err","ES", "NES" ,"size","leadingEdge")
   GSEA_Large.df.TOP <- GSEA_Large.df
 
 
@@ -89,7 +90,7 @@ FUN_GSEA_MultiCell <- function(CCMarker.lt, CellType.list,
   GSEA_Large.Sum.TOP$PhenoType <- factor(GSEA_Large.Sum.TOP$PhenoType,
                                          levels = Cell_Type_Order.set)
 
-  GSEA_ggplot_SPA.lt <- GSEA_ggplot(GSEA_Large.Sum.TOP,NES_Th = 1.5, padj_Th = 0.01)
+  GSEA_ggplot_SPA.lt <- GSEA_ggplot(GSEA_Large.Sum.TOP, NES_Th = NES_TH, padj_Th = Padj_TH)
   GSEA_Large.Sum.TOP.S <- GSEA_ggplot_SPA.lt[["GSEA_TOP.df"]]
   # GSEA_Large.Sum.TOP.S <- GSEA_Large.Sum.TOP[abs(GSEA_Large.Sum.TOP$NES) > 1,]
   # GSEA_Large.Sum.TOP.S <- GSEA_Large.Sum.TOP.S[abs(GSEA_Large.Sum.TOP.S$padj) < 0.05,]
@@ -97,11 +98,11 @@ FUN_GSEA_MultiCell <- function(CCMarker.lt, CellType.list,
   # GSEA_Large.Sum.TOP.S <- GSEA_Large.Sum.TOP.S[abs(GSEA_Large.Sum.TOP.S$pval) < 0.05,]
 
   pdf(file = paste0(PathGSEA,"/",GSEAFilname,"_Bubble_SPA.pdf"),width = 17, height = 12 )
-  GSEA_ggplot_SPA.lt[["BBPlot_Ori"]]
-  GSEA_ggplot_SPA.lt[["BBPlot"]]
-  GSEA_ggplot_SPA.lt[["BBPlot2"]]
-  GSEA_ggplot_SPA.lt[["BBPlotB1"]]
-  GSEA_ggplot_SPA.lt[["BBPlotB1"]]
+  GSEA_ggplot_SPA.lt[["BBPlot_Ori"]] %>% print()
+  GSEA_ggplot_SPA.lt[["BBPlot"]] %>% print()
+  GSEA_ggplot_SPA.lt[["BBPlot2"]] %>% print()
+  GSEA_ggplot_SPA.lt[["BBPlotB1"]] %>% print()
+  GSEA_ggplot_SPA.lt[["BBPlotB1"]] %>% print()
   dev.off()
 
 
@@ -161,7 +162,10 @@ FUN_GSEA_MultiCell <- function(CCMarker.lt, CellType.list,
   BBPlot_MacB1
   dev.off()
 
+  
+  GSEA_Large[["GSEA.df"]] <- GSEA_Large.df
+  GSEA_Large[["GSEA_Top.df"]] <- GSEA_Large.df.TOP
   rm(p2,p3,BBPlotB1,BBPlotB2,BBPlotB,BBPlot_Cluster,df1.1.clust.Pheno,df1.1.clust.Pathway,
      df1.1,df1,BBPlot,BBPlot_Mac,BBPlot_MacB,BBPlot_T,BBPlot_TB)
-  return(OUTPUT)
+  return(GSEA_Large)
 }
