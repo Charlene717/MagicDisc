@@ -1,8 +1,7 @@
-ExportCellCount <- function(AnnoSummary.lt,Path = Save.Path,
-                            Folder = "B01_CellCount", projectName = ProjectName) {
+ExportCellCount <- function(AnnoSummary.lt,Path = Save.Path, projectName = ProjectName) {
   # Create new folder
 
-  NewPath <- paste0(Path,"/",Folder)
+  NewPath <- Path
 
   if (!dir.exists(NewPath)){
     dir.create(NewPath)
