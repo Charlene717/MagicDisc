@@ -54,17 +54,16 @@ scRNAMit <- function(PBMC.combined, Species="Mouse"){
     if(length(mt.mm)<2){
       mt.mm <- data.frame(gene = row.names(PBMC.combined@assays[["RNA"]]))
       # https://en.wikipedia.org/wiki/Human_mitochondrial_genetics
-      # mt.mm <- mt.mm[mt.mm$gene %in% c("MTND1", "MTND2", "MTND3", "MTND4L",
-      #                                  "MTND4", "MTND5", "MTND6", "MTCYB",
-      #                                  "MTCO1", "MTCO2", "MTCO3", "MTATP6",
-      #                                  "MTATP8", "MTRNR2", "MTTA", "MTTR",
-      #                                  "MTTN", "MTTD", "MTTC", "MTTE",
-      #                                  "MTTQ", "MTTG", "MTTH", "MTTI",
-      #                                  "MTTL1", "MTTL2", "MTTK", "MTTM",
-      #                                  "MTTF", "MTTP", "MTTS1", "MTTS2",
-      #                                  "MTTT", "MTTW", "MTTY", "MTTV",
-      #                                  "MTRNR1","MTRNR2"),]
-      mt.mm <- mt.mm[grep("^MT-",mt.mm$gene),]
+      mt.mm <- mt.mm[mt.mm$gene %in% c("MTND1", "MTND2", "MTND3", "MTND4L",
+                                       "MTND4", "MTND5", "MTND6", "MTCYB",
+                                       "MTCO1", "MTCO2", "MTCO3", "MTATP6",
+                                       "MTATP8", "MTRNR2", "MTTA", "MTTR",
+                                       "MTTN", "MTTD", "MTTC", "MTTE",
+                                       "MTTQ", "MTTG", "MTTH", "MTTI",
+                                       "MTTL1", "MTTL2", "MTTK", "MTTM",
+                                       "MTTF", "MTTP", "MTTS1", "MTTS2",
+                                       "MTTT", "MTTW", "MTTY", "MTTV",
+                                       "MTRNR1","MTRNR2"),]
 
     }
     # if(length(mt.mm)<2){
