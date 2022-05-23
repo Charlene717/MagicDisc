@@ -27,6 +27,7 @@
   ClassSet1 = "Sample"
   ClassSet2 = "Cachexia"
   ClassSet3 = "Sex"
+
   DataMode = "10x"
   Species = "mouse"
 
@@ -110,11 +111,13 @@
   Feature.set <- colnames(list_files.df)[-1]
 
   ## Read 10x files
+  source("FUN_ReadscRNA.R")
   scRNA_SeuObj.list <- ReadscRNA(InputFolder,Folder = Folder,
                                  Path =  "/monocle/outs/filtered_gene_bc_matrices/mm10",
-                                 list_files.df, Mode = DataMode)
+                                 list_files.df, Mode = DataMode, projectName = ProjectName)
 
 ##### 01 Combine different datasets before QC #####
+  source("FUN_Cal_Mit.R")
   source("FUN_CombineSeuObj.R")
   ## Combine SeuObjs from list before QC
   # (About 30 min for 20000 cells)
@@ -136,7 +139,8 @@
   }
 
   ## QC for all samples
-  scRNA.SeuObj_QCTry <- scRNAQC(scRNA.SeuObj, Path = PathQC ,FileName = paste0(ProjectName,"_QCTry"))
+  scRNA.SeuObj_QCTry <- scRNAQC(scRNA.SeuObj, Path = PathQC ,SpeciSet = Species,
+                                FileName = paste0(ProjectName,"_QCTry"))
 
   ## QC for each sample for the new integration
   #Test# scRNA_Ori.SeuObj.list <- SplitObject(scRNA_Ori.SeuObj, split.by = "ID")
