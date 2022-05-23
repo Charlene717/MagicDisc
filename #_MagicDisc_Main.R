@@ -263,12 +263,18 @@
   source("FUN_AnnoSummary.R")
   source("FUN_Export_CellCount.R")
 
+  ## Create new folder
+  PathCellCount <- paste0(Save.Path,"/","B01_CellCount")
+  if (!dir.exists(PathCellCount)){
+    dir.create(PathCellCount)
+  }
+
   ## Annotation Summary Table
   AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df, Ori_Meta.set,
                                 ClassSet = ClassSet1, ClassSet2 = ClassSet2)
 
   ## ExportCellCount
-  ExportCellCount(AnnoSummary.lt)
+  ExportCellCount(AnnoSummary.lt,Path = PathCellCount)
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/07_Count_Cell_number.RData"))
