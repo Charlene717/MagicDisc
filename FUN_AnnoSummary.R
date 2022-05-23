@@ -75,30 +75,61 @@ AnnoSummary = function(scRNA.SeuObj,  list_files.df, Ori_Meta.set,
     Freq_All_Cla.lt <- list()
 
     ClassSet2.set <- Anno.df[,ClassSet2] %>% unique()
-    Freq_All_Cla.lt[[paste0("Anno_Cla",1)]] <- Anno.df[Anno.df[,ClassSet2] == ClassSet2.set[1],]
-    Freq_All_Cla.lt[[paste0("Anno_Cla",2)]] <- Anno.df[Anno.df[,ClassSet2] == ClassSet2.set[2],]
+    for (i in 1:length(ClassSet2.set)) {
+      Freq_All_Cla.lt[[paste0("Anno_Cla",i)]] <- Anno.df[Anno.df[,ClassSet2] == ClassSet2.set[i],]
+      # Count EO_CT
+      Freq_All_Cla.lt[[paste0("Freq_Cla",i)]] <- table(Freq_All_Cla.lt[[paste0("Anno_Cla",i)]]$celltype) %>% as.data.frame()
+      Freq_All_Cla.lt[[paste0("Freq_Cla",i)]] <- data.frame(Type=ClassSet2.set[i],Freq_All_Cla.lt[[paste0("Freq_Cla",i)]])
+      Freq_All_Cla.lt[[paste0("Freq_Cla",i)]]$Percent <- Freq_All_Cla.lt[[paste0("Freq_Cla",i)]]$Freq/sum(Freq_All_Cla.lt[[paste0("Freq_Cla",i)]]$Freq)
+      colnames(Freq_All_Cla.lt[[paste0("Freq_Cla",i)]]) <- c(ClassSet2,"celltype","Freq","Percent")
+    }
+    rm(i)
 
+    for (i in 1:length(Anno_Freq_Tar_df.lt)) {
+      if(i==1){
+        Freq_All_Cla.lt[["Freq_All_Cla.df"]]  <- Anno_Freq_Tar_df.lt[[i]][["Freq_celltype"]]
+      }else{
+        Freq_All_Cla.lt[["Freq_All_Cla.df"]]  <- rbind(Freq_All_Cla.lt[["Freq_All_Cla.df"]],
+                                                       Anno_Freq_Tar_df.lt[[i]][["Freq_celltype"]])
+      }
 
-    # Count EO_CT
-    Freq_All_Cla.lt[[paste0("Freq_Cla",1)]] <- table(Freq_All_Cla.lt[[paste0("Anno_Cla",1)]]$celltype) %>% as.data.frame()
-    Freq_All_Cla.lt[[paste0("Freq_Cla",1)]] <- data.frame(Type=ClassSet2.set[1],Freq_All_Cla.lt[[paste0("Freq_Cla",1)]])
-    Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]$Percent <- Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]$Freq/sum(Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]$Freq)
-    colnames(Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]) <- c("SampleID","celltype","Freq","Percent")
+    }
+    rm(i)
 
-    # Count LO_CT
-    Freq_All_Cla.lt[[paste0("Freq_Cla",2)]] <- table(Freq_All_Cla.lt[[paste0("Anno_Cla",2)]]$celltype) %>% as.data.frame()
-    Freq_All_Cla.lt[[paste0("Freq_Cla",2)]] <- data.frame(Type=ClassSet2.set[2],Freq_All_Cla.lt[[paste0("Freq_Cla",2)]])
-    Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]$Percent <- Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]$Freq/sum(Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]$Freq)
-    colnames(Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]) <- c("SampleID","celltype","Freq","Percent")
+    for (i in 1:length(ClassSet2.set)) {
 
-    # Combind all count of sample
-    Freq_All_Cla.lt[["Freq_All_Cla.df"]]  <- rbind(Anno_Freq_Tar_df.lt[[1]][["Freq_celltype"]],
-                                                   Anno_Freq_Tar_df.lt[[2]][["Freq_celltype"]],
-                                                   Anno_Freq_Tar_df.lt[[3]][["Freq_celltype"]],
-                                                   Anno_Freq_Tar_df.lt[[4]][["Freq_celltype"]],
-                                                   Freq_All_Cla.lt[[paste0("Freq_Cla",1)]],
-                                                   Freq_All_Cla.lt[[paste0("Freq_Cla",2)]])
+      # Combind all count of sample
+      Freq_All_Cla.lt[["Freq_All_Cla.df"]]  <- rbind(Freq_All_Cla.lt[["Freq_All_Cla.df"]],
+                                                     Freq_All_Cla.lt[[paste0("Freq_Cla",i)]])
+    }
+    rm(i)
 
+    # ## Old version
+    # Freq_All_Cla.lt <- list()
+    # Freq_All_Cla.lt[[paste0("Anno_Cla",1)]] <- Anno.df[Anno.df[,ClassSet2] == ClassSet2.set[1],]
+    # Freq_All_Cla.lt[[paste0("Anno_Cla",2)]] <- Anno.df[Anno.df[,ClassSet2] == ClassSet2.set[2],]
+    #
+    #
+    # # Count EO_CT
+    # Freq_All_Cla.lt[[paste0("Freq_Cla",1)]] <- table(Freq_All_Cla.lt[[paste0("Anno_Cla",1)]]$celltype) %>% as.data.frame()
+    # Freq_All_Cla.lt[[paste0("Freq_Cla",1)]] <- data.frame(Type=ClassSet2.set[1],Freq_All_Cla.lt[[paste0("Freq_Cla",1)]])
+    # Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]$Percent <- Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]$Freq/sum(Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]$Freq)
+    # colnames(Freq_All_Cla.lt[[paste0("Freq_Cla",1)]]) <- c("SampleID","celltype","Freq","Percent")
+    #
+    # # Count LO_CT
+    # Freq_All_Cla.lt[[paste0("Freq_Cla",2)]] <- table(Freq_All_Cla.lt[[paste0("Anno_Cla",2)]]$celltype) %>% as.data.frame()
+    # Freq_All_Cla.lt[[paste0("Freq_Cla",2)]] <- data.frame(Type=ClassSet2.set[2],Freq_All_Cla.lt[[paste0("Freq_Cla",2)]])
+    # Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]$Percent <- Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]$Freq/sum(Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]$Freq)
+    # colnames(Freq_All_Cla.lt[[paste0("Freq_Cla",2)]]) <- c("SampleID","celltype","Freq","Percent")
+    #
+    # # Combind all count of sample
+    # Freq_All_Cla.lt[["Freq_All_Cla.df"]]  <- rbind(Anno_Freq_Tar_df.lt[[1]][["Freq_celltype"]],
+    #                                                Anno_Freq_Tar_df.lt[[2]][["Freq_celltype"]],
+    #                                                Anno_Freq_Tar_df.lt[[3]][["Freq_celltype"]],
+    #                                                Anno_Freq_Tar_df.lt[[4]][["Freq_celltype"]],
+    #                                                Freq_All_Cla.lt[[paste0("Freq_Cla",1)]],
+    #                                                Freq_All_Cla.lt[[paste0("Freq_Cla",2)]])
+    #
 
 
     Freq_All_Cla.lt[["Freq_All_Cla.df"]] <- data.frame(Index = row.names(Freq_All_Cla.lt[["Freq_All_Cla.df"]]),Freq_All_Cla.lt[["Freq_All_Cla.df"]] )
