@@ -2,58 +2,72 @@ scRNAMit <- function(PBMC.combined, Species="Mouse"){
 
   ## https://github.com/hbctraining/scRNA-seq/blob/master/lessons/mitoRatio.md
   ## Calculating proportion of reads mapping to mitochondrial transcripts
-  library("AnnotationHub")
 
-  # Connect to AnnotationHub
-  ah <- AnnotationHub()
-
-  # Access the Ensembl database for organism
-  ahDb <- query(ah,
-                pattern = c("Homo sapiens", "EnsDb"),
-                ignore.case = TRUE)
-
-
-  # Check versions of databases available
-  ahDb %>%
-    mcols()
-
-
-  # Acquire the latest annotation files
-  id <- ahDb %>%
-    mcols() %>%
-    rownames() %>%
-    tail(n = 1)
-
-  # Download the appropriate Ensembldb database
-  edb <- ah[[id]]
-
-  #library("GPseq")
-  library(ensembldb)
-  # Extract gene-level information from database
-  annotations <- genes(edb,
-                       return.type = "data.frame")
-
-
-  # Select annotations of interest
-  annotations <- annotations %>%
-    dplyr::select(gene_id, gene_name, gene_biotype, seq_name, description, entrezid)
-
-  #View(annotations)
-
-
-  # # Extract IDs for mitochondrial genes
-  # mt <- annotations %>%
-  #   dplyr::filter(seq_name == "MT") %>%
-  #   dplyr::pull(gene_name)
+  # ##### Load Packages #####
+  # Package.set <- c("AnnotationHub", "ensembldb")
+  # ## Check whether the installation of those packages is required from basic
+  # for (i in 1:length(Package.set)) {
+  #   if (!requireNamespace(Package.set[i], quietly = TRUE)){
+  #     install.packages(Package.set[i])
+  #   }
+  # }
+  # ## Load Packages
+  # lapply(Package.set, library, character.only = TRUE)
+  # rm(Package.set,i)
+  #
+  # ##########
+  #
+  # # Connect to AnnotationHub
+  # ah <- AnnotationHub()
+  #
+  # # Access the Ensembl database for organism
+  # ahDb <- query(ah,
+  #               pattern = c("Homo sapiens", "EnsDb"),
+  #               ignore.case = TRUE)
+  #
+  #
+  # # Check versions of databases available
+  # ahDb %>%
+  #   mcols()
+  #
+  #
+  # # Acquire the latest annotation files
+  # id <- ahDb %>%
+  #   mcols() %>%
+  #   rownames() %>%
+  #   tail(n = 1)
+  #
+  # # Download the appropriate Ensembldb database
+  # edb <- ah[[id]]
+  #
+  # #library("GPseq")
+  # library(ensembldb)
+  # # Extract gene-level information from database
+  # annotations <- genes(edb,
+  #                      return.type = "data.frame")
+  #
+  #
+  # # Select annotations of interest
+  # annotations <- annotations %>%
+  #   dplyr::select(gene_id, gene_name, gene_biotype, seq_name, description, entrezid)
+  #
+  # #View(annotations)
+  #
+  #
+  # # # Extract IDs for mitochondrial genes
+  # # mt <- annotations %>%
+  # #   dplyr::filter(seq_name == "MT") %>%
+  # #   dplyr::pull(gene_name)
 
   # (Ch) Extract IDs for mitochondrial genes
   mt.mm <- data.frame(gene = row.names(PBMC.combined@assays[["RNA"]]))
 
   if(Species=="Human"){
     mt.mm <- mt.mm[grep("^MT-",mt.mm$gene),]
-    # if(length(mt.mm)<2){
-    #  mt.mm <- mt.mm[grep("^MT",mt.mm$gene),]
-    # }
+    if(length(mt.mm)<2){
+     mt.mm <- data.frame(gene = row.names(PBMC.combined@assays[["RNA"]]))
+     mt.mm <- mt.mm[grep("^MT",mt.mm$gene),]
+    }
     if(length(mt.mm)<2){
       mt.mm <- data.frame(gene = row.names(PBMC.combined@assays[["RNA"]]))
       # https://en.wikipedia.org/wiki/Human_mitochondrial_genetics
