@@ -10,7 +10,7 @@
   Sampletype = "PBMC"
   #ProjSamp.Path = paste0(Sampletype,"_",ProjectName)
 
-  Version = paste0(Sys.Date(),"_","CC_PBMC")
+  Version = paste0(Sys.Date(),"_",ProjectName,"_",Sampletype)
   Save.Path = paste0(getwd(),"/",Version)
   ## Create new folder
   if (!dir.exists(Save.Path)){
