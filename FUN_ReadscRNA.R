@@ -1,6 +1,6 @@
 ReadscRNA = function( InputFolder,Folder = Folder,
                       Path = "/monocle/outs/filtered_gene_bc_matrices/mm10",
-                      list_files.df, Mode="10x" ,ProjectName="") # Mode=c("10x","Exp")
+                      list_files.df, Mode="10x" ,projectName=ProjectName) # Mode=c("10x","Exp")
   {
 
     if(Mode=="10x"){
@@ -10,7 +10,7 @@ ReadscRNA = function( InputFolder,Folder = Folder,
         Folder <- list_files.df$Folder[i]
         Data.dgCMatrix <- Read10X(data.dir = paste0(InputFolder,"/", Folder,Path))
         Data.SeuObj <- CreateSeuratObject(counts = Data.dgCMatrix,
-                                          project = ProjectName,
+                                          project = projectName,
                                           min.cells = 3, min.features = 200)
 
         for (j in 1:(ncol(list_files.df)-1)) {
@@ -55,7 +55,7 @@ ReadscRNA = function( InputFolder,Folder = Folder,
         GeneExp.df <- read.table(paste0(InputFolder,"/", Folder, "/ExpMat.tsv"),
                                      header=T, row.names = 1, sep="\t")
         Data.SeuObj <- CreateSeuratObject(counts = GeneExp.df,
-                                          project = ProjectName,
+                                          project = projectName,
                                           min.cells = 3, min.features = 200)
 
         for (j in 1:(ncol(list_files.df)-1)) {
