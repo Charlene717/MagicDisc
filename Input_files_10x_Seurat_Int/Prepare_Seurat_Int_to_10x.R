@@ -174,4 +174,8 @@
 
 ##### Export Seurat Object in 10X format #####
   ## Ref: https://github.com/satijalab/seurat/issues/884
-  write10xCounts(x = seurat.object@assays$RNA@counts, path = output.path)
+  # write10xCounts(x = seurat.object@assays$RNA@counts, path = output.path)
+  library(DropletUtils)
+  # write10xCounts(x = immune.combined.sct@assays$RNA@counts, path = "Seurat_Int")
+  write10xCounts(x = ifnb.list[["CTRL"]]@assays$RNA@counts, path = "Seurat_Int/CTRL")
+  write10xCounts(x = ifnb.list[["STIM"]]@assays$RNA@counts, path = "Seurat_Int/STIM")
