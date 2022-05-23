@@ -50,7 +50,10 @@ scRNAMit <- function(PBMC.combined, Species="Mouse"){
   mt.mm <- data.frame(gene = row.names(PBMC.combined@assays[["RNA"]]))
 
   if(Species=="Human"){
-     mt.mm <- mt.mm[grep("^MT-",mt.mm$gene),]
+    mt.mm <- mt.mm[grep("^MT-",mt.mm$gene),]
+    if(length(mt.mm)<2){
+     mt.mm <- mt.mm[grep("^MT",mt.mm$gene),]
+    }
     if(length(mt.mm)<2){
       mt.mm <- data.frame(gene = row.names(PBMC.combined@assays[["RNA"]]))
       # https://en.wikipedia.org/wiki/Human_mitochondrial_genetics
