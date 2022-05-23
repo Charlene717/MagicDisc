@@ -1,6 +1,6 @@
 scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
                     logGPUFilter= 0.8 , mitRFilter=0.1 ,
-                    PtSize=0, SpeciSet = "Mouse",
+                    PtSize=0, SpeciSet = Species,
                     AddMitInf = "Yes", # Add mitochondria information
                     CheckOnly="No", # CheckOnly = "Yes": Just plot the Fig
                     Path = Save.Path,
@@ -15,7 +15,7 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
     # The [[ operator can add columns to object metadata. This is a great place to stash QC stats
     ## PBMC.combined_QC[["percent.mt"]] <- PercentageFeatureSet(PBMC.combined_QC, pattern = "^MT-") # For Human
     ## PBMC.combined_QC[["percent.mt"]] <- PercentageFeatureSet(PBMC.combined_QC, pattern = "^mt-") # For Mouse
-    if(AddMitInf == "Yes"){
+      if(AddMitInf == "Yes"){
         PBMC.combined_QC <- scRNAMit(PBMC.combined_QC, Species = SpeciSet)
       }else{
         PBMC.combined_QC <- PBMC.combined_QC
@@ -231,7 +231,8 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
         # # Reassign to filtered Seurat object
         # PBMC.combined_QC_Filter2 <- CreateSeuratObject(filtered_counts, meta.data = PBMC.combined_QC_Filter@meta.data)
         # scRNAQC(PBMC.combined_QC_Filter2,AddMitInf = "No",FileName = paste0(FileName,"_CheckTry"), CheckOnly="Yes")
-        scRNAQC(PBMC.combined_QC_Filter,AddMitInf = "No",FileName = paste0(FileName,"_Check"),Path = Path, CheckOnly="Yes")
+        scRNAQC(PBMC.combined_QC_Filter,AddMitInf = "No",SpeciSet = Species,
+                FileName = paste0(FileName,"_Check"),Path = Path, CheckOnly="Yes")
       }else{
         PBMC.combined_QC_Filter <- PBMC.combined_QC
       }
