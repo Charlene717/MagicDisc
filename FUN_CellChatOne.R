@@ -547,7 +547,7 @@ CellChatOne <- function(seuratObject,
     # }
 
     #### Save the RData ####
-    save.image(paste0(Version,"_CellChat_Example_PRJCA001063.RData"))
+    save.image(paste0(Save_Path, ProjectName,"_CellChat_Example_PRJCA001063.RData"))
 
     CellChat.lt <- list(CellChatObj = cellchat,
                         DataBase_Use = CellChatDB.use,
