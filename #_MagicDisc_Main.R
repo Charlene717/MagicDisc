@@ -1,14 +1,14 @@
 ## Ref: https://statisticsglobe.com/r-save-all-console-input-output-to-file
 ## Ref: https://blog.gtwang.org/r/r-data-input-and-output/
 
-# setwd("../") # Set the path at the same location of Demo_CellTypeAnno.R
-my_log <- file("CellCheck_log.txt") # File name of output log
+##### Export the log file (Start) #####
+  my_log <- file("MagicDisc_log.txt") # File name of output log
 
-sink(my_log, append = TRUE, type = "output") # Writing console output to log file
-sink(my_log, append = TRUE, type = "message")
+  sink(my_log, append = TRUE, type = "output") # Writing console output to log file
+  sink(my_log, append = TRUE, type = "message")
 
-cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently opened R script to file
-             file.info(rstudioapi::getSourceEditorContext()$path)$size))
+  cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently opened R script to file
+               file.info(rstudioapi::getSourceEditorContext()$path)$size))
 
 
 ##### Presetting ######
@@ -410,5 +410,7 @@ cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently open
 
 ##### Beautify Figs #####
 
-closeAllConnections() # Close connection to log file
+
+##### Export the log file (End) #####
+  closeAllConnections() # Close connection to log file
 
