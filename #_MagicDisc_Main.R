@@ -1,8 +1,37 @@
 ## Ref: https://statisticsglobe.com/r-save-all-console-input-output-to-file
 ## Ref: https://blog.gtwang.org/r/r-data-input-and-output/
 
+##### Presetting ######
+  rm(list = ls()) # Clean variable
+  memory.limit(150000)
+
+##### Current path and new folder setting* #####
+  ProjectName = "CC"
+  Sampletype = "PBMC"
+  #ProjSamp.Path = paste0(Sampletype,"_",ProjectName)
+
+  Version = paste0(Sys.Date(),"_","CC_PBMC")
+  Save.Path = paste0(getwd(),"/",Version)
+  ## Create new folder
+  if (!dir.exists(Save.Path)){
+    dir.create(Save.Path)
+  }
+
+  ## Import information
+  InputFolder = "Input_files_10x"
+  InputAnno = "PBMC_Ano.csv"
+
+  InputGSEA = "GSEA_Geneset_Pathway_3Database_WithoutFilter.txt"
+
+##### Parameter setting* #####
+  ClassSet1 = "Sample"
+  ClassSet2 = "Cachexia"
+  ClassSet3 = "Sex"
+  DataMode = "10x"
+  Species = "mouse"
+
 ##### Export the log file (Start) #####
-  my_log <- file("MagicDisc_log.txt") # File name of output log
+  my_log <- file(paste0(Version,"_log.txt")) # File name of output log
 
   sink(my_log, append = TRUE, type = "output") # Writing console output to log file
   sink(my_log, append = TRUE, type = "message")
@@ -10,10 +39,6 @@
   cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently opened R script to file
                file.info(rstudioapi::getSourceEditorContext()$path)$size))
 
-
-##### Presetting ######
-  rm(list = ls()) # Clean variable
-  memory.limit(150000)
 
 ##### Load Packages #####
   Package.set <- c("tidyverse","Seurat","ggplot2","ggpmisc","broom",
@@ -78,30 +103,6 @@
   source("FUN_CellChatOne.R")
   source("FUN_GSEA_MultiCell.R")
 
-##### Current path and new folder setting* #####
-  ProjectName = "CC"
-  Sampletype = "PBMC"
-  #ProjSamp.Path = paste0(Sampletype,"_",ProjectName)
-
-  Version = paste0(Sys.Date(),"_","CC_PBMC")
-  Save.Path = paste0(getwd(),"/",Version)
-  ## Create new folder
-  if (!dir.exists(Save.Path)){
-    dir.create(Save.Path)
-  }
-
-
-  ## Import information
-  InputFolder = "Input_files_10x"
-  InputAnno = "PBMC_Ano.csv"
-
-  InputGSEA = "GSEA_Geneset_Pathway_3Database_WithoutFilter.txt"
-
-##### Parameter setting* #####
-  ClassSet1 = "Sample"
-  ClassSet2 = "Cachexia"
-  ClassSet3 = "Sex"
-  DataMode="10x"
 
 ##### Load datasets  #####
   ## Annotation table
@@ -380,22 +381,22 @@
   CellChatOne(scRNA.SeuObj,
               signalingtype = "ECM-Receptor", projectName = "ECM",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
-              groupby = "celltype",species = "mouse"
+              groupby = "celltype",species = Species
               ) ->   CellChat_ECM.lt
 
   ## Cell-Cell Contact
   CellChatOne(scRNA.SeuObj,
               signalingtype = "Cell-Cell Contact", projectName = "CC",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
-              groupby = "celltype",species = "mouse"
+              groupby = "celltype",species = Species
               ) -> CellChat_CC.lt
 
   ## Secreted Signaling
   CellChatOne(scRNA.SeuObj,
               signalingtype = "Secreted Signaling", projectName = "Secret",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
-              groupby = "celltype",species = "mouse"
-  ) -> CellChat_Secret.lt
+              groupby = "celltype",species = Species
+              ) -> CellChat_Secret.lt
 
 
 ##### GO/Metascape #####
