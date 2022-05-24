@@ -3,8 +3,8 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
                     PtSize=0, SpeciSet = Species,
                     AddMitInf = "Yes", # Add mitochondria information
                     CheckOnly="No", # CheckOnly = "Yes": Just plot the Fig
-                    Path = Save.Path,
-                    FileName = "QC",GroupBy= colnames(scRNA.SeuObj@meta.data)[4]){
+                    Path = "", FileName = "",
+                    GroupBy= colnames(scRNA.SeuObj@meta.data)[4]){
 
     ## https://hbctraining.github.io/scRNA-seq/lessons/04_SC_quality_control.html
     ## QC for scRNA Data
@@ -187,7 +187,7 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
 
         # https://stackoverflow.com/questions/19288101/r-pdf-usage-inside-a-function/19288874
         pdf(
-          file = paste0(Path,"/",FileName,".pdf"),
+          file = paste0(Path,"/",FileName,"_QC.pdf"),
           width = 10,  height = 7
         )
 
@@ -231,8 +231,8 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
         # # Reassign to filtered Seurat object
         # PBMC.combined_QC_Filter2 <- CreateSeuratObject(filtered_counts, meta.data = PBMC.combined_QC_Filter@meta.data)
         # scRNAQC(PBMC.combined_QC_Filter2,AddMitInf = "No",FileName = paste0(FileName,"_CheckTry"), CheckOnly="Yes")
-        scRNAQC(PBMC.combined_QC_Filter,AddMitInf = "No",SpeciSet = Species,
-                FileName = paste0(FileName,"_Check"),Path = Path, CheckOnly="Yes")
+        scRNAQC(PBMC.combined_QC_Filter,AddMitInf = "No",SpeciSet = SpeciSet,
+                FileName = paste0(FileName,"_After"),Path = Path, CheckOnly="Yes")
       }else{
         PBMC.combined_QC_Filter <- PBMC.combined_QC
       }

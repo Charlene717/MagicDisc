@@ -140,7 +140,7 @@
 
   ## QC for all samples
   scRNA.SeuObj_QCTry <- scRNAQC(scRNA.SeuObj, Path = PathQC ,SpeciSet = Species,
-                                FileName = paste0(ProjectName,"_BeforeQC"))
+                                FileName = paste0(ProjectName))
 
   ## QC for each sample for the new integration
   #Test# scRNA_Ori.SeuObj.list <- SplitObject(scRNA_Ori.SeuObj, split.by = "ID")
@@ -148,8 +148,8 @@
   for (i in 1:length(scRNA_SeuObj.list)) {
 
     Name <- names(scRNA_SeuObj.list)[[i]]
-    scRNA_SeuObj_QC.list[[i]] <- scRNAQC(scRNA_SeuObj.list[[i]], Path = PathQC ,
-                                         FileName = paste0(ProjectName,"_", Name,"_BeforeQC"))
+    scRNA_SeuObj_QC.list[[i]] <- scRNAQC(scRNA_SeuObj.list[[i]], Path = PathQC ,SpeciSet = Species,
+                                         FileName = paste0(ProjectName,"_",Name))
     names(scRNA_SeuObj_QC.list)[[i]] <- Name
 
     }
@@ -167,7 +167,8 @@
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj_QC.list)
 
   ## Check QC
-  scRNAQC(scRNA.SeuObj,AddMitInf = "No",CheckOnly="Yes", Path = PathQC ,FileName = paste0(ProjectName,"_Check"))
+  scRNAQC(scRNA.SeuObj,AddMitInf = "No",CheckOnly="Yes", Path = PathQC ,
+          SpeciSet = Species, FileName = paste0(ProjectName,"_Check"))
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/03_Combine_different_data_sets_after_QC.RData"))
@@ -408,8 +409,8 @@
               groupby = "celltype",species = Species
               ) -> CellChat_Secret.lt
 
-  ##### save.image #####
-  save.image(paste0(Save.Path,"/010_Cell_Interaction.RData"))
+  # ##### save.image #####
+  # save.image(paste0(Save.Path,"/010_Cell_Interaction.RData"))
 
 ##### GO/Metascape #####
 
