@@ -1,6 +1,23 @@
 ## Ref: https://statisticsglobe.com/r-save-all-console-input-output-to-file
 ## Ref: https://blog.gtwang.org/r/r-data-input-and-output/
 
+#************************************************************************************************************************#
+##### To-Do List ######
+  # - [ ] Ensembl gene name conversion
+  # - [ ] Clean up the code
+
+  # - [ ] Find Biomarker
+  # - [ ] GSEA
+  # - [ ] GO
+  # - [ ] Cell-cell interaction
+  # - [ ] inferCNV
+  # - [ ] Deconvolution
+  # - [ ] Clinical analysis
+  # - [ ] Beautify Figs
+
+#************************************************************************************************************************#
+
+
 ##### Presetting ######
   rm(list = ls()) # Clean variable
   memory.limit(150000)
@@ -223,7 +240,7 @@
   #### Save RData ####
   save.image(paste0(Save.Path,"/05_Identify_conserved_cell_type_markers.RData"))
 
-##### 06 Cell type annotation  #####
+##### 06 Cell type annotation*  #####
   # scRNA.SeuObj.copy <- scRNA.SeuObj
 
   ## CD4+T: CD4+T Cell; CD8+T: CD8+T Cell; T: T Cell; B: B Cell; Mac: Macrophages;
@@ -409,8 +426,8 @@
               groupby = "celltype",species = Species
               ) -> CellChat_Secret.lt
 
-  # ##### save.image #####
-  # save.image(paste0(Save.Path,"/010_Cell_Interaction.RData"))
+  ##### save.image #####
+  save.image(paste0(Save.Path,"/010_Cell_Cell_Interaction.RData"))
 
 ##### GO/Metascape #####
 
