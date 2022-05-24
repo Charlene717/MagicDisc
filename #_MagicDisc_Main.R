@@ -297,7 +297,23 @@
   #### Save RData ####
   save.image(paste0(Save.Path,"/07_Count_Cell_number.RData"))
 
-##### 08_1 Find CCmarker in different Cell type and VolcanoPlot (SSA) ########
+##### 08 Find CCmarker in different Cell type ########
+  ##### 08_1 Find CCmarker in different Cell type and VolcanoPlot (SPA) ########
+  ### Define group by different phenotype ###
+  source("FUN_Find_Markers.R")
+
+  Idents(scRNA.SeuObj) <- paste0(Type,".",ClassSet2)
+  DefaultAssay(scRNA.SeuObj) <- "RNA"
+  CCMarker.lt <- BioMarker1Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
+                                 sampletype = Sampletype, cellType.list = CellType.list, classSet2 = ClassSet2,
+                                 Type = paste0("celltype.",ClassSet2) )
+
+  #### Save RData ####
+  save.image(paste0(Save.Path,"/08_1_Find__",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Pooled).RData"))
+
+  if(ClassSet3 != ""){
+
+##### 08_2 Find CCmarker in different Cell type and VolcanoPlot (SSA) ########
   #### Define group by different phenotype ####
   source("FUN_Find_Markers.R")
   source("FUN_BioMarker2Index.R")
@@ -325,10 +341,10 @@
                                   classSet2 = ClassSet2, classSet3 = ClassSet3,Type = "celltype")
 
   #### Save RData ####
-  save.image(paste0(Save.Path,"/08_1_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Separate).RData"))
+  save.image(paste0(Save.Path,"/08_2_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Separate).RData"))
 
 
-##### 08_2 Find CCmarker in different Cell type and VennDiagrame (SSA_IntersectCT) ########
+##### 08_3 Find CCmarker in different Cell type and VennDiagrame (SSA_IntersectCT) ########
   ##-------------- Intersect_CellType --------------##
   CCMarker_Male.lt <- CCMarker2Index.lt[[1]]
   CCMarker_Female.lt <- CCMarker2Index.lt[[2]]
@@ -341,23 +357,11 @@
 
   Venn_CCMarke.lt <- BeautifyVennDiag(CCMarker_Male.lt, CCMarker_Female.lt, CellType.list,list_files.df,
                                       classSet3 = ClassSet3)
-
+  }
   #### Save RData ####
-  save.image(paste0(Save.Path,"/08_2_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_Venn.RData"))
+  save.image(paste0(Save.Path,"/08_3_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_Venn.RData"))
 
 
-##### 08_3 Find CCmarker in different Cell type and VolcanoPlot (SPA) ########
-  ### Define group by different phenotype ###
-  source("FUN_Find_Markers.R")
-
-  Idents(scRNA.SeuObj) <- paste0(Type,".",ClassSet2)
-  DefaultAssay(scRNA.SeuObj) <- "RNA"
-  CCMarker.lt <- BioMarker1Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
-                                 sampletype = Sampletype, cellType.list = CellType.list, classSet2 = ClassSet2,
-                                 Type = paste0("celltype.",ClassSet2) )
-
-  #### Save RData ####
-  save.image(paste0(Save.Path,"/08_3_Find__",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Pooled).RData"))
 
 ################## (Pending) CCmarker matrix (Heatmap) ##################
 ################## (Pending) CCmarker matrix LogFC (Heatmap) ##################
@@ -390,6 +394,7 @@
   ##### save.image #####
   save.image(paste0(Save.Path,"/09_1_GSEA_Analysis_(SPA).RData"))
 
+  if(ClassSet3 != ""){
 ##### 09_2 GSEA Analysis (SSA_MAle) #####
   GSEA_SSA_Male.lt <- FUN_GSEA_MultiCell(CCMarker_Male.lt, CellType.list,Path = Save.Path, sampletype = Sampletype,
                                     projectName = ProjectName,NES_TH = 1.5, Padj_TH = 0.01)
@@ -397,12 +402,14 @@
   ##### save.image #####
   save.image(paste0(Save.Path,"/09_2_GSEA_Analysis_(SSA_Male).RData"))
 
-##### 09_3 GSEA Analysis (SSA_MAle) #####
+##### 09_2 GSEA Analysis (SSA_Female) #####
   GSEA_SSA_Female.lt <- FUN_GSEA_MultiCell(CCMarker_Female.lt, CellType.list,Path = Save.Path, sampletype = Sampletype,
                                          projectName = ProjectName,NES_TH = 1.5, Padj_TH = 0.01)
 
+
   ##### save.image #####
   save.image(paste0(Save.Path,"/09_2_GSEA_Analysis_(SSA_Female).RData"))
+  }
 
 ##### Cell-cell interaction #####
   ## ECM-Receptor
