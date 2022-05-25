@@ -1,6 +1,6 @@
 BioMarker2Index <- function(scRNA.SeuObj,
                       Path = PathBiomarkers, projectName = ProjectName,
-                      sampletype = Sampletype,
+                      sampletype = Sampletype, cellType.set = CellType.set,
                       classSet2 = ClassSet2, classSet3 = ClassSet3,
                       Type = "celltype" ){
 
@@ -17,25 +17,25 @@ BioMarker2Index <- function(scRNA.SeuObj,
 
   classSet2.set <- list_files.df[[classSet2]] %>% unique()
   classSet3.set <- list_files.df[[classSet3]] %>% unique()
-  CellType.list <- as.character(unique(scRNA.SeuObj@meta.data[[Type]]))
-  # CellType.list <- CellType.list[-9]
+  cellType.set <- as.character(unique(scRNA.SeuObj@meta.data[[Type]]))
+  # cellType.set <- cellType.set[-9]
   ####-------------- Find Marker gene in Male --------------####
   Sep_Cla3_FMar.Path <- paste0(sampletype,"_",projectName,"_Separate_",classSet3.set[1],"_FindMarkers")
   dir.create(paste0(Path,"/",Sep_Cla3_FMar.Path))
 
   # About 15 mins
   CCMarker_Male.lt <- list()
-  for(i in c(1:length(CellType.list))){
+  for(i in c(1:length(cellType.set))){
     try({
       CCMarker_Male.lt[[i]] <- Find_Markers(scRNA.SeuObj,
-                                            paste0(CellType.list[i],"_",classSet2.set[1],"_",classSet3.set[1]),
-                                            paste0(CellType.list[i],"_",classSet2.set[2],"_",classSet3.set[1]),
-                                            CellType.list[i],
+                                            paste0(cellType.set[i],"_",classSet2.set[1],"_",classSet3.set[1]),
+                                            paste0(cellType.set[i],"_",classSet2.set[2],"_",classSet3.set[1]),
+                                            cellType.set[i],
                                             Path = Path,
                                             ResultFolder = paste0(Sep_Cla3_FMar.Path),
                                             ProjectTitle = projectName)
-      # names(CCMarker_Male.lt)[[i]] <- paste0("CCMarker_Male.lt.",CellType.list[i])
-      names(CCMarker_Male.lt)[[i]] <- paste0(CellType.list[i])
+      # names(CCMarker_Male.lt)[[i]] <- paste0("CCMarker_Male.lt.",cellType.set[i])
+      names(CCMarker_Male.lt)[[i]] <- paste0(cellType.set[i])
     })
   }
   rm(i)
@@ -49,26 +49,26 @@ BioMarker2Index <- function(scRNA.SeuObj,
 
   pdf(file = paste0(Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,".pdf"),
       width = 7, height = 7 )
-  for (i in 1:length(CellType.list)) {
+  for (i in 1:length(cellType.set)) {
     try({
       print(VolcanoPlot(CCMarker_Male.lt[[i]][[paste0(projectName, "Marker.S")]],
                         CCMarker_Male.lt[[i]][[paste0(projectName, "Marker.S_Pos_List")]],
                         CCMarker_Male.lt[[i]][[paste0(projectName, "Marker.S_Neg_List")]], ShowGeneNum = 6)+
-              ggtitle(paste0(projectName,"_",classSet3.set[1],"_",CellType.list[i]))
+              ggtitle(paste0(projectName,"_",classSet3.set[1],"_",cellType.set[i]))
       )
     })
   }
   dev.off() # graphics.off()
   rm(i)
 
-  for (i in 1:length(CellType.list)) {
+  for (i in 1:length(cellType.set)) {
     try({
-      tiff(file = paste0(Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,"_",CellType.list[i],".tif"),
+      tiff(file = paste0(Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,"_",cellType.set[i],".tif"),
            width = 17, height = 17, units = "cm", res = 200)
       print(VolcanoPlot(CCMarker_Male.lt[[i]][[paste0(projectName, "Marker.S")]],
                         CCMarker_Male.lt[[i]][[paste0(projectName, "Marker.S_Pos_List")]],
                         CCMarker_Male.lt[[i]][[paste0(projectName, "Marker.S_Neg_List")]])+
-              ggtitle(paste0(projectName,"_",classSet3.set[1],"_",CellType.list[i]))
+              ggtitle(paste0(projectName,"_",classSet3.set[1],"_",cellType.set[i]))
       )
 
       graphics.off()
@@ -83,17 +83,17 @@ BioMarker2Index <- function(scRNA.SeuObj,
   # About 15 mins
   CCMarker_Female.lt <- list()
 
-  for(i in c(1:length(CellType.list))){
+  for(i in c(1:length(cellType.set))){
     try({
       CCMarker_Female.lt[[i]] <- Find_Markers(scRNA.SeuObj,
-                                              paste0(CellType.list[i],"_",classSet2.set[1],"_",classSet3.set[2]),
-                                              paste0(CellType.list[i],"_",classSet2.set[2],"_",classSet3.set[2]),
-                                              CellType.list[i],
+                                              paste0(cellType.set[i],"_",classSet2.set[1],"_",classSet3.set[2]),
+                                              paste0(cellType.set[i],"_",classSet2.set[2],"_",classSet3.set[2]),
+                                              cellType.set[i],
                                               Path = Path,
                                               ResultFolder = paste0(Sep_Cla3_FMar.Path),
                                               ProjectTitle = projectName)
-      # names(CCMarker_Female.lt)[[i]] <- paste0("CCMarker_Female.lt.",CellType.list[i])
-      names(CCMarker_Female.lt)[[i]] <- paste0(CellType.list[i])
+      # names(CCMarker_Female.lt)[[i]] <- paste0("CCMarker_Female.lt.",cellType.set[i])
+      names(CCMarker_Female.lt)[[i]] <- paste0(cellType.set[i])
     })
   }
   rm(i)
@@ -109,26 +109,26 @@ BioMarker2Index <- function(scRNA.SeuObj,
 
   pdf(file = paste0(Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,".pdf"),
       width = 7, height = 7 )
-  for (i in 1:length(CellType.list)) {
+  for (i in 1:length(cellType.set)) {
     try({
       print(VolcanoPlot(CCMarker_Female.lt[[i]][[paste0(projectName, "Marker.S")]],
                         CCMarker_Female.lt[[i]][[paste0(projectName, "Marker.S_Pos_List")]],
                         CCMarker_Female.lt[[i]][[paste0(projectName, "Marker.S_Neg_List")]], ShowGeneNum = 6)+
-              ggtitle(paste0(projectName,"_",classSet3.set[2],"_",CellType.list[i]))
+              ggtitle(paste0(projectName,"_",classSet3.set[2],"_",cellType.set[i]))
       )
     })
   }
   dev.off() # graphics.off()
   rm(i)
 
-  for (i in 1:length(CellType.list)) {
+  for (i in 1:length(cellType.set)) {
     try({
-      tiff(file = paste0(Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,"_",CellType.list[i],".tif"),
+      tiff(file = paste0(Path,"/",Sep_Cla3_Volcano.Path,"/",Sep_Cla3_Volcano.Path,"_",cellType.set[i],".tif"),
            width = 17, height = 17, units = "cm", res = 200)
       print(VolcanoPlot(CCMarker_Female.lt[[i]][[paste0(projectName, "Marker.S")]],
                         CCMarker_Female.lt[[i]][[paste0(projectName, "Marker.S_Pos_List")]],
                         CCMarker_Female.lt[[i]][[paste0(projectName, "Marker.S_Neg_List")]])+
-              ggtitle(paste0(projectName,"_",classSet3.set[2],"_",CellType.list[i]))
+              ggtitle(paste0(projectName,"_",classSet3.set[2],"_",cellType.set[i]))
       )
 
       graphics.off()
