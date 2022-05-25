@@ -298,31 +298,16 @@
   save.image(paste0(Save.Path,"/07_Count_Cell_number.RData"))
 
 ##### 08 Find CCmarker in different Cell type ########
-  ##### 08_1 Find CCmarker in different Cell type and VolcanoPlot (SPA) ########
-  ### Define group by different phenotype ###
-  source("FUN_Find_Markers.R")
-
-  Idents(scRNA.SeuObj) <- paste0(Type,".",ClassSet2)
-  DefaultAssay(scRNA.SeuObj) <- "RNA"
-  CCMarker.lt <- BioMarker1Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
-                                 sampletype = Sampletype, cellType.list = CellType.list, classSet2 = ClassSet2,
-                                 Type = paste0("celltype.",ClassSet2) )
-
-  #### Save RData ####
-  save.image(paste0(Save.Path,"/08_1_Find__",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Pooled).RData"))
-
-  if(ClassSet3 != ""){
-
-##### 08_2 Find CCmarker in different Cell type and VolcanoPlot (SSA) ########
-  #### Define group by different phenotype ####
-  source("FUN_Find_Markers.R")
-  source("FUN_BioMarker2Index.R")
-
   ## Create new folder
   PathBiomarkers <- paste0(Save.Path,"/","B02_Biomarkers")
   if (!dir.exists(PathBiomarkers)){
     dir.create(PathBiomarkers)
   }
+
+  #### Define group by different phenotype ####
+  source("FUN_Find_Markers.R")
+  source("FUN_BioMarker2Index.R")
+
 
   # scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
 
@@ -333,12 +318,29 @@
   scRNA.SeuObj[[paste0(Type,".",ClassSet2,".",ClassSet3)]] <- paste(Idents(scRNA.SeuObj),
                                                                     as.matrix(scRNA.SeuObj[[ClassSet2]]),
                                                                     as.matrix(scRNA.SeuObj[[ClassSet3]]), sep = "_")
+
+  CellType.set <- scRNA.SeuObj@meta.data[["celltype"]] %>% unique()
+  ##### 08_1 Find CCmarker in different Cell type and VolcanoPlot (SPA) ########
+  Idents(scRNA.SeuObj) <- paste0(Type,".",ClassSet2)
+
+  DefaultAssay(scRNA.SeuObj) <- "RNA"
+  CCMarker.lt <- BioMarker1Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
+                                 sampletype = Sampletype, cellType.set = CellType.set, classSet2 = ClassSet2,
+                                 Type = paste0("celltype.",ClassSet2) )
+
+  #### Save RData ####
+  save.image(paste0(Save.Path,"/08_1_Find__",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Pooled).RData"))
+
+  if(ClassSet3 != ""){
+
+##### 08_2 Find CCmarker in different Cell type and VolcanoPlot (SSA) ########
   Idents(scRNA.SeuObj) <- paste0(Type,".",ClassSet2,".",ClassSet3)
   DefaultAssay(scRNA.SeuObj) <- "RNA"
 
   ## Find CCmarker in different Cell type
   CCMarker2Index.lt <-  BioMarker2Index(scRNA.SeuObj, Path = PathBiomarkers, projectName = ProjectName,
-                                  classSet2 = ClassSet2, classSet3 = ClassSet3,Type = "celltype")
+                                        sampletype = Sampletype, cellType.set = CellType.set, classSet2 = ClassSet2,
+                                        classSet3 = ClassSet3,Type = "celltype")
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/08_2_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Separate).RData"))
@@ -396,15 +398,16 @@
 
   if(ClassSet3 != ""){
 ##### 09_2 GSEA Analysis (SSA_MAle) #####
+  ClassSet3.set <- list_files.df[,ClassSet3] %>% unique()
   GSEA_SSA_Male.lt <- FUN_GSEA_MultiCell(CCMarker_Male.lt, CellType.list,Path = Save.Path, sampletype = Sampletype,
-                                    projectName = ProjectName,NES_TH = 1.5, Padj_TH = 0.01)
+                                    projectName = ProjectName, Type = ClassSet3.set[1],NES_TH = 1.5, Padj_TH = 0.01)
 
   ##### save.image #####
   save.image(paste0(Save.Path,"/09_2_GSEA_Analysis_(SSA_Male).RData"))
 
 ##### 09_2 GSEA Analysis (SSA_Female) #####
   GSEA_SSA_Female.lt <- FUN_GSEA_MultiCell(CCMarker_Female.lt, CellType.list,Path = Save.Path, sampletype = Sampletype,
-                                         projectName = ProjectName,NES_TH = 1.5, Padj_TH = 0.01)
+                                         projectName = ProjectName, Type = ClassSet3.set[2],NES_TH = 1.5, Padj_TH = 0.01)
 
 
   ##### save.image #####
