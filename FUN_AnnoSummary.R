@@ -99,10 +99,12 @@ AnnoSummary = function(scRNA.SeuObj,  list_files.df, Ori_Meta.set,
     for (i in 1:length(ClassSet2.set)) {
 
       # Combind all count of sample
+      Temp = Freq_All_Cla.lt[[paste0("Freq_Cla",i)]]
+      colnames(Temp)[1] <- colnames(Freq_All_Cla.lt[["Freq_All_Cla.df"]])[1]
       Freq_All_Cla.lt[["Freq_All_Cla.df"]]  <- rbind(Freq_All_Cla.lt[["Freq_All_Cla.df"]],
-                                                     Freq_All_Cla.lt[[paste0("Freq_Cla",i)]])
+                                                     Temp)
     }
-    rm(i)
+    rm(i,Temp)
 
     # ## Old version
     # Freq_All_Cla.lt <- list()
