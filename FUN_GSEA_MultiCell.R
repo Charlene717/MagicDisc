@@ -1,9 +1,9 @@
-FUN_GSEA_MultiCell <- function(CCMarker.lt, CellType.list, 
+FUN_GSEA_MultiCell <- function(CCMarker.lt, CellType.list,
                                Path = Save.Path, sampletype = Sampletype,
-                               projectName = ProjectName,NES_TH = 1.5, Padj_TH = 0.01
+                               projectName = ProjectName, Type = "", NES_TH = 1.5, Padj_TH = 0.01
                                ) {
 
-  GSEAFilname <- paste0(sampletype,"_",projectName,"_GSEA")
+  GSEAFilname <- paste0(sampletype,"_",projectName,"_",Type,"_GSEA")
   PathGSEA <- paste0(paste0(Path,"/B03_Enrichment analysis_GSEA"))
   ## Create new folder
   if (!dir.exists(PathGSEA)){
@@ -162,7 +162,7 @@ FUN_GSEA_MultiCell <- function(CCMarker.lt, CellType.list,
   BBPlot_MacB1 %>% print()
   dev.off()
 
-  
+
   GSEA_Large[["GSEA.df"]] <- GSEA_Large.df
   GSEA_Large[["GSEA_Top.df"]] <- GSEA_Large.df.TOP
   rm(p2,p3,BBPlotB1,BBPlotB2,BBPlotB,BBPlot_Cluster,df1.1.clust.Pheno,df1.1.clust.Pathway,
