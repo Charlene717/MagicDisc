@@ -59,6 +59,7 @@
 
 
 ##### Load Packages #####
+  #### Basic installation ####
   Package.set <- c("tidyverse","Seurat","ggplot2","ggpmisc","broom",
                    "stringr","magrittr","dplyr",
                    "CellChat","patchwork","reticulate","anndata")
@@ -72,6 +73,7 @@
   lapply(Package.set, library, character.only = TRUE)
   rm(Package.set,i)
 
+  #### BiocManager installation ####
   ## Check whether the installation of those packages is required from BiocManager
   if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
