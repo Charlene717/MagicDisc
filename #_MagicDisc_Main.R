@@ -46,7 +46,7 @@
   ClassSet3 = "Sex"
 
   DataMode = "10x"
-  Species = "mouse"
+  Species = "Mouse" # Species = c("Mouse","Human")
 
 ##### Export the log file (Start) #####
   my_log <- file(paste0(Version,"_log.txt")) # File name of output log
