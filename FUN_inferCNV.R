@@ -12,7 +12,7 @@
 
 
 inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
-                     Path = "",
+                     Path = "", SpeciSet = Species,
                      RefGroup = c("T","B")) {
 
   ##### Load package #####
@@ -36,9 +36,12 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
             dplyr::filter(., rowSums(.) > 0, .preserve = F) %>%
             as.matrix()
 
-  ## Need to create mouse gene_order_file
-  ## Ref: https://zhuanlan.zhihu.com/p/111562837
-  rownames(EM.mt) <- rownames(EM.mt) %>% toupper()
+  ## SpeciSet
+  if(SpeciSet == "Mouse"){
+    ## Need to create mouse gene_order_file
+    ## Ref: https://zhuanlan.zhihu.com/p/111562837
+    rownames(EM.mt) <- rownames(EM.mt) %>% toupper()
+  }
 
   ## Create annotaion matrix
   Anno.mt <- scRNA.SeuObj@meta.data %>%
@@ -56,7 +59,7 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
   infercnv_obj = CreateInfercnvObject(raw_counts_matrix = EM.mt,
                                       annotations_file = Anno.mt,
                                       # gene_order_file = system.file("extdata", "gencode_downsampled.EXAMPLE_ONLY_DONT_REUSE.txt", package = "infercnv"),
-                                      gene_order_file = paste0("gencode.v40.annotation.gtf/gencode_v19_gene_pos.txt"),
+                                      gene_order_file = paste0(getwd(),"/gencode.v40.annotation.gtf/gencode_v19_gene_pos.txt"),
                                       # delim="\t",
                                       # max_cells_per_group = NULL,
                                       # min_max_counts_per_cell = c(100, +Inf),
