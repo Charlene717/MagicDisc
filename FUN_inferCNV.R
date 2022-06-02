@@ -9,6 +9,14 @@
 #   - [ ] infercnv::run
 # - [x] RefGroup setting
 
+## Add to-do list in advance ##
+# - [ ] Beautify graphics
+# - [ ] Plot connections in line or plot Chord Diagram
+        # Ref: https://cole-trapnell-lab.github.io/cicero-release/docs_m3/
+# - [ ] Extract genes of interest for statistical analysis and visualization
+# - [ ] Integrated multi-omics analysis of CNV, patient status and other data with clinical databases such as TCGA (bulk data)
+
+
 
 inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
                      Path = "", SpeciSet = Species,
@@ -68,8 +76,8 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
 
   infercnv_obj = CreateInfercnvObject(raw_counts_matrix = EM.mt,
                                       annotations_file = Anno.mt,
-                                      # gene_order_file = system.file("extdata", "gencode_downsampled.EXAMPLE_ONLY_DONT_REUSE.txt", package = "infercnv"),
                                       gene_order_file = paste0(getwd(),"/gencode.v40.annotation.gtf/gencode_v19_gene_pos.txt"),
+                                      # gene_order_file = system.file("extdata", "gencode_downsampled.EXAMPLE_ONLY_DONT_REUSE.txt", package = "infercnv"),
                                       # delim="\t",
                                       # max_cells_per_group = NULL,
                                       # min_max_counts_per_cell = c(100, +Inf),
