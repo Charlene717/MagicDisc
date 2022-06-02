@@ -1,9 +1,9 @@
 ## To-do list ##
 # - [x] Basic setting
-# - [ ] Mouse & Human
+# - [x] Mouse & Human
 #   - [x] Basic setting
 #   - [x] genecode file setting
-#   - [ ] create new version of genecode file
+#   - [x] create new version of genecode file
 # - [x] Parameter setting
 #   - [x] Basic setting
 #   - [x] CreateInfercnvObject
@@ -21,7 +21,7 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
                      SpeciSet = Species,
                      Path = "", infercnvCutOff = 0.1, denoiseSet = TRUE, HMMSet = TRUE,
                      GenecodeSet.list = list(Default = TRUE,
-                                        HumanGenecode = paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt"),
+                                        HumanGenecode = paste0(getwd(),"/Input_files/Genecode/gencode.v40.annotation.txt"), # "/Input_files/Genecode/gencode_v19_gene_pos.txt"
                                         MouseGenecode = paste0(getwd(),"/Input_files/Genecode/gencode.vM29.annotation.txt")),
                      RefSet = c("normal"),
                      CreateInfercnvObject.lt = list(delim="\t",max_cells_per_group = NULL,min_max_counts_per_cell = c(100, +Inf),chr_exclude = c("chrX", "chrY", "chrM")),
@@ -73,7 +73,7 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
     if(SpeciSet == "Mouse"){
       GenecodePath <- paste0(getwd(),"/Input_files/Genecode/gencode.vM29.annotation.txt")
     }else{
-      GenecodePath <- paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt")
+      GenecodePath <- paste0(getwd(),"/Input_files/Genecode/gencode.v40.annotation.txt") # "/Input_files/Genecode/gencode_v19_gene_pos.txt"
     }
   }else{
     if(SpeciSet == "Mouse"){
