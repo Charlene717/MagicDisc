@@ -21,7 +21,9 @@
 
 inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
                      Path = "", SpeciSet = Species,
-                     GenecodeSet.list = list(Default = TRUE, HumanGenecode = "", MouseGenecode = ""),
+                     GenecodeSet.list = list(Default = TRUE,
+                                        HumanGenecode = paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt"),
+                                        MouseGenecode = paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt")),
                      RefSet = c("normal")) {
 
   ##### Load package #####
@@ -66,9 +68,9 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
 
   if(GenecodeSet.list[["Default"]]== TRUE){
     if(SpeciSet == "Mouse"){
-      GenecodePath <- paste0(getwd(),"/gencode.v40.annotation.gtf/gencode_v19_gene_pos.txt")
+      GenecodePath <- paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt")
     }else{
-      GenecodePath <- paste0(getwd(),"/gencode.v40.annotation.gtf/gencode_v19_gene_pos.txt")
+      GenecodePath <- paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt")
     }
   }else{
     if(SpeciSet == "Mouse"){
