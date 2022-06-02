@@ -92,9 +92,14 @@
             dplyr::filter(., rowSums(.) > 0, .preserve = F) %>%
             as.matrix()
 
+  ## Need to create mouse gene_order_file
+  ## Ref: https://zhuanlan.zhihu.com/p/111562837
+  rownames(EM.mt) <- rownames(EM.mt) %>% toupper()
+
   ## Create annotaion matrix
   Anno.mt <- scRNA.SeuObj@meta.data %>%
-             dplyr::select("celltype")
+             dplyr::select("celltype") %>%
+             as.matrix()
 
   ## create the infercnv object
   infercnv_obj = CreateInfercnvObject(raw_counts_matrix = EM.mt,
@@ -102,7 +107,7 @@
                                       #        delim="\t",
                                       gene_order_file=system.file("extdata", "gencode_downsampled.EXAMPLE_ONLY_DONT_REUSE.txt", package = "infercnv"),
                                       # ref_group_names=c("AC","nAtD","ND01"))
-                                      ref_group_names=c("AC","ND01"))
+                                      ref_group_names=c("T","B"))
 
   ## Run inferCNV
   infercnv_obj = infercnv::run(infercnv_obj,
