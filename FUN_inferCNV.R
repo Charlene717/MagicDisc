@@ -2,7 +2,8 @@
 # - [x] Basic setting
 # - [ ] Mouse & Human
 #   - [x] Basic setting
-#   - [ ] genecode file
+#   - [x] genecode file setting
+#   - [ ] create new version of genecode file
 # - [ ] Parameter setting
 #   - [x] Basic setting
 #   - [ ] CreateInfercnvObject
@@ -20,6 +21,7 @@
 
 inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
                      Path = "", SpeciSet = Species,
+                     GenecodeSet.list = list(Default = TRUE, HumanGenecode = "", MouseGenecode = ""),
                      RefSet = c("normal")) {
 
   ##### Load package #####
@@ -56,27 +58,43 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
              as.matrix()
 
   ##### inferCNV #####
-  #### create the infercnv object ####
+
   ## May need to create new version of gene_order_file by yourself
   ## Ref: https://www.jieandze1314.com/post/cnposts/206/
   ## Ref: https://github.com/broadinstitute/infercnv/blob/master/scripts/gtf_to_position_file.py
   ## Ref(OldVersion): https://data.broadinstitute.org/Trinity/CTAT/cnv/
 
+  if(GenecodeSet.list[["Default"]]== TRUE){
+    if(SpeciSet == "Mouse"){
+      GenecodePath <- paste0(getwd(),"/gencode.v40.annotation.gtf/gencode_v19_gene_pos.txt")
+    }else{
+      GenecodePath <- paste0(getwd(),"/gencode.v40.annotation.gtf/gencode_v19_gene_pos.txt")
+    }
+  }else{
+    if(SpeciSet == "Mouse"){
+      GenecodePath <- GenecodePath.list[["MouseGenecode"]]
+    }else{
+      GenecodePath <- GenecodePath.list[["HumanGenecode"]]
+    }
+  }
+
+
+  #### Set reference cell ####
   for (i in 1:length(RefSet)) {
     if(i==1){
       RefGroup <- dplyr::filter(as.data.frame(Anno.mt), grepl(RefSet[i] , Anno.mt)) %>%
         unique() %>% unlist()
     }
-     RefGroup_Temp <- dplyr::filter(as.data.frame(Anno.mt), grepl(RefSet[i] , Anno.mt)) %>%
+    RefGroup_Temp <- dplyr::filter(as.data.frame(Anno.mt), grepl(RefSet[i] , Anno.mt)) %>%
       unique() %>% unlist()
-     RefGroup <- c(RefGroup,RefGroup_Temp) %>% unique()
+    RefGroup <- c(RefGroup,RefGroup_Temp) %>% unique()
   }
   rm(i,RefGroup_Temp)
 
-
+  #### create the infercnv object ####
   infercnv_obj = CreateInfercnvObject(raw_counts_matrix = EM.mt,
                                       annotations_file = Anno.mt,
-                                      gene_order_file = paste0(getwd(),"/gencode.v40.annotation.gtf/gencode_v19_gene_pos.txt"),
+                                      gene_order_file = GenecodePath,
                                       # gene_order_file = system.file("extdata", "gencode_downsampled.EXAMPLE_ONLY_DONT_REUSE.txt", package = "infercnv"),
                                       # delim="\t",
                                       # max_cells_per_group = NULL,
