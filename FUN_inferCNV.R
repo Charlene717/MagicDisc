@@ -7,13 +7,12 @@
 #   - [x] Basic setting
 #   - [ ] CreateInfercnvObject
 #   - [ ] infercnv::run
-
-
+# - [x] RefGroup setting
 
 
 inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
                      Path = "", SpeciSet = Species,
-                     RefGroup = c("T","B")) {
+                     RefSet = c("normal")) {
 
   ##### Load package #####
   ## Check whether the installation of those packages is required from BiocManager
@@ -54,6 +53,17 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
   ## Ref: https://www.jieandze1314.com/post/cnposts/206/
   ## Ref: https://github.com/broadinstitute/infercnv/blob/master/scripts/gtf_to_position_file.py
   ## Ref(OldVersion): https://data.broadinstitute.org/Trinity/CTAT/cnv/
+
+  for (i in 1:length(RefSet)) {
+    if(i==1){
+      RefGroup <- dplyr::filter(as.data.frame(Anno.mt), grepl(RefSet[i] , Anno.mt)) %>%
+        unique() %>% unlist()
+    }
+     RefGroup_Temp <- dplyr::filter(as.data.frame(Anno.mt), grepl(RefSet[i] , Anno.mt)) %>%
+      unique() %>% unlist()
+     RefGroup <- c(RefGroup,RefGroup_Temp) %>% unique()
+  }
+  rm(i,RefGroup_Temp)
 
 
   infercnv_obj = CreateInfercnvObject(raw_counts_matrix = EM.mt,

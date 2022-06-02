@@ -452,9 +452,9 @@
     dir.create(PathinferCNV)
   }
 
-infercnv_obj <- inferCNV(scRNA.SeuObj, AnnoSet = "celltype",
-                         Path = PathinferCNV,
-                         RefGroup = c("T","B"))
+  infercnv_obj <- inferCNV(scRNA.SeuObj, AnnoSet = "celltype",
+                           Path = PathinferCNV,
+                           RefGroup = c("T","B"))
 
 ##### Deconvolution #####
 
