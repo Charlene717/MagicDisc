@@ -231,8 +231,14 @@ scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
         # # Reassign to filtered Seurat object
         # PBMC.combined_QC_Filter2 <- CreateSeuratObject(filtered_counts, meta.data = PBMC.combined_QC_Filter@meta.data)
         # scRNAQC(PBMC.combined_QC_Filter2,AddMitInf = "No",FileName = paste0(FileName,"_CheckTry"), CheckOnly="Yes")
-        scRNAQC(PBMC.combined_QC_Filter,AddMitInf = "No",SpeciSet = SpeciSet,
-                FileName = paste0(FileName,"_After"),Path = Path, CheckOnly="Yes")
+        scRNAQC(PBMC.combined_QC_Filter,nUMIFilter= nUMIFilter,
+                logGPUFilter= logGPUFilter , mitRFilter=mitRFilter ,
+                PtSize=PtSize, SpeciSet = SpeciSet,
+                AddMitInf = "No",CheckOnly="Yes",
+                FileName = paste0(FileName,"_After"),Path = Path,  GroupBy=GroupBy)
+
+
+
       }else{
         PBMC.combined_QC_Filter <- PBMC.combined_QC
       }
