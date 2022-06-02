@@ -454,7 +454,7 @@
 
   infercnv_obj <- inferCNV(scRNA.SeuObj, AnnoSet = "celltype",
                            Path = PathinferCNV,
-                           RefGroup = c("T","B"))
+                           RefSet = c("T","B"))
 
 ##### Deconvolution #####
 
