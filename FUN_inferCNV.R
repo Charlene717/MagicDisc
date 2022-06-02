@@ -4,10 +4,10 @@
 #   - [x] Basic setting
 #   - [x] genecode file setting
 #   - [ ] create new version of genecode file
-# - [ ] Parameter setting
+# - [x] Parameter setting
 #   - [x] Basic setting
-#   - [ ] CreateInfercnvObject
-#   - [ ] infercnv::run
+#   - [x] CreateInfercnvObject
+#   - [x] infercnv::run
 # - [x] RefGroup setting
 
 ## Add to-do list in advance ##
@@ -17,14 +17,18 @@
 # - [ ] Extract genes of interest for statistical analysis and visualization
 # - [ ] Integrated multi-omics analysis of CNV, patient status and other data with clinical databases such as TCGA (bulk data)
 
-
-
 inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
-                     Path = "", SpeciSet = Species,
+                     SpeciSet = Species,
+                     Path = "", infercnvCutOff = 0.1, denoiseSet = TRUE, HMMSet = TRUE,
                      GenecodeSet.list = list(Default = TRUE,
                                         HumanGenecode = paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt"),
                                         MouseGenecode = paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt")),
-                     RefSet = c("normal")) {
+                     RefSet = c("normal"),
+                     CreateInfercnvObject.lt = list(delim="\t",max_cells_per_group = NULL,min_max_counts_per_cell = c(100, +Inf),chr_exclude = c("chrX", "chrY", "chrM")),
+                     inferCNVRun.lt = list(cluster_by_groups=TRUE, plot_steps=FALSE, no_plot=FALSE, resume_mode = FALSE, k_nn = 30)
+                     ) {
+
+  memory.limit(150000)
 
   ##### Load package #####
   ## Check whether the installation of those packages is required from BiocManager
@@ -60,7 +64,6 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
              as.matrix()
 
   ##### inferCNV #####
-
   ## May need to create new version of gene_order_file by yourself
   ## Ref: https://www.jieandze1314.com/post/cnposts/206/
   ## Ref: https://github.com/broadinstitute/infercnv/blob/master/scripts/gtf_to_position_file.py
@@ -94,28 +97,21 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
   rm(i,RefGroup_Temp)
 
   #### create the infercnv object ####
+  formals(CreateInfercnvObject)[names(CreateInfercnvObject.lt)] <- CreateInfercnvObject.lt
   infercnv_obj = CreateInfercnvObject(raw_counts_matrix = EM.mt,
                                       annotations_file = Anno.mt,
                                       gene_order_file = GenecodePath,
                                       # gene_order_file = system.file("extdata", "gencode_downsampled.EXAMPLE_ONLY_DONT_REUSE.txt", package = "infercnv"),
-                                      # delim="\t",
-                                      # max_cells_per_group = NULL,
-                                      # min_max_counts_per_cell = c(100, +Inf),
-                                      # chr_exclude = c("chrX", "chrY", "chrM"),
-                                      ref_group_names = RefGroup
-                                      )
+                                      ref_group_names = RefGroup)
+
 
   #### Run inferCNV ####
+  formals(run)[names(inferCNVRun.lt)] <- inferCNVRun.lt
   infercnv_obj = infercnv::run(infercnv_obj,
-                               cutoff=0.1,  # use 1 for smart-seq, 0.1 for 10x-genomics
-                               #  out_dir= "output_dir",
-                               out_dir= paste0(Path), # out_dir=tempfile(),
-                               cluster_by_groups=TRUE,
-                               plot_steps=FALSE,
-                               no_plot=FALSE,
-                               denoise=TRUE,
-                               resume_mode = FALSE,
-                               HMM=TRUE)
+                               cutoff = infercnvCutOff,  # use 1 for smart-seq, 0.1 for 10x-genomics
+                               out_dir= paste0(Path), # out_dir=tempfile(),  #  out_dir= "output_dir",
+                               denoise=denoiseSet,
+                               HMM=HMMSet)
 
   return(infercnv_obj)
 
@@ -125,71 +121,3 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
 ## inferCNV parameter
 ## Ref: https://rdrr.io/github/broadinstitute/inferCNV/man/run.html
 ## Ref: https://bioconductor.org/packages/devel/bioc/manuals/infercnv/man/infercnv.pdf
-
-# run(
-#   infercnv_obj,
-#   cutoff = 1,
-#   min_cells_per_gene = 3,
-#   out_dir = NULL,
-#   window_length = 101,
-#   smooth_method = c("pyramidinal", "runmeans", "coordinates"),
-#   num_ref_groups = NULL,
-#   ref_subtract_use_mean_bounds = TRUE,
-#   cluster_by_groups = FALSE,
-#   cluster_references = TRUE,
-#   k_obs_groups = 1,
-#   hclust_method = "ward.D2",
-#   max_centered_threshold = 3,
-#   scale_data = FALSE,
-#   HMM = FALSE,
-#   HMM_transition_prob = 1e-06,
-#   HMM_report_by = c("subcluster", "consensus", "cell"),
-#   HMM_type = c("i6", "i3"),
-#   HMM_i3_pval = 0.01,
-#   HMM_i3_use_KS = FALSE,
-#   BayesMaxPNormal = 0.5,
-#   sim_method = "meanvar",
-#   sim_foreground = FALSE,
-#   reassignCNVs = TRUE,
-#   analysis_mode = c("samples", "subclusters", "cells"),
-#   tumor_subcluster_partition_method = c("leiden", "random_trees", "qnorm", "pheight",
-#                                         "qgamma", "shc"),
-#   tumor_subcluster_pval = 0.1,
-#   k_nn = 30,
-#   leiden_resolution = 1,
-#   denoise = FALSE,
-#   noise_filter = NA,
-#   sd_amplifier = 1.5,
-#   noise_logistic = FALSE,
-#   outlier_method_bound = "average_bound",
-#   outlier_lower_bound = NA,
-#   outlier_upper_bound = NA,
-#   final_scale_limits = NULL,
-#   final_center_val = NULL,
-#   debug = FALSE,
-#   num_threads = 4,
-#   plot_steps = FALSE,
-#   resume_mode = TRUE,
-#   png_res = 300,
-#   plot_probabilities = TRUE,
-#   save_rds = TRUE,
-#   save_final_rds = TRUE,
-#   diagnostics = FALSE,
-#   remove_genes_at_chr_ends = FALSE,
-#   prune_outliers = FALSE,
-#   mask_nonDE_genes = FALSE,
-#   mask_nonDE_pval = 0.05,
-#   test.use = "wilcoxon",
-#   require_DE_all_normals = "any",
-#   hspike_aggregate_normals = FALSE,
-#   no_plot = FALSE,
-#   no_prelim_plot = FALSE,
-#   output_format = "png",
-#   plot_chr_scale = FALSE,
-#   chr_lengths = NULL,
-#   useRaster = TRUE,
-#   up_to_step = 100
-# )
-
-
-

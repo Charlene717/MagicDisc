@@ -122,7 +122,7 @@
   source("FUN_BioMarker1Index.R")
   source("FUN_CellChatOne.R")
   source("FUN_GSEA_MultiCell.R")
-
+  source("FUN_inferCNV.R")
 
 ##### Load datasets  #####
   ## Annotation table
@@ -416,7 +416,7 @@
   save.image(paste0(Save.Path,"/09_2_GSEA_Analysis_(SSA_Female).RData"))
   }
 
-##### Cell-cell interaction #####
+##### 010 Cell-cell interaction #####
   ## ECM-Receptor
   CellChatOne(scRNA.SeuObj,
               signalingtype = "ECM-Receptor", projectName = "ECM",
@@ -443,9 +443,12 @@
 
 ##### GO/Metascape #####
 
+##### Deconvolution #####
+
+##### Clinical analysis #####
 
 
-##### inferCNV #####
+##### 013 inferCNV #####
   ## Create new folder
   PathinferCNV <- paste0(Save.Path,"/","D01_inferCNV")
   if (!dir.exists(PathinferCNV)){
@@ -454,11 +457,11 @@
 
   infercnv_obj <- inferCNV(scRNA.SeuObj, AnnoSet = "celltype",
                            Path = PathinferCNV,
-                           RefSet = c("T","B"))
+                           RefSet = c("T","B"),
+                           CreateInfercnvObject.lt = list(chr_exclude = c("chrM")))
+  ##### save.image #####
+  save.image(paste0(Save.Path,"/013_inferCNV.RData"))
 
-##### Deconvolution #####
-
-##### Clinical analysis #####
 
 ##### Beautify Figs #####
 
