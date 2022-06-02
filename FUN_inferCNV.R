@@ -22,7 +22,7 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
                      Path = "", infercnvCutOff = 0.1, denoiseSet = TRUE, HMMSet = TRUE,
                      GenecodeSet.list = list(Default = TRUE,
                                         HumanGenecode = paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt"),
-                                        MouseGenecode = paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt")),
+                                        MouseGenecode = paste0(getwd(),"/Input_files/Genecode/gencode.vM29.annotation.txt")),
                      RefSet = c("normal"),
                      CreateInfercnvObject.lt = list(delim="\t",max_cells_per_group = NULL,min_max_counts_per_cell = c(100, +Inf),chr_exclude = c("chrX", "chrY", "chrM")),
                      inferCNVRun.lt = list(cluster_by_groups=TRUE, plot_steps=FALSE, no_plot=FALSE, resume_mode = FALSE, k_nn = 30)
@@ -51,12 +51,12 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
             dplyr::filter(., rowSums(.) > 0, .preserve = F) %>%
             as.matrix()
 
-  ## SpeciSet
-  if(SpeciSet == "Mouse"){
-    ## Need to create mouse gene_order_file
-    ## Ref: https://zhuanlan.zhihu.com/p/111562837
-    rownames(EM.mt) <- rownames(EM.mt) %>% toupper()
-  }
+  # ## SpeciSet
+  # if(SpeciSet == "Mouse"){
+  #   ## Need to create mouse gene_order_file
+  #   ## Ref: https://zhuanlan.zhihu.com/p/111562837
+  #   rownames(EM.mt) <- rownames(EM.mt) %>% toupper()
+  # }
 
   ## Create annotaion matrix
   Anno.mt <- scRNA.SeuObj@meta.data %>%
@@ -71,7 +71,7 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
 
   if(GenecodeSet.list[["Default"]]== TRUE){
     if(SpeciSet == "Mouse"){
-      GenecodePath <- paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt")
+      GenecodePath <- paste0(getwd(),"/Input_files/Genecode/gencode.vM29.annotation.txt")
     }else{
       GenecodePath <- paste0(getwd(),"/Input_files/Genecode/gencode_v19_gene_pos.txt")
     }
