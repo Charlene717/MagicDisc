@@ -446,6 +446,15 @@
 
 
 ##### inferCNV #####
+  ## Create new folder
+  PathinferCNV <- paste0(Save.Path,"/","D01_inferCNV")
+  if (!dir.exists(PathinferCNV)){
+    dir.create(PathinferCNV)
+  }
+
+infercnv_obj <- inferCNV(scRNA.SeuObj, AnnoSet = "celltype",
+                         Path = PathinferCNV,
+                         RefGroup = c("T","B"))
 
 ##### Deconvolution #####
 
