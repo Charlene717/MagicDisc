@@ -1,10 +1,10 @@
 ## To-do list ##
 # - [x] Basic setting
 # - [ ] Mouse & Human
-#   - [ ] Basic setting
+#   - [x] Basic setting
 #   - [ ] genecode file
 # - [ ] Parameter setting
-#   - [ ] Basic setting
+#   - [x] Basic setting
 #   - [ ] CreateInfercnvObject
 #   - [ ] infercnv::run
 
