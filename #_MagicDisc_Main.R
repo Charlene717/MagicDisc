@@ -6,6 +6,9 @@
   # - [ ] Ensembl gene name conversion
   # - [ ] Clean up the code
 
+
+  # - [ ] Delete unrecognized cell type
+
   # - [ ] Find Biomarker
   # - [ ] GSEA
   # - [ ] GO
