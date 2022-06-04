@@ -464,7 +464,7 @@
 
 
 ##### Beautify Figs #####
-
+## Test
 
 ##### Export the log file (End) #####
   closeAllConnections() # Close connection to log file
