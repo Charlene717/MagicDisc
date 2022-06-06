@@ -24,8 +24,8 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
                                         HumanGenecode = paste0(getwd(),"/Input_files/Genecode/gencode.v40.annotation.txt"), # "/Input_files/Genecode/gencode_v19_gene_pos.txt"
                                         MouseGenecode = paste0(getwd(),"/Input_files/Genecode/gencode.vM29.annotation.txt")),
                      RefSet = c("normal"),
-                     CreateInfercnvObject.lt = list(delim="\t",max_cells_per_group = NULL,min_max_counts_per_cell = c(100, +Inf),chr_exclude = c("chrX", "chrY", "chrM")),
-                     inferCNVRun.lt = list(cluster_by_groups=TRUE, plot_steps=FALSE, no_plot=FALSE, resume_mode = FALSE, k_nn = 30)
+                     CreateInfercnvObject.lt = "",
+                     inferCNVRun.lt = ""
                      ) {
 
   memory.limit(150000)
@@ -97,6 +97,9 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
   rm(i,RefGroup_Temp)
 
   #### create the infercnv object ####
+  CreateInfercnvObject.lt = list(delim="\t",max_cells_per_group = NULL,min_max_counts_per_cell = c(100, +Inf),chr_exclude = c("chrX", "chrY", "chrM"))
+  formals(CreateInfercnvObject)[names(CreateInfercnvObject.lt)] <- CreateInfercnvObject.lt
+  CreateInfercnvObject.lt = CreateInfercnvObject.lt
   formals(CreateInfercnvObject)[names(CreateInfercnvObject.lt)] <- CreateInfercnvObject.lt
   infercnv_obj = CreateInfercnvObject(raw_counts_matrix = EM.mt,
                                       annotations_file = Anno.mt,
@@ -106,6 +109,10 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
 
 
   #### Run inferCNV ####
+
+  inferCNVRun.lt = list(cluster_by_groups=TRUE, plot_steps=FALSE, no_plot=FALSE, resume_mode = FALSE, k_nn = 30)
+  formals(run)[names(inferCNVRun.lt)] <- inferCNVRun.lt
+  inferCNVRun.lt = inferCNVRun.lt
   formals(run)[names(inferCNVRun.lt)] <- inferCNVRun.lt
   infercnv_obj = infercnv::run(infercnv_obj,
                                cutoff = infercnvCutOff,  # use 1 for smart-seq, 0.1 for 10x-genomics
