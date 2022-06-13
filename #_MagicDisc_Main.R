@@ -93,7 +93,7 @@
 
   options(stringsAsFactors = FALSE)
 
-
+  devtools::load_all()
 ##### Function setting #####
   ## Call function
   source("FUN_ReadscRNA.R")
@@ -458,12 +458,11 @@
     dir.create(PathinferCNV)
   }
 
-  createInfercnvObject.lt = list(chr_exclude = c("chrM"))
   infercnv_obj <- inferCNV(scRNA.SeuObj, AnnoSet = "celltype",
                            SpeciSet = Species,
                            Path = PathinferCNV,
                            RefSet = c("T","B"),
-                           CreateInfercnvObject.lt = createInfercnvObject.lt)
+                           CreateInfercnvObject.lt = list(chr_exclude = c("chrM")))
   ##### save.image #####
   save.image(paste0(Save.Path,"/013_inferCNV.RData"))
 
