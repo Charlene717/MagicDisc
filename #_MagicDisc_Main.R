@@ -63,7 +63,7 @@
 
 ##### Load Packages #####
   #### Basic installation ####
-  Package.set <- c("tidyverse","Seurat","ggplot2","ggpmisc","broom",
+  Package.set <- c("tidyverse","Seurat","monocle","ggplot2","ggpmisc","broom",
                    "stringr","magrittr","dplyr",
                    "CellChat","patchwork","reticulate","anndata")
   ## Check whether the installation of those packages is required from basic
@@ -94,6 +94,13 @@
   options(stringsAsFactors = FALSE)
 
   devtools::load_all()
+
+  #### GitHub installation ####
+  if (!require("devtools", quietly = TRUE))
+    install.packages("devtools")
+  devtools::install_github("cole-trapnell-lab/garnett")
+  devtools::install_github('cole-trapnell-lab/monocle3')
+
 ##### Function setting #####
   ## Call function
   source("FUN_ReadscRNA.R")
