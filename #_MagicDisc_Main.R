@@ -81,7 +81,8 @@
   if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
   Package.set <- c("fgsea","AnnotationHub","ensembldb",
-                   "basilisk","zellkonverter","SeuratDisk")
+                   "basilisk","zellkonverter","SeuratDisk",
+                   "SingleR")
   for (i in 1:length(Package.set)) {
     if (!requireNamespace(Package.set[i], quietly = TRUE)){
       BiocManager::install(Package.set[i])
@@ -93,13 +94,16 @@
 
   options(stringsAsFactors = FALSE)
 
-  devtools::load_all()
-
   #### GitHub installation ####
   if (!require("devtools", quietly = TRUE))
     install.packages("devtools")
   devtools::install_github("cole-trapnell-lab/garnett")
   devtools::install_github('cole-trapnell-lab/monocle3')
+  # devtools::install_github("LTLA/SingleR")
+
+  library(monocle3)
+  library(garnett)
+  # library(SingleR)
 
 ##### Function setting #####
   ## Call function
@@ -288,6 +292,15 @@
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/06_Cell_type_annotation.RData"))
+
+##### 06 Cell type annotation  #####
+  library(scSorter)
+  ## Ref: https://cran.r-project.org/web/packages/scSorter/vignettes/scSorter.html
+  load(url('https://github.com/hyguo2/scSorter/blob/master/inst/extdata/TMpancreas.RData?raw=true'))
+  # anno2 <- anno
+  # anno$Marker <- toupper(anno$Marker)
+  anno <- anno[!anno$Type %in% c("Pancreatic_Acinar_cells","Pancreatic_PP_cells"),]
+  scSorter.obj <- scSorter(scRNA.SeuObj@assays[["RNA"]]@counts %>% as.data.frame(),anno)
 
 ##### 07 Count Cell number  #####
   source("FUN_AnnoSummary.R")
