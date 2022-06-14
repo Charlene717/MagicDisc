@@ -297,10 +297,16 @@
   library(scSorter)
   ## Ref: https://cran.r-project.org/web/packages/scSorter/vignettes/scSorter.html
   load(url('https://github.com/hyguo2/scSorter/blob/master/inst/extdata/TMpancreas.RData?raw=true'))
-  # anno2 <- anno
-  # anno$Marker <- toupper(anno$Marker)
+  anno_ori <- anno
   anno <- anno[!anno$Type %in% c("Pancreatic_Acinar_cells","Pancreatic_PP_cells"),]
-  scSorter.obj <- scSorter(scRNA.SeuObj@assays[["RNA"]]@counts %>% as.data.frame(),anno)
+  # anno$Marker <- toupper(anno$Marker)
+
+  # Create small sample for test
+  scRNA.SeuObj_Small <- scRNA.SeuObj[,scRNA.SeuObj$cells %in% sample(scRNA.SeuObj$cells,1000)]
+  scSorter.obj <- scSorter(scRNA.SeuObj_Small@assays[["RNA"]]@counts %>% as.data.frame(),anno)
+
+  scRNA.SeuObj_Small$scSorterPred <- scSorter.obj[["Pred_Type"]]
+  DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="scSorterPred" ,label = TRUE, pt.size = 0.5) + NoLegend()
 
 ##### 07 Count Cell number  #####
   source("FUN_AnnoSummary.R")
