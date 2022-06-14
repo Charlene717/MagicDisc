@@ -310,20 +310,60 @@
   anno <- anno[!anno$Type %in% c("Pancreatic_Acinar_cells","Pancreatic_PP_cells"),]
   # anno$Marker <- toupper(anno$Marker)
 
-  ##### Create anno.df #####
-  # # DefaultAssay(scRNA.SeuObj_Small) <- "RNA"
-  # scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
-  # CellType.markers <- FindAllMarkers(scRNA.SeuObj, only.pos = TRUE, min.pct = 0.1, logfc.threshold = 0.25)
+  ##### Test #####
+  ## Create anno.df
+  CellType.markers %>%
+    group_by(cluster) %>%
+    top_n(n = 10, wt = avg_log2FC) -> CTTop.markers
+  #DoHeatmap(scRNA.SeuObj, features = CTTop.markers$gene) + NoLegend()
+  anno.df <- data.frame(Type = CTTop.markers$cluster,
+                        Marker = CTTop.markers$gene,
+                        Weight = CTTop.markers$avg_log2FC)
 
-
-  # Create small sample for test
+  ## Create small sample for test
   scRNA.SeuObj_Small <- scRNA.SeuObj[,scRNA.SeuObj$cells %in% sample(scRNA.SeuObj$cells,1000)]
-  scSorter.obj <- scSorter(scRNA.SeuObj_Small@assays[["RNA"]]@counts %>% as.data.frame(),anno)
+  scSorter.obj <- scSorter(scRNA.SeuObj_Small@assays[["RNA"]]@counts %>% as.data.frame(),anno.df)
 
   scRNA.SeuObj_Small$scSorterPred <- scSorter.obj[["Pred_Type"]]
   DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="scSorterPred" ,label = TRUE, pt.size = 0.5) + NoLegend()
   DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
 
+  ##### Verification (CellCheck) #####
+    #### Install ####
+    ## Check whether the installation of those packages is required
+    Package.set <- c("tidyverse","caret","cvms","DescTools","devtools")
+    for (i in 1:length(Package.set)) {
+      if (!requireNamespace(Package.set[i], quietly = TRUE)){
+        install.packages(Package.set[i])
+      }
+    }
+    ## Load Packages
+    # library(Seurat)
+    lapply(Package.set, library, character.only = TRUE)
+    rm(Package.set,i)
+
+    ## install CellCheck
+    # Install the CellCheck package
+    detach("package:CellCheck", unload = TRUE)
+    devtools::install_github("Charlene717/CellCheck")
+    # Load CellCheck
+    library(CellCheck)
+
+    #### Run CellCheck ####
+    ## Create check dataframe
+    scSorter.df <- data.frame(Actual = scRNA.SeuObj_Small@meta.data[["celltype"]],
+                              Predict = scRNA.SeuObj_Small@meta.data[["scSorterPred"]])
+    scSorter_Anno.df <- data.frame(TestID = "Predict",
+                                   Tool = "scSorter",
+                                   Type = "PDAC",
+                                   PARM = "1")
+    ## For one prediction
+    DisMultCM.lt <- list(Actual = "Actual", Predict = "Predict")
+    cm_DisMult.lt <- CellCheck_DisMult(scSorter.df, scSorter_Anno.df, Mode = "One", DisMultCM.lt,
+                                       Save.Path = Save.Path, ProjectName = ProjectName)
+    ## For multiple prediction
+    Sum_DisMult.df <- CellCheck_DisMult(scSorter.df, scSorter_Anno.df, Mode = "Multiple",
+                                        Save.Path = Save.Path, ProjectName = ProjectName)
 
 
 ##### 07 Count Cell number  #####
