@@ -368,9 +368,12 @@
 
 
     Temp <- as.SingleCellExperiment(scRNA.SeuObj_Small)
-    singler.results <- SingleR(Temp, hpca.se, labels = hpca.se$label.main)
+    # Ref <- HumanPrimaryCellAtlasData()
+    Ref <- ImmGenData()
+    singler.results <- SingleR(Temp, Ref, labels = Ref$label.main)
     scRNA.SeuObj_Small[["SingleR.labels"]] <- singler.results$labels
     DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="SingleR.labels" ,label = TRUE, pt.size = 0.5) + NoLegend()
+    DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
 
   ##### Verification (CellCheck) #####
     #### Install ####
