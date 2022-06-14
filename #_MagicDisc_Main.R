@@ -358,14 +358,13 @@
                                    Type = "PDAC",
                                    PARM = "1")
     ## For one prediction
-    DisMultCM.lt <- list(Actual = "Actual", Predict = "Predict")
+    DisMultCM.lt <- list(Actual = "Actual", Predict = "Predict", Type = "scSorter", Type2 = "PDAC" )
     cm_DisMult.lt <- CellCheck_DisMult(scSorter.df, scSorter_Anno.df, Mode = "One", DisMultCM.lt,
                                        Save.Path = Save.Path, ProjectName = ProjectName)
     ## For multiple prediction
-    Sum_DisMult.df <- CellCheck_DisMult(scSorter.df, scSorter_Anno.df, Mode = "Multiple",
+    Sum_DisMult.df <- CellCheck_DisMult(scSorter.df, scSorter_Anno.df,
+                                        Mode = "Multiple",DisMultCM.lt=DisMultCM.lt,
                                         Save.Path = Save.Path, ProjectName = ProjectName)
-
-
 ##### 07 Count Cell number  #####
   source("FUN_AnnoSummary.R")
   source("FUN_Export_CellCount.R")
