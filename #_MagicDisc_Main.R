@@ -82,7 +82,7 @@
     install.packages("BiocManager")
   Package.set <- c("fgsea","AnnotationHub","ensembldb",
                    "basilisk","zellkonverter","SeuratDisk",
-                   "SingleR","scRNAseq","celldex")
+                   "SingleR","scRNAseq","celldex","scran")
   for (i in 1:length(Package.set)) {
     if (!requireNamespace(Package.set[i], quietly = TRUE)){
       BiocManager::install(Package.set[i])
@@ -227,11 +227,6 @@
 
 ################## (Pending) Cell Cycle Regression ##################
 
-
-################## (Pending) Auto Cell type annotation ##################
-
-
-
 ##### 05 Identify conserved cluster markers  #####
   ## Create new folder
   PathCellType <- paste0(Save.Path,"/","A03_CellTypeAno")
@@ -300,6 +295,8 @@
   #### Save RData ####
   save.image(paste0(Save.Path,"/06_Cell_type_annotation.RData"))
 
+
+################## (Pending) Auto Cell type annotation ##################
 ##### 06 Cell type annotation  #####
   ##### scSorter #####
     library(scSorter)
@@ -330,6 +327,7 @@
     DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
 
   ##### SingleR #####
+    ## SingleRBook Ref: http://bioconductor.org/books/release/SingleRBook/
     ## Example Ref: https://bioconductor.org/packages/devel/bioc/vignettes/SingleR/inst/doc/SingleR.html
     library(SingleR)
 
@@ -351,6 +349,85 @@
     singler.results <- SingleR(Temp, Ref, labels = Ref$label.main)
     scRNA.SeuObj_Small[["SingleR.labels"]] <- singler.results$labels
     DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="SingleR.labels" ,label = TRUE, pt.size = 0.5) + NoLegend()
+    DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
+
+    ## Create reference
+    # ## Ref: https://github.com/dviraran/SingleR/issues/136
+    # ## Ref: http://bioconductor.org/books/3.15/OSCA.basic/cell-type-annotation.html
+    # ### Ref: https://rdrr.io/github/dviraran/SingleR/f/vignettes/SingleR_create.Rmd
+    # library(scran)
+    #
+    # library(scRNAseq)
+    # sceM <- MuraroPancreasData()
+    # out <- pairwiseBinom(counts(sceM), sceM$label, direction="up")
+    # markers <- getTopMarkers(out$statistics, out$pairs, n=10)
+    sce.muraro
+
+
+  ##### CelliD #####
+  ## Ref: https://github.com/RausellLab/CelliD
+  ## CelliD Vignette Ref: https://bioconductor.org/packages/release/bioc/vignettes/CelliD/inst/doc/BioconductorVignette.html
+
+    ## install
+    if(!require("tidyverse")) install.packages("tidyverse")
+    if(!require("ggpubr")) install.packages("ggpubr")
+    BiocManager::install("CelliD")
+
+    ## Load libraries
+    library(CelliD)
+    library(tidyverse) # general purpose library for data handling
+    library(ggpubr) #library for plotting
+
+    ## Obtaining pancreatic cell-type gene signatures
+    panglao <- read_tsv("https://panglaodb.se/markers/PanglaoDB_markers_27_Mar_2020.tsv.gz")
+
+    # restricting the analysis to pancreas specific gene signatues
+    panglao_pancreas <- panglao %>% dplyr::filter(organ == "Pancreas")
+
+    library(Hmisc)
+    capitalize(tolower("TOP2A"))
+    capitalize(tolower("TOP2A"))
+    panglao_pancreas$`official gene symbol` <- capitalize(tolower(panglao_pancreas$`official gene symbol`))
+
+    # restricting to human specific genes
+    panglao_pancreas <- panglao_pancreas %>%  dplyr::filter(str_detect(species,"Hs"))
+
+    # converting dataframes into a list of vectors, which is the format needed as input for CelliD
+    panglao_pancreas <- panglao_pancreas %>%
+      group_by(`cell type`) %>%
+      summarise(geneset = list(`official gene symbol`))
+    pancreas_gs <- setNames(panglao_pancreas$geneset, panglao_pancreas$`cell type`)
+
+    ## Obtaining gene signatures for all cell types in the Panglao database
+    #filter to get human specific genes
+    panglao_all <- panglao %>%  dplyr::filter(str_detect(species,"Hs"))
+
+    # convert dataframes to a list of named vectors which is the format for CelliD input
+    panglao_all <- panglao_all %>%
+      group_by(`cell type`) %>%
+      summarise(geneset = list(`official gene symbol`))
+    all_gs <- setNames(panglao_all$geneset, panglao_all$`cell type`)
+
+    #remove very short signatures
+    all_gs <- all_gs[sapply(all_gs, length) >= 10]
+
+    ## Assessing per-cell gene signature enrichments against pre-established marker lists
+    # Performing per-cell hypergeometric tests against the gene signature collection
+    scRNA.SeuObj_Small <- RunMCA(scRNA.SeuObj_Small)
+    DimPlotMC(scRNA.SeuObj_Small, reduction = "mca", group.by = "celltype", features = c("CTRL", "INS", "MYZAP", "CDH11"), as.text = TRUE) + ggtitle("MCA with some key gene markers")
+
+    HGT_pancreas_gs <- RunCellHGT(scRNA.SeuObj_Small, pathways = pancreas_gs, dims = 1:50, n.features = 200)
+    # For each cell, assess the signature with the lowest corrected p-value (max -log10 corrected p-value)
+    pancreas_gs_prediction <- rownames(HGT_pancreas_gs)[apply(HGT_pancreas_gs, 2, which.max)]
+
+    # For each cell, evaluate if the lowest p-value is significant
+    pancreas_gs_prediction_signif <- ifelse(apply(HGT_pancreas_gs, 2, max)>2, yes = pancreas_gs_prediction, "unassigned")
+
+    # Save cell type predictions as metadata within the Seurat object
+    scRNA.SeuObj_Small$pancreas_gs_prediction <- pancreas_gs_prediction_signif
+
+
+    DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="pancreas_gs_prediction" ,label = TRUE, pt.size = 0.5) + NoLegend()
     DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
 
   ##### Garnett #####
