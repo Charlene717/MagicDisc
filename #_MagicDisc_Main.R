@@ -82,7 +82,7 @@
     install.packages("BiocManager")
   Package.set <- c("fgsea","AnnotationHub","ensembldb",
                    "basilisk","zellkonverter","SeuratDisk",
-                   "SingleR")
+                   "SingleR","scRNAseq","celldex")
   for (i in 1:length(Package.set)) {
     if (!requireNamespace(Package.set[i], quietly = TRUE)){
       BiocManager::install(Package.set[i])
@@ -328,6 +328,49 @@
     scRNA.SeuObj_Small$scSorterPred <- scSorter.obj[["Pred_Type"]]
     DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="scSorterPred" ,label = TRUE, pt.size = 0.5) + NoLegend()
     DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
+
+  ##### Garnett #####
+    library(monocle3)
+    library(garnett)
+
+    ## Convert Seurat object to Monocle3
+    ## Ref: https://github.com/satijalab/seurat-wrappers
+    remotes::install_github('satijalab/seurat-wrappers')
+    library(SeuratWrappers)
+    scRNA.cds_Small <- as.cell_data_set(scRNA.SeuObj_Small)
+
+    ## Ref: https://github.com/satijalab/seurat-wrappers/issues/54
+    ## Calculate size factors using built-in function in monocle3
+    scRNA.cds_Small <- estimate_size_factors(scRNA.cds_Small)
+
+    ## Add gene names into CDS
+    scRNA.cds_Small@rowRanges@elementMetadata@listData[["gene_short_name"]] <- rownames(scRNA.SeuObj_Small[["RNA"]])
+
+    ## Automated annotation with Garnett
+    assigned_type_marker_test_res <- top_markers(scRNA.cds_Small,
+                                                 group_cells_by="celltype",
+                                                 #reference_cells=1000,
+                                                 cores=4)
+
+  ##### SingleR #####
+    ## Example Ref: https://bioconductor.org/packages/devel/bioc/vignettes/SingleR/inst/doc/SingleR.html
+    library(SingleR)
+
+    library(scRNAseq)
+    hESCs <- LaMannoBrainData('human-es')
+    hESCs <- hESCs[,1:100]
+
+    library(celldex)
+    hpca.se <- HumanPrimaryCellAtlasData()
+    hpca.se
+
+    TTT <- SingleR(scRNA.cds_Small, hpca.se, labels = hpca.se$label.main)
+
+
+    Temp <- as.SingleCellExperiment(scRNA.SeuObj_Small)
+    singler.results <- SingleR(Temp, hpca.se, labels = hpca.se$label.main)
+    scRNA.SeuObj_Small[["SingleR.labels"]] <- singler.results$labels
+    DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="SingleR.labels" ,label = TRUE, pt.size = 0.5) + NoLegend()
 
   ##### Verification (CellCheck) #####
     #### Install ####
