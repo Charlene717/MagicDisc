@@ -301,32 +301,33 @@
   save.image(paste0(Save.Path,"/06_Cell_type_annotation.RData"))
 
 ##### 06 Cell type annotation  #####
-  library(scSorter)
-  ## Ref: https://cran.r-project.org/web/packages/scSorter/vignettes/scSorter.html
+  ##### scSorter #####
+    library(scSorter)
+    ## Ref: https://cran.r-project.org/web/packages/scSorter/vignettes/scSorter.html
 
-  ##### Example #####
-  load(url('https://github.com/hyguo2/scSorter/blob/master/inst/extdata/TMpancreas.RData?raw=true'))
-  anno_ori <- anno
-  anno <- anno[!anno$Type %in% c("Pancreatic_Acinar_cells","Pancreatic_PP_cells"),]
-  # anno$Marker <- toupper(anno$Marker)
+    #### Example ####
+    load(url('https://github.com/hyguo2/scSorter/blob/master/inst/extdata/TMpancreas.RData?raw=true'))
+    anno_ori <- anno
+    anno <- anno[!anno$Type %in% c("Pancreatic_Acinar_cells","Pancreatic_PP_cells"),]
+    # anno$Marker <- toupper(anno$Marker)
 
-  ##### Test #####
-  ## Create anno.df
-  CellType.markers %>%
-    group_by(cluster) %>%
-    top_n(n = 10, wt = avg_log2FC) -> CTTop.markers
-  #DoHeatmap(scRNA.SeuObj, features = CTTop.markers$gene) + NoLegend()
-  anno.df <- data.frame(Type = CTTop.markers$cluster,
-                        Marker = CTTop.markers$gene,
-                        Weight = CTTop.markers$avg_log2FC)
+    #### Test ####
+    ## Create anno.df
+    CellType.markers %>%
+      group_by(cluster) %>%
+      top_n(n = 10, wt = avg_log2FC) -> CTTop.markers
+    #DoHeatmap(scRNA.SeuObj, features = CTTop.markers$gene) + NoLegend()
+    anno.df <- data.frame(Type = CTTop.markers$cluster,
+                          Marker = CTTop.markers$gene,
+                          Weight = CTTop.markers$avg_log2FC)
 
-  ## Create small sample for test
-  scRNA.SeuObj_Small <- scRNA.SeuObj[,scRNA.SeuObj$cells %in% sample(scRNA.SeuObj$cells,1000)]
-  scSorter.obj <- scSorter(scRNA.SeuObj_Small@assays[["RNA"]]@counts %>% as.data.frame(),anno.df)
+    ## Create small sample for test
+    scRNA.SeuObj_Small <- scRNA.SeuObj[,scRNA.SeuObj$cells %in% sample(scRNA.SeuObj$cells,1000)]
+    scSorter.obj <- scSorter(scRNA.SeuObj_Small@assays[["RNA"]]@counts %>% as.data.frame(),anno.df)
 
-  scRNA.SeuObj_Small$scSorterPred <- scSorter.obj[["Pred_Type"]]
-  DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="scSorterPred" ,label = TRUE, pt.size = 0.5) + NoLegend()
-  DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
+    scRNA.SeuObj_Small$scSorterPred <- scSorter.obj[["Pred_Type"]]
+    DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="scSorterPred" ,label = TRUE, pt.size = 0.5) + NoLegend()
+    DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
 
   ##### Verification (CellCheck) #####
     #### Install ####
@@ -358,13 +359,14 @@
                                    Type = "PDAC",
                                    PARM = "1")
     ## For one prediction
-    DisMultCM.lt <- list(Actual = "Actual", Predict = "Predict", Type = "scSorter", Type2 = "PDAC" )
+    DisMultCM.lt <- list(Actual = "Actual", Predict = "Predict", Type = "Type", Type2 = "PDAC" )
     cm_DisMult.lt <- CellCheck_DisMult(scSorter.df, scSorter_Anno.df, Mode = "One", DisMultCM.lt,
                                        Save.Path = Save.Path, ProjectName = ProjectName)
     ## For multiple prediction
     Sum_DisMult.df <- CellCheck_DisMult(scSorter.df, scSorter_Anno.df,
                                         Mode = "Multiple",DisMultCM.lt=DisMultCM.lt,
                                         Save.Path = Save.Path, ProjectName = ProjectName)
+
 ##### 07 Count Cell number  #####
   source("FUN_AnnoSummary.R")
   source("FUN_Export_CellCount.R")
