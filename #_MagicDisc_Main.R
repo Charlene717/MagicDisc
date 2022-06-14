@@ -289,6 +289,13 @@
   BeautifyDotPlot(scRNA.SeuObj, Path = PathCellType, projectName = ProjectName,
                   Features = markers.to.plot)
 
+  ## Create cell type markers dataframe
+  # DefaultAssay(scRNA.SeuObj_Small) <- "RNA"
+  scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
+  CellType.markers <- FindAllMarkers(scRNA.SeuObj, only.pos = TRUE, min.pct = 0.1, logfc.threshold = 0.25)
+
+  write.table(CellType.markers, file = paste0(PathCellType,"/CC_celltypeMarker2_AllGene.txt"),
+              quote = F,sep = "\t",row.names = F)
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/06_Cell_type_annotation.RData"))
@@ -296,10 +303,18 @@
 ##### 06 Cell type annotation  #####
   library(scSorter)
   ## Ref: https://cran.r-project.org/web/packages/scSorter/vignettes/scSorter.html
+
+  ##### Example #####
   load(url('https://github.com/hyguo2/scSorter/blob/master/inst/extdata/TMpancreas.RData?raw=true'))
   anno_ori <- anno
   anno <- anno[!anno$Type %in% c("Pancreatic_Acinar_cells","Pancreatic_PP_cells"),]
   # anno$Marker <- toupper(anno$Marker)
+
+  ##### Create anno.df #####
+  # # DefaultAssay(scRNA.SeuObj_Small) <- "RNA"
+  # scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
+  # CellType.markers <- FindAllMarkers(scRNA.SeuObj, only.pos = TRUE, min.pct = 0.1, logfc.threshold = 0.25)
+
 
   # Create small sample for test
   scRNA.SeuObj_Small <- scRNA.SeuObj[,scRNA.SeuObj$cells %in% sample(scRNA.SeuObj$cells,1000)]
@@ -307,6 +322,9 @@
 
   scRNA.SeuObj_Small$scSorterPred <- scSorter.obj[["Pred_Type"]]
   DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="scSorterPred" ,label = TRUE, pt.size = 0.5) + NoLegend()
+  DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
+
+
 
 ##### 07 Count Cell number  #####
   source("FUN_AnnoSummary.R")
