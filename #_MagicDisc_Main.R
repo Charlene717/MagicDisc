@@ -329,6 +329,30 @@
     DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="scSorterPred" ,label = TRUE, pt.size = 0.5) + NoLegend()
     DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
 
+  ##### SingleR #####
+    ## Example Ref: https://bioconductor.org/packages/devel/bioc/vignettes/SingleR/inst/doc/SingleR.html
+    library(SingleR)
+
+    #### Example ####
+    library(scRNAseq)
+    hESCs <- LaMannoBrainData('human-es')
+    hESCs <- hESCs[,1:100]
+
+    library(celldex)
+    hpca.se <- HumanPrimaryCellAtlasData()
+    hpca.se
+
+    singler.results.Demo <- SingleR(scRNA.cds_Small, hpca.se, labels = hpca.se$label.main)
+
+    #### Test ####
+    Temp <- as.SingleCellExperiment(scRNA.SeuObj_Small)
+    # Ref <- HumanPrimaryCellAtlasData()
+    Ref <- ImmGenData()
+    singler.results <- SingleR(Temp, Ref, labels = Ref$label.main)
+    scRNA.SeuObj_Small[["SingleR.labels"]] <- singler.results$labels
+    DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="SingleR.labels" ,label = TRUE, pt.size = 0.5) + NoLegend()
+    DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
+
   ##### Garnett #####
     library(monocle3)
     library(garnett)
@@ -351,29 +375,6 @@
                                                  group_cells_by="celltype",
                                                  #reference_cells=1000,
                                                  cores=4)
-
-  ##### SingleR #####
-    ## Example Ref: https://bioconductor.org/packages/devel/bioc/vignettes/SingleR/inst/doc/SingleR.html
-    library(SingleR)
-
-    library(scRNAseq)
-    hESCs <- LaMannoBrainData('human-es')
-    hESCs <- hESCs[,1:100]
-
-    library(celldex)
-    hpca.se <- HumanPrimaryCellAtlasData()
-    hpca.se
-
-    TTT <- SingleR(scRNA.cds_Small, hpca.se, labels = hpca.se$label.main)
-
-
-    Temp <- as.SingleCellExperiment(scRNA.SeuObj_Small)
-    # Ref <- HumanPrimaryCellAtlasData()
-    Ref <- ImmGenData()
-    singler.results <- SingleR(Temp, Ref, labels = Ref$label.main)
-    scRNA.SeuObj_Small[["SingleR.labels"]] <- singler.results$labels
-    DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="SingleR.labels" ,label = TRUE, pt.size = 0.5) + NoLegend()
-    DimPlot(scRNA.SeuObj_Small, reduction = "umap", group.by ="celltype" ,label = TRUE, pt.size = 0.5) + NoLegend()
 
   ##### Verification (CellCheck) #####
     #### Install ####
