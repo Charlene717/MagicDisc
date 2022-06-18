@@ -65,7 +65,7 @@
   #### Basic installation ####
   Package.set <- c("tidyverse","Seurat","monocle","ggplot2","ggpmisc","broom",
                    "stringr","magrittr","dplyr",
-                   "CellChat","patchwork","reticulate","anndata")
+                   "patchwork","reticulate","anndata")
   ## Check whether the installation of those packages is required from basic
   for (i in 1:length(Package.set)) {
     if (!requireNamespace(Package.set[i], quietly = TRUE)){
@@ -99,6 +99,7 @@
     install.packages("devtools")
   devtools::install_github("cole-trapnell-lab/garnett")
   devtools::install_github('cole-trapnell-lab/monocle3')
+  devtools::install_github("sqjin/CellChat")
   # devtools::install_github("LTLA/SingleR")
 
   library(monocle3)
