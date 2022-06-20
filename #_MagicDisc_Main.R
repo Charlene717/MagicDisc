@@ -239,6 +239,8 @@
   # find markers for every cluster compared to all remaining cells, report only the positive ones
   set.seed(1) # Fix the seed
   PBMC.markers <- FindAllMarkers(scRNA.SeuObj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+  write.table(PBMC.markers, file = paste0(PathCluster,"/CC_ClusterMarker_AllGene.txt"),
+              quote = F,sep = "\t",row.names = F)
 
   scRNA.SeuObj <- Beautify_Heatmap_Seurat(scRNA.SeuObj, PBMC.markers, topN = 7, Path = PathCluster,
                                           Type = "seurat_clusters",
@@ -290,7 +292,7 @@
   scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
   CellType.markers <- FindAllMarkers(scRNA.SeuObj, only.pos = TRUE, min.pct = 0.1, logfc.threshold = 0.25)
 
-  write.table(CellType.markers, file = paste0(PathCellType,"/CC_celltypeMarker2_AllGene.txt"),
+  write.table(CellType.markers, file = paste0(PathCellType,"/CC_CelltypeMarker_AllGene.txt"),
               quote = F,sep = "\t",row.names = F)
 
   #### Save RData ####
