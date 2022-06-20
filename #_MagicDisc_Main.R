@@ -238,11 +238,11 @@
   ## Identify conserved cluster markers
   # find markers for every cluster compared to all remaining cells, report only the positive ones
   set.seed(1) # Fix the seed
-  PBMC.markers <- FindAllMarkers(scRNA.SeuObj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
-  write.table(PBMC.markers, file = paste0(PathCluster,"/CC_ClusterMarker_AllGene.txt"),
+  PBMC.markers.df <- FindAllMarkers(scRNA.SeuObj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+  write.table(PBMC.markers.df, file = paste0(PathCluster,"/CC_ClusterMarker_AllGene.txt"),
               quote = F,sep = "\t",row.names = F)
 
-  scRNA.SeuObj <- Beautify_Heatmap_Seurat(scRNA.SeuObj, PBMC.markers, topN = 7, Path = PathCluster,
+  scRNA.SeuObj <- Beautify_Heatmap_Seurat(scRNA.SeuObj, PBMC.markers.df, topN = 7, Path = PathCluster,
                                           Type = "seurat_clusters",
                                           projectName = ProjectName)
 
@@ -272,7 +272,7 @@
 
   ## Heatmap
   Heatmap_Color.lt <- list(low="#5283ff",mid ="white", high ="#ff5c5c")
-  scRNA.SeuObj <- Beautify_Heatmap_Seurat(scRNA.SeuObj, PBMC.markers, topN = 7, Path = PathCellType,
+  scRNA.SeuObj <- Beautify_Heatmap_Seurat(scRNA.SeuObj, PBMC.markers.df, topN = 7, Path = PathCellType,
                                           Type = "celltype", HMColor.lt = Heatmap_Color.lt,
                                           projectName = ProjectName)
 
@@ -290,9 +290,9 @@
   ## Create cell type markers dataframe
   # DefaultAssay(scRNA.SeuObj_Small) <- "RNA"
   scRNA.SeuObj$celltype <- Idents(scRNA.SeuObj)
-  CellType.markers <- FindAllMarkers(scRNA.SeuObj, only.pos = TRUE, min.pct = 0.1, logfc.threshold = 0.25)
+  CellType.markers.df <- FindAllMarkers(scRNA.SeuObj, only.pos = TRUE, min.pct = 0.1, logfc.threshold = 0.25)
 
-  write.table(CellType.markers, file = paste0(PathCellType,"/CC_CelltypeMarker_AllGene.txt"),
+  write.table(CellType.markers.df, file = paste0(PathCellType,"/CC_CelltypeMarker_AllGene.txt"),
               quote = F,sep = "\t",row.names = F)
 
   #### Save RData ####
@@ -313,7 +313,7 @@
 
     #### Test ####
     ## Create anno.df
-    CellType.markers %>%
+    CellType.markers.df %>%
       group_by(cluster) %>%
       top_n(n = 10, wt = avg_log2FC) -> CTTop.markers
     #DoHeatmap(scRNA.SeuObj, features = CTTop.markers$gene) + NoLegend()
