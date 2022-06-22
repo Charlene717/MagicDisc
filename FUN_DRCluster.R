@@ -1,4 +1,5 @@
 DRCluster <- function(scRNA_SeuObj.list, seed=1, PCAdims = 30,
+                      UMAP_NNEighbors = 30, UMAP_MinDist = 0.3,
                       Path = Save.Path,
                       projectName= ProjectName,
                       MetaSet = Ori_Meta.set
@@ -38,7 +39,7 @@ DRCluster <- function(scRNA_SeuObj.list, seed=1, PCAdims = 30,
     # set.seed(seed) # Fix the seed
     # scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 30, verbose = FALSE)
     set.seed(seed) # Fix the seed
-    scRNA.SeuObj <- RunPCA(scRNA.SeuObj, features = VariableFeatures(object = scRNA.SeuObj))
+    scRNA.SeuObj <- RunPCA(scRNA.SeuObj,npcs = PCAdims, features = VariableFeatures(object = scRNA.SeuObj))
 
     print(scRNA.SeuObj[["pca"]], dims = 1:5, nfeatures = 5)
 
@@ -59,10 +60,10 @@ DRCluster <- function(scRNA_SeuObj.list, seed=1, PCAdims = 30,
     # scRNA.SeuObj <- JackStraw(scRNA.SeuObj, num.replicate = 100)
     # scRNA.SeuObj <- ScoreJackStraw(scRNA.SeuObj, dims = 1:20)
     # JackStrawPlot(scRNA.SeuObj, dims = 1:20)
-    ElbowPlot(scRNA.SeuObj, ndims = 50)
+    ElbowPlot(scRNA.SeuObj, ndims = PCAdims)
     dev.off()
 
-    ElbowPlot(scRNA.SeuObj, ndims = 50)
+    ElbowPlot(scRNA.SeuObj, ndims = PCAdims)
 
     ## Issues: RunUMAP causes R exit
     ## https://github.com/satijalab/seurat/issues/2259
@@ -71,7 +72,8 @@ DRCluster <- function(scRNA_SeuObj.list, seed=1, PCAdims = 30,
     # This message will be shown once per session
     #### UMAP
     set.seed(seed) # Fix the seed
-    scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:PCAdims)
+    scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:PCAdims ,
+                            n.neighbors = UMAP_NNEighbors, min.dist= UMAP_MinDist)
 
     set.seed(seed) # Fix the seed
     scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:PCAdims)
