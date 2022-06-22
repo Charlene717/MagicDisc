@@ -1,4 +1,4 @@
-CombineSeuObj <- function(scRNA_SeuObj.list) {
+CombineSeuObj <- function(scRNA_SeuObj.list,...) {
 
   if(length(scRNA_SeuObj.list)==1){
     scRNA.SeuObj <- scRNA_SeuObj.list[[1]]
@@ -16,10 +16,11 @@ CombineSeuObj <- function(scRNA_SeuObj.list) {
 
     ## Perform integration
     set.seed(1) # Fix the seed
-    scRNA.anchors <- FindIntegrationAnchors(object.list = scRNA_SeuObj.list, anchor.features = features)
+    scRNA.anchors <- FindIntegrationAnchors(object.list = scRNA_SeuObj.list,
+                                            anchor.features = features)
     # this command creates an 'integrated' data assay
     set.seed(1) # Fix the seed
-    scRNA.SeuObj <- IntegrateData(anchorset = scRNA.anchors)
+    scRNA.SeuObj <- IntegrateData(anchorset = scRNA.anchors,...)
 
     set.seed(1) # Fix the seed
     DefaultAssay(scRNA.SeuObj) <- "integrated"
