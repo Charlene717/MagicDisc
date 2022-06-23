@@ -1,5 +1,5 @@
-DRCluster <- function(scRNA.SeuObj,scRNA_SeuObj.list, seed=1, PCAdims = 30,
-                      UMAP_NNEighbors = 30, UMAP_MinDist = 0.3,
+DRCluster <- function(scRNA.SeuObj,scRNA_SeuObj.list, seed=1, PCAdims = 160,
+                      UMAP_NNEighbors = 25, UMAP_MinDist = 0.3,
                       Path = Save.Path,
                       projectName= ProjectName,
                       MetaSet = Ori_Meta.set
