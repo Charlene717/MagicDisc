@@ -1,4 +1,4 @@
-DRCluster <- function(scRNA_SeuObj.list, seed=1, PCAdims = 30,
+DRCluster <- function(scRNA.SeuObj,scRNA_SeuObj.list, seed=1, PCAdims = 30,
                       UMAP_NNEighbors = 30, UMAP_MinDist = 0.3,
                       Path = Save.Path,
                       projectName= ProjectName,

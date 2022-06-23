@@ -215,7 +215,7 @@
     dir.create(PathCluster)
   }
 
-  scRNA.SeuObj <- DRCluster(scRNA_SeuObj.list, seed=1, PCAdims = 30,
+  scRNA.SeuObj <- DRCluster(scRNA.SeuObj, scRNA_SeuObj.list, seed=1, PCAdims = 30,
                             Path = PathCluster, projectName= ProjectName,
                             MetaSet = Ori_Meta.set)
 
