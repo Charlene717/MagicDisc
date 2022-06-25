@@ -52,9 +52,9 @@ load("D:/Dropbox/##_GitHub/##_CAESAR/MagicDisc/2022-06-23_PDAC_GSE154778_SC/04_P
 seuratObject_3 <- scRNA.SeuObj
 DefaultAssay(seuratObject_3) <- "RNA"
 
-scRNA_SeuObj.list <- list(PRJCA001063=seuratObject_1,
-                          GSE131886=seuratObject_2,
-                          GSE154778=seuratObject_3)
+scRNA_SeuObj.list <- list(PRJCA001063 = seuratObject_1,
+                          GSE131886 = seuratObject_2,
+                          GSE154778 = seuratObject_3)
 
 rm(list=setdiff(ls(), "scRNA_SeuObj.list"))
 
@@ -123,10 +123,12 @@ if (!dir.exists(Save.Path)){
   ## Call function
   source("FUN_Cal_Mit.R")
   source("FUN_CombineSeuObj.R")
+  source("FUN_Beautify_ggplot.R")
+
 
 ##### CombineSeuObj #####
 scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
-
+rm(scRNA_SeuObj.list)
 
 # Run the standard workflow for visualization and clustering
 scRNA.SeuObj <- ScaleData(scRNA.SeuObj, verbose = FALSE)
@@ -167,6 +169,15 @@ for (i in seq(80,400,80)) {
           ggtitle(paste0("ReCluster","  PCA:",i,"  NNe:",k,"  MD:",j)) +
           theme(plot.title = element_text(hjust = 0.5,vjust = 0))
         tiff(file = paste0(Save.Path,"/",ProjectName,"_Trajectory","_PCA",i,"_NNe",k,"_MD",j,"_ReCluster.tiff"),
+             width = 35, height = 20, units = "cm", res = 200)
+        print(p)
+        graphics.off()
+
+        Idents(scRNA.SeuObj) <- scRNA.SeuObj@meta.data[["DataSetID"]]
+        p <-  DimPlot(scRNA.SeuObj, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
+          ggtitle(paste0("ReCluster","  PCA:",i,"  NNe:",k,"  MD:",j)) +
+          theme(plot.title = element_text(hjust = 0.5,vjust = 0))
+        tiff(file = paste0(Save.Path,"/",ProjectName,"_Trajectory","_PCA",i,"_NNe",k,"_MD",j,"_DataSetID.tiff"),
              width = 35, height = 20, units = "cm", res = 200)
         print(p)
         graphics.off()
