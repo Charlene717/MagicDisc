@@ -1,4 +1,4 @@
-CombineSeuObj <- function(scRNA_SeuObj.list,...) {
+CombineSeuObj <- function(scRNA_SeuObj.list, nfeatures = 2000 ,...) {
 
   if(length(scRNA_SeuObj.list)==1){
     scRNA.SeuObj <- scRNA_SeuObj.list[[1]]
@@ -7,7 +7,7 @@ CombineSeuObj <- function(scRNA_SeuObj.list,...) {
     set.seed(1) # Fix the seed
     scRNA_SeuObj.list <- lapply(X = scRNA_SeuObj.list, FUN = function(x) {
       x <- NormalizeData(x)
-      x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
+      x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = nfeatures)
     })
 
     # select features that are repeatedly variable across datasets for integration
