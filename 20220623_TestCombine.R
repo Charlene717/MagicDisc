@@ -130,6 +130,9 @@
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
   rm(scRNA_SeuObj.list)
 
+#### Re-dimension reduction ####
+  # scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj, selection.method = "vst", nfeatures = 2000)
+  scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj)
   # Run the standard workflow for visualization and clustering
   scRNA.SeuObj <- ScaleData(scRNA.SeuObj, verbose = FALSE)
   scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 1000, verbose = FALSE)
