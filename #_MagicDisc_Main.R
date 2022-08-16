@@ -6,7 +6,7 @@
   # - [ ] Ensembl gene name conversion
   # - [ ] Clean up the code
 
-
+  # - [ ] Gene correlation
   # - [ ] Delete unrecognized cell type
 
   # - [ ] Find Biomarker
