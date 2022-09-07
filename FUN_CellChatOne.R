@@ -478,7 +478,7 @@ CellChatOne <- function(seuratObject,
   #     netVisual_embeddingZoomIn(cellchat, type = "structural", nCol = 2)
 
 ##### Part V: Save the CellChat object #####
-  saveRDS(cellchat, file = paste0(Save_Path,"cellchat_humanSkin_LS.rds"))
+  saveRDS(cellchat, file = paste0(Save_PathSave_Path, ProjectName,"_CellChat_Example_PRJCA001063.rds"))
 
     ##### Save CellChatDataBase #####
     PathDB <- paste0(Save_Path,"/", projectName, "_DataBase")
