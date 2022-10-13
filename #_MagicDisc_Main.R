@@ -29,14 +29,11 @@ memory.limit(150000)
   #### Current path and new folder setting* ####
   ProjectName = "CC"
   Sampletype = "PBMC"
-  #ProjSamp.Path = paste0(Sampletype,"_",ProjectName)
-
   Version = paste0(Sys.Date(),"_",ProjectName,"_",Sampletype)
   Save.Path = paste0(getwd(),"/",Version)
+
   ## Create new folder
-  if (!dir.exists(Save.Path)){
-    dir.create(Save.Path)
-  }
+  if (!dir.exists(Save.Path)){dir.create(Save.Path)}
 
   ##### Import information sheet setting* #####
   InputFolder = "Input_files_10x"
