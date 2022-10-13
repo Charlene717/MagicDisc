@@ -34,7 +34,4 @@ FUN_Package_InstLoad = function( Basic.set = Basic.set,
   lapply(BiocManager.set, library, character.only = TRUE)
   rm(BiocManager.set,i)
 
-  # options(stringsAsFactors = FALSE)
-  # Sys.setlocale(category = "LC_ALL", locale = "UTF-8")
-
 }
