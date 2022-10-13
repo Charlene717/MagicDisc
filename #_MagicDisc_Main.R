@@ -22,10 +22,11 @@
 
 
 ##### Presetting ######
-  rm(list = ls()) # Clean variable
-  memory.limit(150000)
+rm(list = ls()) # Clean variable
+memory.limit(150000)
 
-##### Current path and new folder setting* #####
+##### Setting ######
+  #### Current path and new folder setting* ####
   ProjectName = "CC"
   Sampletype = "PBMC"
   #ProjSamp.Path = paste0(Sampletype,"_",ProjectName)
@@ -37,13 +38,13 @@
     dir.create(Save.Path)
   }
 
-  ## Import information
+  ##### Import information sheet setting* #####
   InputFolder = "Input_files_10x"
   InputAnno = "PBMC_Ano.csv"
 
   InputGSEA = "GSEA_Geneset_Pathway_3Database_WithoutFilter.txt"
 
-##### Parameter setting* #####
+  ##### Parameter setting* #####
   ClassSet1 = "Sample"
   ClassSet2 = "Cachexia"
   ClassSet3 = "Sex"
