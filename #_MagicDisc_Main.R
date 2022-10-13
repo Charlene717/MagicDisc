@@ -77,7 +77,7 @@ FUN_BiocManager.set <- c("fgsea","AnnotationHub","ensembldb",
 # organism = "org.Hs.eg.db" ## c("org.Hs.eg.db","org.Mm.eg.db","org.Dm.eg.db")
 # c(organism,"fgsea")
 
-Package_InstLoad(Basic.set = FUN_Basic.set, FUN_BiocManager.set = BiocManager.set)
+FUN_Package_InstLoad(Basic.set = FUN_Basic.set, FUN_BiocManager.set = BiocManager.set)
 
   #### GitHub installation ####
   if (!require("devtools", quietly = TRUE))
