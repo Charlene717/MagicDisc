@@ -66,37 +66,18 @@ memory.limit(150000)
 
 
 ##### Load Packages #####
-  #### Basic installation ####
-  Package.set <- c("tidyverse","Seurat","monocle","ggplot2","ggpmisc","broom",
+source("FUN_Package_InstLoad.R")
+FUN_Basic.set <- c("tidyverse","Seurat","monocle","ggplot2","ggpmisc","broom",
                    "stringr","magrittr","dplyr",
                    "patchwork","reticulate","anndata")
-  ## Check whether the installation of those packages is required from basic
-  for (i in 1:length(Package.set)) {
-    if (!requireNamespace(Package.set[i], quietly = TRUE)){
-      install.packages(Package.set[i])
-    }
-  }
-  ## Load Packages
-  lapply(Package.set, library, character.only = TRUE)
-  rm(Package.set,i)
+FUN_BiocManager.set <- c("fgsea","AnnotationHub","ensembldb",
+                         "basilisk","zellkonverter","SeuratDisk",
+                         "SingleR","scRNAseq","celldex","scran")
+## Set the desired organism
+# organism = "org.Hs.eg.db" ## c("org.Hs.eg.db","org.Mm.eg.db","org.Dm.eg.db")
+# c(organism,"fgsea")
 
-  #### BiocManager installation ####
-  ## Check whether the installation of those packages is required from BiocManager
-  if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-  Package.set <- c("fgsea","AnnotationHub","ensembldb",
-                   "basilisk","zellkonverter","SeuratDisk",
-                   "SingleR","scRNAseq","celldex","scran")
-  for (i in 1:length(Package.set)) {
-    if (!requireNamespace(Package.set[i], quietly = TRUE)){
-      BiocManager::install(Package.set[i])
-    }
-  }
-  ## Load Packages
-  lapply(Package.set, library, character.only = TRUE)
-  rm(Package.set,i)
-
-  options(stringsAsFactors = FALSE)
+Package_InstLoad(Basic.set = FUN_Basic.set, FUN_BiocManager.set = BiocManager.set)
 
   #### GitHub installation ####
   if (!require("devtools", quietly = TRUE))
