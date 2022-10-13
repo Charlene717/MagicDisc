@@ -23,6 +23,8 @@
 ##### Presetting ######
 rm(list = ls()) # Clean variable
 memory.limit(150000)
+# options(stringsAsFactors = FALSE)
+# Sys.setlocale(category = "LC_ALL", locale = "UTF-8")
 
 ##### Setting ######
   #### Current path and new folder setting* ####
