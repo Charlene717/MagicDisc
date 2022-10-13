@@ -78,6 +78,7 @@ FUN_BiocManager.set <- c("fgsea","AnnotationHub","ensembldb",
 # c(organism,"fgsea")
 
 FUN_Package_InstLoad(Basic.set = FUN_Basic.set, FUN_BiocManager.set = BiocManager.set)
+rm(FUN_Basic.set, FUN_BiocManager.set)
 
   #### GitHub installation ####
   if (!require("devtools", quietly = TRUE))
@@ -89,6 +90,7 @@ FUN_Package_InstLoad(Basic.set = FUN_Basic.set, FUN_BiocManager.set = BiocManage
 
   library(monocle3)
   library(garnett)
+  library(CellChat)
   # library(SingleR)
 
 ##### Function setting #####
