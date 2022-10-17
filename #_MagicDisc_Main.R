@@ -96,37 +96,49 @@ rm(FUN_Basic.set, FUN_BiocManager.set)
   # library(SingleR)
 
 ##### Function setting #####
-  ## Call function
+  ## Prepossession
   source("FUN_ReadscRNA.R")
   source("FUN_Cal_Mit.R")
   source("FUN_scRNAQC.R")
+  source("FUN_HSsymbol2MMsymbol.R")
+  source("FUN_CombineSeuObj.R")
+  source("FUN_DRCluster.R")
+  source("FUN_UMAP_CellTypeMarker.R")
+  source("FUN_Export_All_DRPlot.R")
+
+  ## Summarize
   source("FUN_MetaSummary.R")
   source("FUN_AnnoSummary.R")
+  source("FUN_Export_CellCount.R")
 
+  ## Find Markers
   source("FUN_Find_Markers.R")
   source("FUN_VolcanoPlot.R")
   source("FUN_Venn.R")
-  source("FUN_HSsymbol2MMsymbol.R")
-  source("FUN_Beautify_ggplot.R")
-  source("FUN_Beautify_UMAP.R")
+  source("FUN_BioMarker1Index.R")
+  source("FUN_BioMarker2Index.R")
+
+  ## Enrichment analysis
   source("FUN_GSEA_LargeGeneSet.R")
   source("FUN_GSEA_ggplot.R")
+  source("FUN_GSEA_MultiCell.R")
 
+  ## Cell-Cell interaction
+  source("FUN_CellChatOne.R")
+
+  ## inferCNV
+  source("FUN_inferCNV.R")
+
+  ## Beautify Plot
+  source("FUN_Beautify_ggplot.R")
+  source("FUN_Beautify_UMAP.R")
+  source("FUN_Beautify_Heatmap_Seurat.R")
+  source("FUN_BeautifyVennDiag.R")
+  source("FUN_BeautifyDotPlot.R")
+
+  ## Verification
   source("Fun_Draw_ConfuMax.R")
 
-  source("FUN_CombineSeuObj.R")
-  source("FUN_DRCluster.R")
-  source("FUN_Export_CellCount.R")
-  source("FUN_Beautify_Heatmap_Seurat.R")
-  source("FUN_UMAP_CellTypeMarker.R")
-  source("FUN_Export_All_DRPlot.R")
-  source("FUN_BeautifyDotPlot.R")
-  source("FUN_BioMarker2Index.R")
-  source("FUN_BeautifyVennDiag.R")
-  source("FUN_BioMarker1Index.R")
-  source("FUN_CellChatOne.R")
-  source("FUN_GSEA_MultiCell.R")
-  source("FUN_inferCNV.R")
 
 ##### Load datasets  #####
   ## Annotation table
