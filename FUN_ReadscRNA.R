@@ -21,11 +21,11 @@ FUN_ReadscRNA = function( InputFolder,Folder = Folder,
         scRNA_SeuObj.list[[i]] <- Data.SeuObj
         names(scRNA_SeuObj.list)[[i]] <- list_files.df$Folder[i]
       }
-      rm(i,j,Folder,Data.dgCMatrix,Data.SeuObj)
 
     }else if(Mode=="H5AD") {
       scRNA_SeuObj.list <- list()
       for(i in 1:nrow(list_files.df)){
+
         # Install SeuratDisk # https://github.com/mojaveazure/seurat-disk
         if (!requireNamespace("remotes", quietly = TRUE)) {install.packages("remotes")}
         remotes::install_github("mojaveazure/seurat-disk")
@@ -51,7 +51,7 @@ FUN_ReadscRNA = function( InputFolder,Folder = Folder,
     }else{
 
       ## Expression matrix
-      ## GSE103322 HNSC
+      ## Example: GSE103322 HNSC
       scRNA_SeuObj.list <- list()
       for(i in 1:nrow(list_files.df)){
         Folder <- list_files.df$Folder[i]
@@ -78,7 +78,6 @@ FUN_ReadscRNA = function( InputFolder,Folder = Folder,
           }
 
       }
-      rm(i,j,k,Folder,GeneExp.df,Data.SeuObj)
 
     }
     return(scRNA_SeuObj.list)
