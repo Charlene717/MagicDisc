@@ -27,7 +27,10 @@ FUN_ReadscRNA = function( InputFolder,Folder = Folder,
       scRNA_SeuObj.list <- list()
       for(i in 1:nrow(list_files.df)){
         # Install SeuratDisk # https://github.com/mojaveazure/seurat-disk
+        if (!requireNamespace("remotes", quietly = TRUE)) {install.packages("remotes")}
+        remotes::install_github("mojaveazure/seurat-disk")
         library(SeuratDisk)
+
         Folder <- list_files.df$Folder[i]
         ## Convert h5ad to h5seurat
         Convert(paste0(InputFolder,"/", Folder, "/scRNA.h5ad"), paste0(InputFolder,"/", Folder, "/scRNA.h5seurat"),
