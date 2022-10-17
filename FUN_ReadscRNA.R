@@ -1,4 +1,4 @@
-ReadscRNA = function( InputFolder,Folder = Folder,
+FUN_ReadscRNA = function( InputFolder,Folder = Folder,
                       Path = "/monocle/outs/filtered_gene_bc_matrices/mm10",
                       list_files.df, Mode="10x" ,projectName=ProjectName) # Mode=c("10x","Exp")
   {

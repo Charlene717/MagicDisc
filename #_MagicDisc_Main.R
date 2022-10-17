@@ -147,7 +147,7 @@ rm(FUN_Basic.set, FUN_BiocManager.set)
 
   ## Read 10x files
   source("FUN_ReadscRNA.R")
-  scRNA_SeuObj.list <- ReadscRNA(InputFolder,Folder = Folder,
+  scRNA_SeuObj.list <- FUN_ReadscRNA(InputFolder,Folder = Folder,
                                  Path =  "/monocle/outs/filtered_gene_bc_matrices/mm10",
                                  list_files.df, Mode = DataMode, projectName = ProjectName)
 
