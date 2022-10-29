@@ -1,13 +1,19 @@
 ## Load Packages
+#
+
+##### For few packages #####
+# if(!require("tidyverse")) install.packages("tidyverse")
+# library(tidyverse)
+
+## Set the desired organism
+# organism = "org.Hs.eg.db" ## c("org.Hs.eg.db","org.Mm.eg.db","org.Dm.eg.db")
+# c(organism,"fgsea")
 
 
 FUN_Package_InstLoad = function( Basic.set = Basic.set,
                              BiocManager.set = BiocManager.set)
 {
 
-  ##### For few packages #####
-  # if(!require("tidyverse")) install.packages("tidyverse")
-  # library(tidyverse)
 
   #### Basic installation ####
   ## Check whether the installation of those packages is required from basic
