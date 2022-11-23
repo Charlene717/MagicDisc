@@ -47,9 +47,22 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
 
   ##### Data preprocessing #####
   ## Create expression matrix
-  EM.mt <-  scRNA.SeuObj@assays[["RNA"]]@counts %>% as.data.frame() %>%
+
+  # # ## Old version (Without normalizaiton) ##
+  # EM.mt <-  scRNA.SeuObj@assays[["RNA"]]@counts %>% as.data.frame() %>%
+  #           dplyr::filter(., rowSums(.) > 0, .preserve = F) %>%
+  #           as.matrix()
+
+  if(!require("Seurat")) install.packages("Seurat")
+  library(Seurat)
+  EM.mt <-  GetAssayData(scRNA.SeuObj, assay = "RNA", slot = "data") %>% as.data.frame() %>%
             dplyr::filter(., rowSums(.) > 0, .preserve = F) %>%
             as.matrix()
+
+  # ## Old version (Without normalizaiton) ## GeneExp.df <- scRNA.SeuObj@assays[["RNA"]]@counts %>% as.data.frame()
+  # GeneExp.df <- GetAssayData(scRNA.SeuObj, assay = "RNA", slot = "data") %>% as.data.frame() # normalized data matrix
+
+
 
   # ## SpeciSet
   # if(SpeciSet == "Mouse"){
