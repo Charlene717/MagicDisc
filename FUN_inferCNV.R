@@ -55,6 +55,9 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
 
   if(!require("Seurat")) install.packages("Seurat")
   library(Seurat)
+  if(!require("tidyverse")) install.packages("tidyverse")
+  library(tidyverse)
+
   EM.mt <-  GetAssayData(scRNA.SeuObj, assay = "RNA", slot = "data") %>% as.data.frame() %>%
             dplyr::filter(., rowSums(.) > 0, .preserve = F) %>%
             as.matrix()
