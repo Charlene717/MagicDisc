@@ -11,6 +11,7 @@ load("D:/Dropbox/#_Dataset/Cancer/PDAC/2022-12-05_CTAnno_singleR_RefPRJCA001063_
 rm(list=setdiff(ls(), c("scRNA.SeuObj")))
 
 scRNA.SeuObj$celltype <- scRNA.SeuObj$singleR_classic_PredbyscRNA
+scRNA.SeuObj$celltype <- gsub(" ", "_", scRNA.SeuObj$celltype)
 
 ##### Setting ######
   #### Current path and new folder setting* ####
@@ -133,9 +134,9 @@ rm(FUN_Basic.set, FUN_BiocManager.set)
 
 
 ##### Load datasets  #####
-  # ## Annotation table
-  # list_files.df <- read.csv(paste0(InputFolder,"/",InputAnno))
-  # Feature.set <- colnames(list_files.df)[-1]
+  ## Annotation table
+  list_files.df <- read.csv(paste0(InputFolder,"/",InputAnno))
+  Feature.set <- colnames(list_files.df)[-1]
   #
   # ## Read 10x files
   # source("FUN_ReadscRNA.R")
@@ -143,25 +144,25 @@ rm(FUN_Basic.set, FUN_BiocManager.set)
   #                                Path =  "/monocle/outs/filtered_gene_bc_matrices/mm10",
   #                                list_files.df, Mode = DataMode, projectName = ProjectName)
 
-##### 07 Count Cell number  #####
-  source("FUN_AnnoSummary.R")
-  source("FUN_Export_CellCount.R")
-
-  ## Create new folder
-  PathCellCount <- paste0(Save.Path,"/","B01_CellCount")
-  if (!dir.exists(PathCellCount)){
-    dir.create(PathCellCount)
-  }
-
-  ## Annotation Summary Table
-  AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df, Ori_Meta.set,
-                                ClassSet = ClassSet1, ClassSet2 = ClassSet2)
-
-  ## ExportCellCount
-  ExportCellCount(AnnoSummary.lt,Path = PathCellCount)
-
-  #### Save RData ####
-  save.image(paste0(Save.Path,"/07_Count_Cell_number.RData"))
+# ##### 07 Count Cell number  #####
+#   source("FUN_AnnoSummary.R")
+#   source("FUN_Export_CellCount.R")
+#
+#   ## Create new folder
+#   PathCellCount <- paste0(Save.Path,"/","B01_CellCount")
+#   if (!dir.exists(PathCellCount)){
+#     dir.create(PathCellCount)
+#   }
+#
+#   ## Annotation Summary Table
+#   AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df, Ori_Meta.set,
+#                                 ClassSet = ClassSet1, ClassSet2 = ClassSet2)
+#
+#   ## ExportCellCount
+#   ExportCellCount(AnnoSummary.lt,Path = PathCellCount)
+#
+#   #### Save RData ####
+#   save.image(paste0(Save.Path,"/07_Count_Cell_number.RData"))
 
 ##### 08 Find CCmarker in different Cell type ########
   ## Create new folder
@@ -179,9 +180,9 @@ rm(FUN_Basic.set, FUN_BiocManager.set)
 
   ### Define group by different phenotype ###
   Type = "celltype"
-  scRNA.SeuObj[[paste0(Type,".",ClassSet2)]] <- paste(Idents(scRNA.SeuObj),
+  scRNA.SeuObj[[paste0(Type,".",ClassSet2)]] <- paste(scRNA.SeuObj$celltype,
                                                       as.matrix(scRNA.SeuObj[[ClassSet2]]), sep = "_")
-  scRNA.SeuObj[[paste0(Type,".",ClassSet2,".",ClassSet3)]] <- paste(Idents(scRNA.SeuObj),
+  scRNA.SeuObj[[paste0(Type,".",ClassSet2,".",ClassSet3)]] <- paste(scRNA.SeuObj$celltype,
                                                                     as.matrix(scRNA.SeuObj[[ClassSet2]]),
                                                                     as.matrix(scRNA.SeuObj[[ClassSet3]]), sep = "_")
 
@@ -208,8 +209,8 @@ rm(FUN_Basic.set, FUN_BiocManager.set)
                                         sampletype = Sampletype, cellType.set = CellType.set, classSet2 = ClassSet2,
                                         classSet3 = ClassSet3,Type = "celltype")
 
-  #### Save RData ####
-  save.image(paste0(Save.Path,"/08_2_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Separate).RData"))
+  # #### Save RData ####
+  # save.image(paste0(Save.Path,"/08_2_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_VolcanoPlot(Separate).RData"))
 
 
 ##### 08_3 Find CCmarker in different Cell type and VennDiagrame (SSA_IntersectCT) ########
@@ -226,8 +227,8 @@ rm(FUN_Basic.set, FUN_BiocManager.set)
   Venn_CCMarke.lt <- BeautifyVennDiag(CCMarker_Male.lt, CCMarker_Female.lt, CellType.list,list_files.df,
                                       classSet3 = ClassSet3)
   }
-  #### Save RData ####
-  save.image(paste0(Save.Path,"/08_3_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_Venn.RData"))
+  # #### Save RData ####
+  # save.image(paste0(Save.Path,"/08_3_Find_",Sampletype,"_",ProjectName,"marker_in_different_Cell_type_and_Venn.RData"))
 
 
 
@@ -243,6 +244,7 @@ rm(FUN_Basic.set, FUN_BiocManager.set)
   source("FUN_GSEA_LargeGeneSet.R")
   source("FUN_HSsymbol2MMsymbol.R")
   source("FUN_GSEA_ggplot.R")
+  source("FUN_GSEA_MultiCell.R")
 
   ## Load the GSEA Dataset
   load("GSEA_Analysis_Geneset.RData")
@@ -256,6 +258,7 @@ rm(FUN_Basic.set, FUN_BiocManager.set)
 
 ##### 09_1 GSEA Analysis (SPA) #####
   ## Create folder
+  CellType.list <- scRNA.SeuObj$celltype %>% unique()
   GSEA_SPA.lt <- FUN_GSEA_MultiCell(CCMarker.lt, CellType.list,Path = Save.Path, sampletype = Sampletype,
                                     projectName = ProjectName,NES_TH = 1.5, Padj_TH = 0.01)
 
