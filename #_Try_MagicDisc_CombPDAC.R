@@ -43,17 +43,17 @@ scRNA.SeuObj$celltype <- scRNA.SeuObj$singleR_classic_PredbyscRNA
   DataMode = "10x"
   Species = "Human" # Species = c("Mouse","Human")
 
-##### Export the log file (Start) #####
-  ## Create new folder for log file
-  if (!dir.exists("LogFiles")){dir.create("LogFiles")}
-
-  my_log <- file(paste0("LogFiles/",Version,"_log.txt")) # File name of output log
-
-  sink(my_log, append = TRUE, type = "output") # Writing console output to log file
-  sink(my_log, append = TRUE, type = "message")
-
-  cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently opened R script to file
-               file.info(rstudioapi::getSourceEditorContext()$path)$size))
+# ##### Export the log file (Start) #####
+#   ## Create new folder for log file
+#   if (!dir.exists("LogFiles")){dir.create("LogFiles")}
+#
+#   my_log <- file(paste0("LogFiles/",Version,"_log.txt")) # File name of output log
+#
+#   sink(my_log, append = TRUE, type = "output") # Writing console output to log file
+#   sink(my_log, append = TRUE, type = "message")
+#
+#   cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently opened R script to file
+#                file.info(rstudioapi::getSourceEditorContext()$path)$size))
 
 
 ##### Load Packages #####
@@ -328,6 +328,6 @@ rm(FUN_Basic.set, FUN_BiocManager.set)
 ##### Beautify Figs #####
 ## Test
 
-##### Export the log file (End) #####
-  closeAllConnections() # Close connection to log file
+# ##### Export the log file (End) #####
+#   closeAllConnections() # Close connection to log file
 
