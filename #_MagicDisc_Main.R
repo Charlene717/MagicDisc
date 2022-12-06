@@ -58,7 +58,10 @@ memory.limit(150000)
   Species = "Mouse" # Species = c("Mouse","Human")
 
 ##### Export the log file (Start) #####
-  my_log <- file(paste0(Version,"_log.txt")) # File name of output log
+  ## Create new folder for log file
+  if (!dir.exists("LogFiles")){dir.create("LogFiles")}
+
+  my_log <- file(paste0("LogFiles/",Version,"_log.txt")) # File name of output log
 
   sink(my_log, append = TRUE, type = "output") # Writing console output to log file
   sink(my_log, append = TRUE, type = "message")
