@@ -43,6 +43,9 @@ scRNA.SeuObj$celltype <- scRNA.SeuObj$singleR_classic_PredbyscRNA
   DataMode = "10x"
   Species = "Human" # Species = c("Mouse","Human")
 
+  ## Extract the original Meta term
+  Ori_Meta.set <- colnames(scRNA.SeuObj@meta.data)
+
 # ##### Export the log file (Start) #####
 #   ## Create new folder for log file
 #   if (!dir.exists("LogFiles")){dir.create("LogFiles")}
