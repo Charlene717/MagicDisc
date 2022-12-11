@@ -53,8 +53,7 @@ memory.limit(150000)
 
 ##### Load Packages #####
 FUN_Basic.set <- c("tidyverse","Seurat","monocle","ggplot2","ggpmisc","broom",
-                   "stringr","magrittr","dplyr",
-                   "patchwork","reticulate","anndata")
+                   "stringr","magrittr","dplyr", "patchwork","reticulate","anndata")
 FUN_BiocManager.set <- c("fgsea","AnnotationHub","ensembldb",
                          "basilisk","zellkonverter","SeuratDisk",
                          "SingleR","scRNAseq","celldex","scran")
@@ -89,9 +88,7 @@ source("#_MagicDisc_0_PKG_FUN.R")
   source("FUN_scRNAQC.R")
   ## Create new folder
   PathQC <- paste0(Save.Path,"/","A01_QC")
-  if (!dir.exists(PathQC)){
-    dir.create(PathQC)
-  }
+  if (!dir.exists(PathQC)){dir.create(PathQC)}
 
   ## QC for all samples
   scRNA.SeuObj_QCTry <- scRNAQC(scRNA.SeuObj, Path = PathQC ,SpeciSet = Species,
@@ -132,9 +129,7 @@ source("#_MagicDisc_0_PKG_FUN.R")
   source("FUN_DRCluster.R")
   ## Create new folder
   PathCluster <- paste0(Save.Path,"/","A02_Cluster")
-  if (!dir.exists(PathCluster)){
-    dir.create(PathCluster)
-  }
+  if (!dir.exists(PathCluster)){dir.create(PathCluster)}
 
   scRNA.SeuObj <- DRCluster(scRNA.SeuObj, scRNA_SeuObj.list, seed=1, PCAdims = 30,
                             Path = PathCluster, projectName= ProjectName,
@@ -152,9 +147,7 @@ source("#_MagicDisc_0_PKG_FUN.R")
 ##### 05 Identify conserved cluster markers  #####
   ## Create new folder
   PathCellType <- paste0(Save.Path,"/","A03_CellTypeAno")
-  if (!dir.exists(PathCellType)){
-    dir.create(PathCellType)
-  }
+  if (!dir.exists(PathCellType)){dir.create(PathCellType)}
 
   ## Identify conserved cluster markers
   # find markers for every cluster compared to all remaining cells, report only the positive ones
@@ -421,9 +414,7 @@ source("#_MagicDisc_0_PKG_FUN.R")
 
   ## Create new folder
   PathCellCount <- paste0(Save.Path,"/","B01_CellCount")
-  if (!dir.exists(PathCellCount)){
-    dir.create(PathCellCount)
-  }
+  if (!dir.exists(PathCellCount)){dir.create(PathCellCount)}
 
   ## Annotation Summary Table
   AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df, Ori_Meta.set,
@@ -438,9 +429,7 @@ source("#_MagicDisc_0_PKG_FUN.R")
 ##### 08 Find CCmarker in different Cell type ########
   ## Create new folder
   PathBiomarkers <- paste0(Save.Path,"/","B02_Biomarkers")
-  if (!dir.exists(PathBiomarkers)){
-    dir.create(PathBiomarkers)
-  }
+  if (!dir.exists(PathBiomarkers)){dir.create(PathBiomarkers)}
 
   #### Define group by different phenotype ####
   source("FUN_Find_Markers.R")
@@ -587,9 +576,7 @@ source("#_MagicDisc_0_PKG_FUN.R")
 ##### 013 inferCNV #####
   ## Create new folder
   PathinferCNV <- paste0(Save.Path,"/","D01_inferCNV")
-  if (!dir.exists(PathinferCNV)){
-    dir.create(PathinferCNV)
-  }
+  if (!dir.exists(PathinferCNV)){dir.create(PathinferCNV)}
 
   infercnv_obj <- inferCNV(scRNA.SeuObj, AnnoSet = "celltype",
                            SpeciSet = Species,
