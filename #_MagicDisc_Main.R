@@ -2,41 +2,13 @@
 ## Ref: https://blog.gtwang.org/r/r-data-input-and-output/
 
 ##### Presetting ######
-rm(list = ls()) # Clean variable
-memory.limit(150000)
-# options(stringsAsFactors = FALSE)
-# Sys.setlocale(category = "LC_ALL", locale = "UTF-8")
+  rm(list = ls()) # Clean variable
+  memory.limit(150000)
+  # options(stringsAsFactors = FALSE)
+  # Sys.setlocale(category = "LC_ALL", locale = "UTF-8")
 
 ##### Setting ######
-  #### Current path and new folder setting* ####
-  ProjectName = "CC"
-  Sampletype = "PBMC"
-  Version = paste0(Sys.Date(),"_",ProjectName,"_",Sampletype)
-  Save.Path = paste0(getwd(),"/",Version)
-
-  ## Create new folder
-  if (!dir.exists(Save.Path)){dir.create(Save.Path)}
-
-  ##### Import information sheet setting* #####
-  ## Folder name
-  InputFolder = "Input_files_10x"
-
-  ## Metadata spreadsheet
-  InputAnno = "PBMC_Ano.csv"
-
-  ## GSEA Genesets file
-  InputGSEA = "GSEA_Geneset_Pathway_3Database_WithoutFilter.txt"
-
-  ## InferCNV Ref file
-  InputInferCNV = "mm10_genomic_mapinfo_one.tsv"
-
-  ##### Parameter setting* #####
-  ClassSet1 = "Sample"
-  ClassSet2 = "Cachexia"
-  ClassSet3 = "Sex"
-
-  DataMode = "10x"
-  Species = "Mouse" # Species = c("Mouse","Human")
+  source("#_MagicDisc_00_CondSet.R")
 
 ##### Export the log file (Start) #####
   ## Create new folder for log file
@@ -52,12 +24,12 @@ memory.limit(150000)
 
 
 ##### Load Packages #####
-FUN_Basic.set <- c("tidyverse","Seurat","monocle","ggplot2","ggpmisc","broom",
-                   "stringr","magrittr","dplyr", "patchwork","reticulate","anndata")
-FUN_BiocManager.set <- c("fgsea","AnnotationHub","ensembldb",
-                         "basilisk","zellkonverter","SeuratDisk",
-                         "SingleR","scRNAseq","celldex","scran")
-source("#_MagicDisc_0_PKG_FUN.R")
+  FUN_Basic.set <- c("tidyverse","Seurat","monocle","ggplot2","ggpmisc","broom",
+                     "stringr","magrittr","dplyr", "patchwork","reticulate","anndata")
+  FUN_BiocManager.set <- c("fgsea","AnnotationHub","ensembldb",
+                           "basilisk","zellkonverter","SeuratDisk",
+                           "SingleR","scRNAseq","celldex","scran")
+  source("#_MagicDisc_00_PKG_FUN.R")
 
 ##### Load datasets  #####
   ## Annotation table
@@ -70,11 +42,17 @@ source("#_MagicDisc_0_PKG_FUN.R")
                                      Path =  "/monocle/outs/filtered_gene_bc_matrices/mm10",
                                      list_files.df, Mode = DataMode, projectName = ProjectName)
 
+
+  ##****************************************************************************##
+  ################## (Pending) Cell Cycle Regression ##################
+  ##****************************************************************************##
+
+
 ##### 01 Combine different datasets before QC #####
   source("FUN_Cal_Mit.R")
   source("FUN_CombineSeuObj.R")
-  ## Combine SeuObjs from list before QC
-  # (About 30 min for 20000 cells)
+
+  ## Combine SeuObjs from list before QC   # (About 30 min for 20000 cells)
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
 
   ## Extract the original Meta term
@@ -96,7 +74,7 @@ source("#_MagicDisc_0_PKG_FUN.R")
 
   ## QC for each sample for the new integration
   #Test# scRNA_Ori.SeuObj.list <- SplitObject(scRNA_Ori.SeuObj, split.by = "ID")
-    scRNA_SeuObj_QC.list <- list()
+  scRNA_SeuObj_QC.list <- list()
   for (i in 1:length(scRNA_SeuObj.list)) {
 
     Name <- names(scRNA_SeuObj.list)[[i]]
@@ -114,8 +92,7 @@ source("#_MagicDisc_0_PKG_FUN.R")
   save.image(paste0(Save.Path,"/02_Quality_Control.RData"))
 
 ##### 03 Combine different data sets after QC #####
-  ## Combine SeuObjs from list after QC
-  # (About 30 min for 20000 cells)
+  ## Combine SeuObjs from list after QC  # (About 30 min for 20000 cells)
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj_QC.list)
 
   ## Check QC
@@ -137,12 +114,11 @@ source("#_MagicDisc_0_PKG_FUN.R")
 
   ##### Meta Table  #####
   Meta.df <- MetaSummary(scRNA_SeuObj.list, scRNA.SeuObj,
-                         scRNA_SeuObj_QC.list,scRNA_Ori.SeuObj)
+                         scRNA_SeuObj_QC.list, scRNA_Ori.SeuObj)
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/04_Perform_an_integrated_analysis.RData"))
 
-################## (Pending) Cell Cycle Regression ##################
 
 ##### 05 Identify conserved cluster markers  #####
   ## Create new folder
