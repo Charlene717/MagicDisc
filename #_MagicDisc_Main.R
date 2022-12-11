@@ -77,7 +77,7 @@ FUN_Basic.set <- c("tidyverse","Seurat","monocle","ggplot2","ggpmisc","broom",
 FUN_BiocManager.set <- c("fgsea","AnnotationHub","ensembldb",
                          "basilisk","zellkonverter","SeuratDisk",
                          "SingleR","scRNAseq","celldex","scran")
-source("#_MagicDisc_PKG_FUN.R")
+source("#_MagicDisc_0_PKG_FUN.R")
 
 ##### Load datasets  #####
   ## Annotation table
