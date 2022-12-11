@@ -1,25 +1,6 @@
 ## Ref: https://statisticsglobe.com/r-save-all-console-input-output-to-file
 ## Ref: https://blog.gtwang.org/r/r-data-input-and-output/
 
-#************************************************************************************************************************#
-##### To-Do List ######
-  # - [ ] Ensembl gene name conversion
-  # - [ ] Clean up the code
-
-  # - [ ] Gene correlation
-  # - [ ] Delete unrecognized cell type
-
-  # - [ ] Find Biomarker
-  # - [ ] GSEA
-  # - [ ] GO
-  # - [ ] Cell-cell interaction
-  # - [ ] inferCNV
-  # - [ ] Deconvolution
-  # - [ ] Clinical analysis
-  # - [ ] Beautify Figs
-
-#************************************************************************************************************************#
-
 ##### Presetting ######
 rm(list = ls()) # Clean variable
 memory.limit(150000)
