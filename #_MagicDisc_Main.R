@@ -119,6 +119,9 @@
   #### Save RData ####
   save.image(paste0(Save.Path,"/04_Perform_an_integrated_analysis.RData"))
 
+  ##****************************************************************************##
+  ################## (Pending) ROUGE ##################
+  ##****************************************************************************##
 
 ##### 05 Identify conserved cluster markers  #####
   ## Create new folder
