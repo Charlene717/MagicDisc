@@ -326,6 +326,10 @@
 ##### GO/Metascape #####
 
 ##### Deconvolution #####
+  source("#_MagicDisc_DSA_04_RNADeconvolution.R")
+
+  ##### save.image #####
+  save.image(paste0(Save.Path,"/DSA_04_RNADeconvolution.RData"))
 
 ##### Clinical analysis #####
 
