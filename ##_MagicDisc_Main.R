@@ -1,5 +1,5 @@
-## Ref: https://statisticsglobe.com/r-save-all-console-input-output-to-file
-## Ref: https://blog.gtwang.org/r/r-data-input-and-output/
+## Ref: https://satijalab.org/seurat/
+## Ref: https://cole-trapnell-lab.github.io/monocle3/
 
 ##### Presetting ######
   rm(list = ls()) # Clean variable
@@ -10,7 +10,9 @@
 ##### Setting ######
   source("#_MagicDisc_00_CondSet.R")
 
-##### Export the log file (Start) #####
+##**************************** Export the log file (Start) ****************************##
+  ## Ref: https://statisticsglobe.com/r-save-all-console-input-output-to-file
+  ## Ref: https://blog.gtwang.org/r/r-data-input-and-output/
   ## Create new folder for log file
   if (!dir.exists("LogFiles")){dir.create("LogFiles")}
 
@@ -21,7 +23,7 @@
 
   cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently opened R script to file
                file.info(rstudioapi::getSourceEditorContext()$path)$size))
-
+##**************************** Export the log file (Start) ****************************##
 
 ##### Load Packages #####
   FUN_Basic.set <- c("tidyverse","Seurat","monocle","ggplot2","ggpmisc","broom",
@@ -38,8 +40,8 @@
 
   ## Read 10x files
   source("FUN_ReadscRNA.R")
-  scRNA_SeuObj.list <- FUN_ReadscRNA(InputFolder,Folder = Folder,
-                                     Path =  "/monocle/outs/filtered_gene_bc_matrices/mm10",
+  scRNA_SeuObj.list <- FUN_ReadscRNA(InputFolder, Folder = Folder,
+                                     Path =  "/monocle/outs/filtered_gene_bc_matrices/mm10", ## Hm: hg19 ; Mm: mm10
                                      list_files.df, Mode = DataMode, projectName = ProjectName)
 
 
@@ -47,6 +49,7 @@
   ################## (Pending) Cell Cycle Regression ##################
   ##****************************************************************************##
 
+##### 01 Quality Control #####
 
 ##### 01 Combine different datasets before QC #####
   source("FUN_Cal_Mit.R")
@@ -257,6 +260,12 @@
 
     #####------------------------------------------------------------------------------------------------------------#####
 
+
+  ##****************************************************************************##
+  ################## (Pending) Trajectory inference ##################
+  ##****************************************************************************##
+
+
 ##### 09_0 GSEA Analysis (Geneset Prepare) #####
   # https://bioinformatics-core-shared-training.github.io/cruk-summer-school-2018/RNASeq2018/html/06_Gene_set_testing.nb.html
   # install # https://bioconductor.org/packages/release/bioc/html/GSEABase.html
@@ -354,6 +363,8 @@
 ##### Beautify Figs #####
 ## Test
 
-##### Export the log file (End) #####
+
+##**************************** Export the log file (End) ****************************##
   closeAllConnections() # Close connection to log file
+##**************************** Export the log file (End) ****************************##
 
