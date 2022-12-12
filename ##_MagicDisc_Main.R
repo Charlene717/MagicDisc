@@ -26,11 +26,6 @@
 ##**************************** Export the log file (Start) ****************************##
 
 ##### Load Packages #####
-  FUN_Basic.set <- c("tidyverse","Seurat","monocle","ggplot2","ggpmisc","broom",
-                     "stringr","magrittr","dplyr", "patchwork","reticulate","anndata")
-  FUN_BiocManager.set <- c("fgsea","AnnotationHub","ensembldb",
-                           "basilisk","zellkonverter","SeuratDisk",
-                           "SingleR","scRNAseq","celldex","scran")
   source("#_MagicDisc_00_PKG_FUN.R")
 
 ##### Load datasets  #####
@@ -51,18 +46,18 @@
 
 ##### 01 Quality Control #####
 
-##### 01 Combine different datasets before QC #####
-  source("FUN_Cal_Mit.R")
-  source("FUN_CombineSeuObj.R")
+  #### 01Sup Combine different datasets before QC ####
+    source("FUN_Cal_Mit.R")
+    source("FUN_CombineSeuObj.R")
 
-  ## Combine SeuObjs from list before QC   # (About 30 min for 20000 cells)
-  scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
+    ## Combine SeuObjs from list before QC   # (About 30 min for 20000 cells)
+    scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
 
-  ## Extract the original Meta term
-  Ori_Meta.set <- colnames(scRNA.SeuObj@meta.data)
+    ## Extract the original Meta term
+    MetaData_BFQC.df <- colnames(scRNA.SeuObj@meta.data)
 
-  #### Save RData ####
-  save.image(paste0(Save.Path,"/01_Combine_different_datasets_before_QC.RData"))
+    #### Save RData ####
+    save.image(paste0(Save.Path,"/01Sup_Combine_different_datasets_before_QC.RData"))
 
 
 ##### 02 Quality Control #####
@@ -113,7 +108,7 @@
 
   scRNA.SeuObj <- DRCluster(scRNA.SeuObj, scRNA_SeuObj.list, seed=1, PCAdims = 30,
                             Path = PathCluster, projectName= ProjectName,
-                            MetaSet = Ori_Meta.set)
+                            MetaSet = MetaData_BFQC.df)
 
   ##### Meta Table  #####
   Meta.df <- MetaSummary(scRNA_SeuObj.list, scRNA.SeuObj,
@@ -180,7 +175,7 @@
   if (!dir.exists(PathCellCount)){dir.create(PathCellCount)}
 
   ## Annotation Summary Table
-  AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df, Ori_Meta.set,
+  AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df, MetaData_BFQC.df,
                                 ClassSet = ClassSet1, ClassSet2 = ClassSet2)
 
   ## ExportCellCount

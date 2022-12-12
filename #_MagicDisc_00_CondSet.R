@@ -1,4 +1,11 @@
 ##### Setting ######
+##### Load Packages #####
+FUN_Basic.set <- c("tidyverse","Seurat","monocle","ggplot2","ggpmisc","broom",
+                   "stringr","magrittr","dplyr", "patchwork","reticulate","anndata")
+FUN_BiocManager.set <- c("fgsea","AnnotationHub","ensembldb",
+                         "basilisk","zellkonverter","SeuratDisk",
+                         "SingleR","scRNAseq","celldex","scran")
+
 #### Current path and new folder setting* ####
 ProjectName = "CC"
 Sampletype = "PBMC"
