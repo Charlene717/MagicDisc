@@ -48,26 +48,25 @@
 
   #### 01Sup Combine different datasets before QC ####
     source("FUN_Cal_Mit.R")
-    source("FUN_CombineSeuObj.R")
 
-    ## Combine SeuObjs from list before QC   # (About 30 min for 20000 cells)
-    scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
-
+    ### Combine SeuObjs from list before QC   # (About 30 min for 20000 cells)
+    source("#_MagicDisc_01_CombineSeuObj.R")
     ## Extract the original Meta term
     MetaData_BFQC.df <- colnames(scRNA.SeuObj@meta.data)
+    scRNA_BFQC.SeuObj <- scRNA.SeuObj
 
     #### Save RData ####
     save.image(paste0(Save.Path,"/01Sup_Combine_different_datasets_before_QC.RData"))
 
 
-##### 02 Quality Control #####
+##### 01 Quality Control #####
   source("FUN_scRNAQC.R")
   ## Create new folder
   PathQC <- paste0(Save.Path,"/","A01_QC")
   if (!dir.exists(PathQC)){dir.create(PathQC)}
 
   ## QC for all samples
-  scRNA.SeuObj_QCTry <- scRNAQC(scRNA.SeuObj, Path = PathQC ,SpeciSet = Species,
+  scRNA.SeuObj_QCTry <- FUN_scRNAQC(scRNA.SeuObj, Path = PathQC ,SpeciSet = Species,
                                 FileName = paste0(ProjectName))
 
   ## QC for each sample for the new integration
@@ -76,7 +75,7 @@
   for (i in 1:length(scRNA_SeuObj.list)) {
 
     Name <- names(scRNA_SeuObj.list)[[i]]
-    scRNA_SeuObj_QC.list[[i]] <- scRNAQC(scRNA_SeuObj.list[[i]], Path = PathQC ,SpeciSet = Species,
+    scRNA_SeuObj_QC.list[[i]] <- FUN_scRNAQC(scRNA_SeuObj.list[[i]], Path = PathQC ,SpeciSet = Species,
                                          FileName = paste0(ProjectName,"_",Name))
     names(scRNA_SeuObj_QC.list)[[i]] <- Name
 
@@ -87,7 +86,7 @@
   rm(scRNA.SeuObj,scRNA.SeuObj_QCTry)
 
   #### Save RData ####
-  save.image(paste0(Save.Path,"/02_Quality_Control.RData"))
+  save.image(paste0(Save.Path,"/01_Quality_Control.RData"))
 
 ##### 03 Combine different data sets after QC #####
   ## Combine SeuObjs from list after QC  # (About 30 min for 20000 cells)

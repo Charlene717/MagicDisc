@@ -1,4 +1,4 @@
-scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
+FUN_scRNAQC <- function(PBMC.combined, nUMIFilter= 500, nGeneFilter = 250 ,
                     logGPUFilter= 0.8 , mitRFilter=0.1 ,
                     PtSize=0, SpeciSet = Species,
                     AddMitInf = "Yes", # Add mitochondria information
