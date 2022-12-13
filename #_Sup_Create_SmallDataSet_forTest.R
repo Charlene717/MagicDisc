@@ -4,91 +4,86 @@
 
 #### Load the required libraries ####
   ## Check whether the installation of those packages is required from basic
-  Package.set <- c("tidyverse","Seurat")
-  for (i in 1:length(Package.set)) {
-    if (!requireNamespace(Package.set[i], quietly = TRUE)){
-      install.packages(Package.set[i])
-    }
-  }
+  if(!require("tidyverse")) install.packages("tidyverse")
+  if(!require("Seurat")) install.packages("Seurat")
+
   ## Load Packages
-  lapply(Package.set, library, character.only = TRUE)
-  rm(Package.set,i)
+  library(tidyverse)
+  library(Seurat)
 
   ## Check whether the installation of those packages is required from BiocManager
-  if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-  Package.set <- c("SeuratDisk")
-  for (i in 1:length(Package.set)) {
-    if (!requireNamespace(Package.set[i], quietly = TRUE)){
-      BiocManager::install(Package.set[i])
-    }
-  }
+  if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+  if(!require("SeuratDisk", quietly = TRUE)) BiocManager::install("SeuratDisk")
+
 ## Load Packages
-  lapply(Package.set, library, character.only = TRUE)
-  rm(Package.set,i)
+  library(SeuratDisk)
 
-  options(stringsAsFactors = FALSE)
-
-  ##### Current path and new folder setting*  #####
+##### Current path and new folder setting*  #####
   ProjectName = "SeuratSmall"
   Version = paste0(Sys.Date(),"_",ProjectName,"_PADC")
   Save.Path = paste0(getwd(),"/",Version)
   ## Create new folder
-  if (!dir.exists(Save.Path)){
-    dir.create(Save.Path)
-  }
+  if (!dir.exists(Save.Path)){dir.create(Save.Path)}
 
 #### Load data ####
-  #### Converse h5ad to Seurat ####
-  remotes::install_github("mojaveazure/seurat-disk")
-  library(SeuratDisk)
+  # ## Old version for h5ad ##
+  # #### Converse h5ad to Seurat ####
+  # remotes::install_github("mojaveazure/seurat-disk")
+  # library(SeuratDisk)
+  #
+  # # This creates a copy of this .h5ad object reformatted into .h5seurat inside the example_dir directory
+  # Convert("StdWf1_PRJCA001063_CRC_besca2.annotated.h5ad", "PRJCA001063.h5seurat")
+  #
+  # # This .d5seurat object can then be read in manually
+  # scRNA.SeuObj <- LoadH5Seurat("PRJCA001063.h5seurat")
 
-  # This creates a copy of this .h5ad object reformatted into .h5seurat inside the example_dir directory
-  Convert("StdWf1_PRJCA001063_CRC_besca2.annotated.h5ad", "PRJCA001063.h5seurat")
+  load("D:/Dropbox/#_Dataset/Cancer/PDAC/2022-12-05_CTAnno_singleR_RefPRJCA001063_PDAC.RData")
+  ## Clean up the object
+  rm(list=setdiff(ls(), c("scRNA.SeuObj")))
 
-  # This .d5seurat object can then be read in manually
-  seuratObject <- LoadH5Seurat("PRJCA001063.h5seurat")
-  seuratObject_Ori <- seuratObject
+  Meta.df <- scRNA.SeuObj@meta.data %>% as.data.frame()
+
 #### Data preprocessing ####
-  seuratObject@meta.data[["orig.ident"]] <- sample(c(1,2),nrow(seuratObject@meta.data),replace = TRUE)
-  seuratObject@meta.data <- seuratObject@meta.data %>%
-                            relocate(orig.ident, .before = colnames(seuratObject@meta.data)[1])%>%
-                            relocate(n_counts, .before = colnames(seuratObject@meta.data)[1]) %>%
-                            relocate(n_genes, .before = colnames(seuratObject@meta.data)[1]) %>%
-
-
-                            rename(nFeature_RNA = n_genes, nCount_RNA = n_counts)
-
-
+  # ## Try sample
+  # scRNA.SeuObj@meta.data[["orig.ident"]] <- sample(c(1,2),nrow(scRNA.SeuObj@meta.data),replace = TRUE)
+  # ## Reorder the col
+  # scRNA.SeuObj@meta.data <- scRNA.SeuObj@meta.data %>%
+  #                           relocate(orig.ident, .before = colnames(scRNA.SeuObj@meta.data)[1])%>%
+  #                           relocate(n_counts, .before = colnames(scRNA.SeuObj@meta.data)[1]) %>%
+  #                           relocate(n_genes, .before = colnames(scRNA.SeuObj@meta.data)[1]) %>%
+  #                           rename(nFeature_RNA = n_genes, nCount_RNA = n_counts)
 
 #### Sampling ####
-  # TTT <- sample(seuratObject@meta.data[["Cell_type"]] %>% unique(), 100, replace = TRUE, prob = NULL)
-  # FibroblastTTT <- seuratObject[,seuratObject@meta.data[["Cell_type"]] %in% c("Fibroblast cell")]
-  #
-  # seuratObject_Small <- seuratObject[,sample(1:100,50, replace = FALSE, prob = NULL)]
-  # seuratObject_Small2 <- seuratObject[,sample(1:100,50, replace = FALSE, prob = NULL)]
-  #
+  # ## Test Sampling
+  # Celltype_S100.set <- sample(scRNA.SeuObj@meta.data[["Cell_type"]] %>% unique(), 100, replace = TRUE, prob = NULL)
+  # scRNA_S50.SeuObj <- scRNA.SeuObj[,sample(1:100,50, replace = FALSE, prob = NULL)]
+  # scRNA_S100.SeuObj <- scRNA.SeuObj[,sample(1:100,100, replace = FALSE, prob = NULL)]
+
   # ## Merging more than two seurat objects
   # ## Ref: https://github.com/satijalab/seurat/issues/706
   # ## Ref: https://mojaveazure.github.io/seurat-object/reference/Seurat-methods.html
   #
-  # seuratObject_Small_Merge <- merge(seuratObject_Small,seuratObject_Small2) # merge(x,y,add.cell.ids = c(x@project.name,y@project.name))
+  # scRNA.SeuObj_Small_Merge <- merge(scRNA_S50.SeuObj, scRNA_S100.SeuObj) # merge(x,y,add.cell.ids = c(x@project.name,y@project.name))
 
-  CellType.set <- seuratObject@meta.data[["Cell_type"]] %>% unique()
+  ## Extract SubSet
+  # scRNA_Fib.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% c("Fibroblast cell")]
+
+
+  CellType.set <- scRNA.SeuObj@meta.data[["Cell_type"]] %>% unique()
   for (i in 1:length(CellType.set)) {
     if(i==1){
-      seuratObject_Small <- seuratObject[,seuratObject@meta.data[["Cell_type"]] %in% CellType.set[i]]
-      seuratObject_Small <- seuratObject_Small[,sample(1:nrow((seuratObject_Small@meta.data)),50, replace = FALSE, prob = NULL)]
+      scRNA.SeuObj_Small <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% CellType.set[i]]
+      scRNA.SeuObj_Small <- scRNA.SeuObj_Small[,sample(1:nrow((scRNA.SeuObj_Small@meta.data)),50, replace = FALSE, prob = NULL)]
     }else{
-      seuratObject_Small_Temp <- seuratObject[,seuratObject@meta.data[["Cell_type"]] %in% CellType.set[i]]
-      seuratObject_Small_Temp <- seuratObject_Small_Temp[,sample(1:nrow((seuratObject_Small_Temp@meta.data)),50, replace = FALSE, prob = NULL)]
-      seuratObject_Small <- merge(seuratObject_Small,seuratObject_Small_Temp)
+      scRNA.SeuObj_Small_Temp <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% CellType.set[i]]
+      scRNA.SeuObj_Small_Temp <- scRNA.SeuObj_Small_Temp[,sample(1:nrow((scRNA.SeuObj_Small_Temp@meta.data)),50, replace = FALSE, prob = NULL)]
+      scRNA.SeuObj_Small <- merge(scRNA.SeuObj_Small,scRNA.SeuObj_Small_Temp)
     }
   }
-  rm(i,seuratObject_Small_Temp)
+  rm(i,scRNA.SeuObj_Small_Temp)
 
 
 
 #### Save the RData ####
-  rm(list=setdiff(ls(), c("seuratObject_Small","Version","Save.Path")))
+  rm(list=setdiff(ls(), c("scRNA.SeuObj_Small","Version","Save.Path")))
   save.image(paste0(Save.Path,"/",Version,"_Seurat-Small-Data-Set.RData"))
