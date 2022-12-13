@@ -68,20 +68,30 @@
   ## Extract SubSet
   # scRNA_Fib.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% c("Fibroblast cell")]
 
-
+  Set_SSize <- 50
   CellType.set <- scRNA.SeuObj@meta.data[["Cell_type"]] %>% unique()
   for (i in 1:length(CellType.set)) {
-    if(i==1){
-      scRNA.SeuObj_Small <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% CellType.set[i]]
-      scRNA.SeuObj_Small <- scRNA.SeuObj_Small[,sample(1:nrow((scRNA.SeuObj_Small@meta.data)),50, replace = FALSE, prob = NULL)]
+
+    scRNA.SeuObj_Small_Temp <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% CellType.set[i]]
+    if(nrow(scRNA.SeuObj_Small_Temp@meta.data) < Set_SSize){
+      scRNA.SeuObj_Small_Temp <- scRNA.SeuObj_Small_Temp[,sample(1:nrow((scRNA.SeuObj_Small_Temp@meta.data)),Set_SSize, replace = TRUE, prob = NULL)]
     }else{
-      scRNA.SeuObj_Small_Temp <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% CellType.set[i]]
-      scRNA.SeuObj_Small_Temp <- scRNA.SeuObj_Small_Temp[,sample(1:nrow((scRNA.SeuObj_Small_Temp@meta.data)),50, replace = FALSE, prob = NULL)]
-      scRNA.SeuObj_Small <- merge(scRNA.SeuObj_Small,scRNA.SeuObj_Small_Temp)
+      scRNA.SeuObj_Small_Temp <- scRNA.SeuObj_Small_Temp[,sample(1:nrow((scRNA.SeuObj_Small_Temp@meta.data)),Set_SSize, replace = FALSE, prob = NULL)]
     }
+
+    try({
+      if(i==1){
+        scRNA.SeuObj_Small <- scRNA.SeuObj_Small_Temp
+      }else{
+        scRNA.SeuObj_Small <- merge(scRNA.SeuObj_Small,scRNA.SeuObj_Small_Temp)
+      }
+    })
+
   }
   rm(i,scRNA.SeuObj_Small_Temp)
 
+## Plot
+  DimPlot(scRNA.SeuObj_Small, reduction = "umap",group.by = "seurat_clusters")
 
 
 #### Save the RData ####
