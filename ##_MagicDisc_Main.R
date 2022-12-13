@@ -10,20 +10,20 @@
 ##### Setting ######
   source("#_MagicDisc_00_CondSet.R")
 
-##**************************** Export the log file (Start) ****************************##
-  ## Ref: https://statisticsglobe.com/r-save-all-console-input-output-to-file
-  ## Ref: https://blog.gtwang.org/r/r-data-input-and-output/
-  ## Create new folder for log file
-  if (!dir.exists("LogFiles")){dir.create("LogFiles")}
-
-  my_log <- file(paste0("LogFiles/",Version,"_log.txt")) # File name of output log
-
-  sink(my_log, append = TRUE, type = "output") # Writing console output to log file
-  sink(my_log, append = TRUE, type = "message")
-
-  cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently opened R script to file
-               file.info(rstudioapi::getSourceEditorContext()$path)$size))
-##**************************** Export the log file (Start) ****************************##
+# ##**************************** Export the log file (Start) ****************************##
+#   ## Ref: https://statisticsglobe.com/r-save-all-console-input-output-to-file
+#   ## Ref: https://blog.gtwang.org/r/r-data-input-and-output/
+#   ## Create new folder for log file
+#   if (!dir.exists("LogFiles")){dir.create("LogFiles")}
+#
+#   my_log <- file(paste0("LogFiles/",Version,"_log.txt")) # File name of output log
+#
+#   sink(my_log, append = TRUE, type = "output") # Writing console output to log file
+#   sink(my_log, append = TRUE, type = "message")
+#
+#   cat(readChar(rstudioapi::getSourceEditorContext()$path, # Writing currently opened R script to file
+#                file.info(rstudioapi::getSourceEditorContext()$path)$size))
+# ##**************************** Export the log file (Start) ****************************##
 
 ##### Load Packages #####
   source("#_MagicDisc_00_PKG_FUN.R")
@@ -35,10 +35,9 @@
 
   ## Read 10x files
   source("FUN_ReadscRNA.R")
-  scRNA_SeuObj.list <- FUN_ReadscRNA(InputFolder, Folder = Folder,
+  scRNA_SeuObj_WOQC.list <- FUN_ReadscRNA(InputFolder, Folder = Folder,
                                      Path =  "/monocle/outs/filtered_gene_bc_matrices/mm10", ## Hm: hg19 ; Mm: mm10
                                      list_files.df, Mode = DataMode, projectName = ProjectName)
-
 
   ##****************************************************************************##
   ################## (Pending) Cell Cycle Regression ##################
@@ -46,75 +45,74 @@
 
 ##### 01 Quality Control #####
 
-  #### 01Sup Combine different datasets before QC ####
+  #### 01Sup Combine different datasets without QC ####
     source("FUN_Cal_Mit.R")
 
     ### Combine SeuObjs from list before QC   # (About 30 min for 20000 cells)
-    source("#_MagicDisc_01_CombineSeuObj.R")
+    source("FUN_CombineSeuObj.R")
     ## Extract the original Meta term
-    MetaData_BFQC.df <- colnames(scRNA.SeuObj@meta.data)
-    scRNA_BFQC.SeuObj <- scRNA.SeuObj
+    scRNA_CombWOQC.SeuObj <- FUN_CombineSeuObj(scRNA_SeuObj_WOQC.list)
+    MetaData_WOQC.set <- colnames(scRNA_CombWOQC.SeuObj@meta.data)
 
     #### Save RData ####
-    save.image(paste0(Save.Path,"/01Sup_Combine_different_datasets_before_QC.RData"))
+    save.image(paste0(Save.Path,"/01Sup_Combine_datasets_before_QC.RData"))
 
 
-##### 01 Quality Control #####
-  source("FUN_scRNAQC.R")
-  ## Create new folder
-  PathQC <- paste0(Save.Path,"/","A01_QC")
-  if (!dir.exists(PathQC)){dir.create(PathQC)}
+  ##### 01 Quality Control #####
+    source("FUN_scRNAQC.R")
+    ## Create new folder
+    PathQC <- paste0(Save.Path,"/","A01_QC")
+    if (!dir.exists(PathQC)){dir.create(PathQC)}
 
-  ## QC for all samples
-  scRNA.SeuObj_QCTry <- FUN_scRNAQC(scRNA.SeuObj, Path = PathQC ,SpeciSet = Species,
-                                FileName = paste0(ProjectName))
+    ## QC for all samples
+    scRNA_CombWOQC_QC.SeuObj <- FUN_scRNAQC(scRNA_CombWOQC.SeuObj, Path = PathQC ,SpeciSet = Species,
+                                            FileName = paste0(ProjectName))
 
-  ## QC for each sample for the new integration
-  #Test# scRNA_Ori.SeuObj.list <- SplitObject(scRNA_Ori.SeuObj, split.by = "ID")
-  scRNA_SeuObj_QC.list <- list()
-  for (i in 1:length(scRNA_SeuObj.list)) {
+    ## QC for each sample for the new integration
+    #Test# scRNA_Ori.SeuObj.list <- SplitObject(scRNA_Ori.SeuObj, split.by = "ID")
+    scRNA_SeuObj_QC.list <- list()
+    for (i in 1:length(scRNA_SeuObj_WOQC.list )) {
 
-    Name <- names(scRNA_SeuObj.list)[[i]]
-    scRNA_SeuObj_QC.list[[i]] <- FUN_scRNAQC(scRNA_SeuObj.list[[i]], Path = PathQC ,SpeciSet = Species,
-                                         FileName = paste0(ProjectName,"_",Name))
-    names(scRNA_SeuObj_QC.list)[[i]] <- Name
+      Name <- names(scRNA_SeuObj_WOQC.list )[[i]]
+      scRNA_SeuObj_QC.list[[i]] <- FUN_scRNAQC(scRNA_SeuObj_WOQC.list [[i]], Path = PathQC ,SpeciSet = Species,
+                                               FileName = paste0(ProjectName,"_",Name))
+      names(scRNA_SeuObj_QC.list)[[i]] <- Name
 
-    }
-  rm(i,Name)
+      }
+    rm(i,Name)
 
-  scRNA_Ori.SeuObj <- scRNA.SeuObj # Save the original obj
-  rm(scRNA.SeuObj,scRNA.SeuObj_QCTry)
+    rm(scRNA.SeuObj)
+
+  ##### 01 Combine different data sets after QC #####
+  ## Combine SeuObjs from list after QC  # (About 30 min for 20000 cells)
+  source("FUN_CombineSeuObj.R")
+  scRNA.SeuObj <- FUN_CombineSeuObj(scRNA_SeuObj_QC.list)
+
+  ## Check QC
+  FUN_scRNAQC(scRNA.SeuObj,AddMitInf = "No",CheckOnly="Yes", Path = PathQC ,
+              SpeciSet = Species, FileName = paste0(ProjectName,"_Check"))
+
+  ##### Meta Table  #####
+  Meta.df <- MetaSummary(  SeuObj_BFQC.list = scRNA_SeuObj_WOQC.list,  scRNA_BFQC.SeuObj = scRNA_CombWOQC.SeuObj,
+                           SeuObj_AFTQC.list = scRNA_SeuObj_QC.list, scRNA_AFTQC.SeuObj = scRNA.SeuObj)
 
   #### Save RData ####
   save.image(paste0(Save.Path,"/01_Quality_Control.RData"))
 
-##### 03 Combine different data sets after QC #####
-  ## Combine SeuObjs from list after QC  # (About 30 min for 20000 cells)
-  scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj_QC.list)
+##### 02 Perform an integrated analysis #####
+  rm(scRNA_CombWOQC_QC.SeuObj, scRNA_CombWOQC.SeuObj, scRNA_SeuObj_WOQC.list, scRNA_SeuObj_QC.list)
 
-  ## Check QC
-  scRNAQC(scRNA.SeuObj,AddMitInf = "No",CheckOnly="Yes", Path = PathQC ,
-          SpeciSet = Species, FileName = paste0(ProjectName,"_Check"))
-
-  #### Save RData ####
-  save.image(paste0(Save.Path,"/03_Combine_different_data_sets_after_QC.RData"))
-
-##### 04 Perform an integrated analysis #####
   source("FUN_DRCluster.R")
   ## Create new folder
   PathCluster <- paste0(Save.Path,"/","A02_Cluster")
   if (!dir.exists(PathCluster)){dir.create(PathCluster)}
 
-  scRNA.SeuObj <- DRCluster(scRNA.SeuObj, scRNA_SeuObj.list, seed=1, PCAdims = 30,
+  scRNA.SeuObj <- DRCluster(scRNA.SeuObj, scRNA_SeuObj_QC.list, seed=1, PCAdims = 30,
                             Path = PathCluster, projectName= ProjectName,
-                            MetaSet = MetaData_BFQC.df)
-
-  ##### Meta Table  #####
-  Meta.df <- MetaSummary(scRNA_SeuObj.list, scRNA.SeuObj,
-                         scRNA_SeuObj_QC.list, scRNA_Ori.SeuObj)
+                            MetaSet = MetaData_WOQC.set)
 
   #### Save RData ####
-  save.image(paste0(Save.Path,"/04_Perform_an_integrated_analysis.RData"))
+  save.image(paste0(Save.Path,"/02_Perform_an_integrated_analysis.RData"))
 
   ##****************************************************************************##
   ################## (Pending) ROUGE ##################
@@ -174,7 +172,7 @@
   if (!dir.exists(PathCellCount)){dir.create(PathCellCount)}
 
   ## Annotation Summary Table
-  AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df, MetaData_BFQC.df,
+  AnnoSummary.lt <- AnnoSummary(scRNA.SeuObj,  list_files.df, MetaData_WOQC.set,
                                 ClassSet = ClassSet1, ClassSet2 = ClassSet2)
 
   ## ExportCellCount
@@ -358,7 +356,7 @@
 ## Test
 
 
-##**************************** Export the log file (End) ****************************##
-  closeAllConnections() # Close connection to log file
-##**************************** Export the log file (End) ****************************##
+# ##**************************** Export the log file (End) ****************************##
+#   closeAllConnections() # Close connection to log file
+# ##**************************** Export the log file (End) ****************************##
 

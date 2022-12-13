@@ -113,7 +113,10 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
   rm(i,RefGroup_Temp)
 
   #### create the infercnv object ####
-  CreateInfercnvObject.lt = list(delim="\t",max_cells_per_group = NULL,min_max_counts_per_cell = c(100, +Inf),chr_exclude = c("chrX", "chrY", "chrM"))
+  if(CreateInfercnvObject.lt == ""){
+    CreateInfercnvObject.lt = list(delim="\t",max_cells_per_group = NULL,min_max_counts_per_cell = c(100, +Inf),chr_exclude = c("chrX", "chrY", "chrM"))
+  }
+
   formals(CreateInfercnvObject)[names(CreateInfercnvObject.lt)] <- CreateInfercnvObject.lt
   CreateInfercnvObject.lt = CreateInfercnvObject.lt
   formals(CreateInfercnvObject)[names(CreateInfercnvObject.lt)] <- CreateInfercnvObject.lt
