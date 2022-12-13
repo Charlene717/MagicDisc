@@ -52,6 +52,9 @@
   #                           relocate(n_counts, .before = colnames(scRNA.SeuObj@meta.data)[1]) %>%
   #                           relocate(n_genes, .before = colnames(scRNA.SeuObj@meta.data)[1]) %>%
   #                           rename(nFeature_RNA = n_genes, nCount_RNA = n_counts)
+  scRNA.SeuObj@meta.data[["Cell_ID"]] <- rownames(scRNA.SeuObj@meta.data)
+  scRNA.SeuObj@meta.data <- scRNA.SeuObj@meta.data %>%
+                            relocate(Cell_ID, .before = colnames(scRNA.SeuObj@meta.data)[1])
 
 #### Sampling ####
   # ## Test Sampling
@@ -63,37 +66,66 @@
   # ## Ref: https://github.com/satijalab/seurat/issues/706
   # ## Ref: https://mojaveazure.github.io/seurat-object/reference/Seurat-methods.html
   #
-  # scRNA.SeuObj_Small_Merge <- merge(scRNA_S50.SeuObj, scRNA_S100.SeuObj) # merge(x,y,add.cell.ids = c(x@project.name,y@project.name))
+  # scRNA_Small.SeuObj_Merge <- merge(scRNA_S50.SeuObj, scRNA_S100.SeuObj) # merge(x,y,add.cell.ids = c(x@project.name,y@project.name))
 
   ## Extract SubSet
   # scRNA_Fib.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% c("Fibroblast cell")]
 
+  ## Old version
   Set_SSize <- 50
   CellType.set <- scRNA.SeuObj@meta.data[["Cell_type"]] %>% unique()
   for (i in 1:length(CellType.set)) {
 
-    scRNA.SeuObj_Small_Temp <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% CellType.set[i]]
-    if(nrow(scRNA.SeuObj_Small_Temp@meta.data) < Set_SSize){
-      scRNA.SeuObj_Small_Temp <- scRNA.SeuObj_Small_Temp[,sample(1:nrow((scRNA.SeuObj_Small_Temp@meta.data)),Set_SSize, replace = TRUE, prob = NULL)]
+    scRNA_Small_Temp.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% CellType.set[i]]
+    if(nrow(scRNA_Small_Temp.SeuObj@meta.data) < Set_SSize){
+      scRNA_Small_Temp.SeuObj <- scRNA_Small_Temp.SeuObj[,sample(1:nrow((scRNA_Small_Temp.SeuObj@meta.data)),Set_SSize, replace = TRUE, prob = NULL)]
     }else{
-      scRNA.SeuObj_Small_Temp <- scRNA.SeuObj_Small_Temp[,sample(1:nrow((scRNA.SeuObj_Small_Temp@meta.data)),Set_SSize, replace = FALSE, prob = NULL)]
+      scRNA_Small_Temp.SeuObj <- scRNA_Small_Temp.SeuObj[,sample(1:nrow((scRNA_Small_Temp.SeuObj@meta.data)),Set_SSize, replace = FALSE, prob = NULL)]
     }
 
     try({
       if(i==1){
-        scRNA.SeuObj_Small <- scRNA.SeuObj_Small_Temp
+        scRNA_Small.SeuObj <- scRNA_Small_Temp.SeuObj
       }else{
-        scRNA.SeuObj_Small <- merge(scRNA.SeuObj_Small,scRNA.SeuObj_Small_Temp)
+        scRNA_Small.SeuObj <- merge(scRNA_Small.SeuObj, scRNA_Small_Temp.SeuObj)
       }
     })
 
   }
-  rm(i,scRNA.SeuObj_Small_Temp)
+  rm(i,scRNA_Small_Temp.SeuObj)
+
+
+  ## New version (Keep all data)
+  Set_SSize <- 50
+  CellType.set <- scRNA.SeuObj@meta.data[["Cell_type"]] %>% unique()
+  for (i in 1:length(CellType.set)) {
+
+    scRNA_Small_Temp.set <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% CellType.set[i]]$Cell_ID
+    if(length(scRNA_Small_Temp.set) < Set_SSize){
+      scRNA_Small_Temp.set <- sample(scRNA_Small_Temp.set, Set_SSize, replace = TRUE, prob = NULL)
+    }else{
+      scRNA_Small_Temp.set <- sample(scRNA_Small_Temp.set, Set_SSize, replace = FALSE, prob = NULL)
+
+    }
+
+    try({
+      if(i==1){
+        scRNA_Small.set <- scRNA_Small_Temp.set
+      }else{
+        scRNA_Small.set <- c(scRNA_Small.set,scRNA_Small_Temp.set)
+      }
+    })
+
+  }
+  scRNA_Small.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_ID"]] %in% scRNA_Small.set]
+  rm(i,scRNA_Small.set,  scRNA_Small_Temp.set)
 
 ## Plot
-  DimPlot(scRNA.SeuObj_Small, reduction = "umap",group.by = "seurat_clusters")
+  DimPlot(scRNA_Small.SeuObj, reduction = "umap",group.by = "seurat_clusters")
+  DimPlot(scRNA_Small.SeuObj, reduction = "umap",group.by = "Cell_type")
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "Cell_type")
 
 
 #### Save the RData ####
-  rm(list=setdiff(ls(), c("scRNA.SeuObj_Small","Version","Save.Path")))
+  rm(list=setdiff(ls(), c("scRNA_Small.SeuObj","Version","Save.Path")))
   save.image(paste0(Save.Path,"/",Version,"_Seurat-Small-Data-Set.RData"))
