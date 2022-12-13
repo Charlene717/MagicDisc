@@ -71,28 +71,28 @@
   ## Extract SubSet
   # scRNA_Fib.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% c("Fibroblast cell")]
 
-  ## Old version
-  Set_SSize <- 50
-  CellType.set <- scRNA.SeuObj@meta.data[["Cell_type"]] %>% unique()
-  for (i in 1:length(CellType.set)) {
-
-    scRNA_Small_Temp.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% CellType.set[i]]
-    if(nrow(scRNA_Small_Temp.SeuObj@meta.data) < Set_SSize){
-      scRNA_Small_Temp.SeuObj <- scRNA_Small_Temp.SeuObj[,sample(1:nrow((scRNA_Small_Temp.SeuObj@meta.data)),Set_SSize, replace = TRUE, prob = NULL)]
-    }else{
-      scRNA_Small_Temp.SeuObj <- scRNA_Small_Temp.SeuObj[,sample(1:nrow((scRNA_Small_Temp.SeuObj@meta.data)),Set_SSize, replace = FALSE, prob = NULL)]
-    }
-
-    try({
-      if(i==1){
-        scRNA_Small.SeuObj <- scRNA_Small_Temp.SeuObj
-      }else{
-        scRNA_Small.SeuObj <- merge(scRNA_Small.SeuObj, scRNA_Small_Temp.SeuObj)
-      }
-    })
-
-  }
-  rm(i,scRNA_Small_Temp.SeuObj)
+  # ## Old version
+  # Set_SSize <- 50
+  # CellType.set <- scRNA.SeuObj@meta.data[["Cell_type"]] %>% unique()
+  # for (i in 1:length(CellType.set)) {
+  #
+  #   scRNA_Small_Temp.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% CellType.set[i]]
+  #   if(nrow(scRNA_Small_Temp.SeuObj@meta.data) < Set_SSize){
+  #     scRNA_Small_Temp.SeuObj <- scRNA_Small_Temp.SeuObj[,sample(1:nrow((scRNA_Small_Temp.SeuObj@meta.data)),Set_SSize, replace = TRUE, prob = NULL)]
+  #   }else{
+  #     scRNA_Small_Temp.SeuObj <- scRNA_Small_Temp.SeuObj[,sample(1:nrow((scRNA_Small_Temp.SeuObj@meta.data)),Set_SSize, replace = FALSE, prob = NULL)]
+  #   }
+  #
+  #   try({
+  #     if(i==1){
+  #       scRNA_Small.SeuObj <- scRNA_Small_Temp.SeuObj
+  #     }else{
+  #       scRNA_Small.SeuObj <- merge(scRNA_Small.SeuObj, scRNA_Small_Temp.SeuObj)
+  #     }
+  #   })
+  #
+  # }
+  # rm(i,scRNA_Small_Temp.SeuObj)
 
 
   ## New version (Keep all data)
