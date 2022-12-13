@@ -18,13 +18,6 @@
 ## Load Packages
   library(SeuratDisk)
 
-##### Current path and new folder setting*  #####
-  ProjectName = "SeuratSmall"
-  Version = paste0(Sys.Date(),"_",ProjectName,"_PADC")
-  Save.Path = paste0(getwd(),"/",Version)
-  ## Create new folder
-  if (!dir.exists(Save.Path)){dir.create(Save.Path)}
-
 #### Load data ####
   # ## Old version for h5ad ##
   # #### Converse h5ad to Seurat ####
@@ -42,6 +35,13 @@
   rm(list=setdiff(ls(), c("scRNA.SeuObj")))
 
   Meta.df <- scRNA.SeuObj@meta.data %>% as.data.frame()
+
+##### Current path and new folder setting*  #####
+  ProjectName = "SeuratSmall"
+  Version = paste0(Sys.Date(),"_",ProjectName,"_PADC")
+  Save.Path = paste0(getwd(),"/",Version)
+  ## Create new folder
+  if (!dir.exists(Save.Path)){dir.create(Save.Path)}
 
 #### Data preprocessing ####
   # ## Try sample
@@ -97,13 +97,17 @@
 
   ## New version (Keep all data)
   Set_SSize <- 50
+  Set_seed <- 1
+
   CellType.set <- scRNA.SeuObj@meta.data[["Cell_type"]] %>% unique()
   for (i in 1:length(CellType.set)) {
 
     scRNA_Small_Temp.set <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% CellType.set[i]]$Cell_ID
     if(length(scRNA_Small_Temp.set) < Set_SSize){
+      set.seed(Set_seed)
       scRNA_Small_Temp.set <- sample(scRNA_Small_Temp.set, Set_SSize, replace = TRUE, prob = NULL)
     }else{
+      set.seed(Set_seed)
       scRNA_Small_Temp.set <- sample(scRNA_Small_Temp.set, Set_SSize, replace = FALSE, prob = NULL)
 
     }
@@ -125,7 +129,11 @@
   DimPlot(scRNA_Small.SeuObj, reduction = "umap",group.by = "Cell_type")
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "Cell_type")
 
+  scRNA_Small_S1.SeuObj <- scRNA_Small.SeuObj
+  # scRNA_Small_S2.SeuObj <- scRNA_Small.SeuObj
+  # scRNA_Small_S3.SeuObj <- scRNA_Small.SeuObj
 
 #### Save the RData ####
-  rm(list=setdiff(ls(), c("scRNA_Small.SeuObj","Version","Save.Path")))
-  save.image(paste0(Save.Path,"/",Version,"_Seurat-Small-Data-Set.RData"))
+  # rm(list=setdiff(ls(), c("scRNA_Small.SeuObj","Version","Save.Path",
+  # "scRNA_Small_S1.SeuObj", "scRNA_Small_S2.SeuObj", scRNA_Small_S3.SeuObj)))
+  save.image(paste0(Save.Path,"/",Version,"_SmallData.RData"))
