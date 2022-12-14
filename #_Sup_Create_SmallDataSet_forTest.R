@@ -133,7 +133,11 @@
   # scRNA_Small_S2.SeuObj <- scRNA_Small.SeuObj
   # scRNA_Small_S3.SeuObj <- scRNA_Small.SeuObj
 
+
 #### Save the RData ####
   # rm(list=setdiff(ls(), c("scRNA_Small.SeuObj","Version","Save.Path",
   # "scRNA_Small_S1.SeuObj", "scRNA_Small_S2.SeuObj", scRNA_Small_S3.SeuObj)))
   save.image(paste0(Save.Path,"/",Version,"_SmallData.RData"))
+
+  scRNA.SeuObj <- scRNA_Small.SeuObj
+  save.image(paste0(Save.Path,"/",Version,"_SmallDataS.RData"))
