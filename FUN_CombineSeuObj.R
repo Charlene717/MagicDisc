@@ -1,4 +1,4 @@
-CombineSeuObj <- function(scRNA_SeuObj.list,selection.method = "vst", nfeatures = 2000 ,...) {
+FUN_CombineSeuObj <- function(scRNA_SeuObj.list,selection.method = "vst", nfeatures = 2000 ,...) {
 
   if(length(scRNA_SeuObj.list)==1){
     scRNA.SeuObj <- scRNA_SeuObj.list[[1]]
