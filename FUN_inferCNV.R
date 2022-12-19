@@ -113,8 +113,9 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
   rm(i,RefGroup_Temp)
 
   #### create the infercnv object ####
+  ## Ref: https://rdrr.io/bioc/infercnv/man/CreateInfercnvObject.html
   if(CreateInfercnvObject.lt == ""){
-    CreateInfercnvObject.lt = list(delim="\t",max_cells_per_group = NULL,min_max_counts_per_cell = c(100, +Inf),chr_exclude = c("chrX", "chrY", "chrM"))
+     CreateInfercnvObject.lt = list(delim="\t",max_cells_per_group = NULL,min_max_counts_per_cell = c(100, +Inf),chr_exclude = c("chrX", "chrY", "chrM"))
   }
 
   formals(CreateInfercnvObject)[names(CreateInfercnvObject.lt)] <- CreateInfercnvObject.lt
@@ -128,8 +129,11 @@ inferCNV <- function(scRNA.SeuObj, AnnoSet = "celltype",
 
 
   #### Run inferCNV ####
+  ## Ref: https://rdrr.io/github/broadinstitute/inferCNV/man/run.html
+  if(inferCNVRun.lt == ""){
+    inferCNVRun.lt = list(cluster_by_groups=TRUE, plot_steps=FALSE, no_plot=FALSE, resume_mode = FALSE, k_nn = 30)
+  }
 
-  inferCNVRun.lt = list(cluster_by_groups=TRUE, plot_steps=FALSE, no_plot=FALSE, resume_mode = FALSE, k_nn = 30)
   formals(run)[names(inferCNVRun.lt)] <- inferCNVRun.lt
   inferCNVRun.lt = inferCNVRun.lt
   formals(run)[names(inferCNVRun.lt)] <- inferCNVRun.lt
